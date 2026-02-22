@@ -5,6 +5,7 @@ import { CheckCircle } from 'lucide-react'
 import { publicApi } from '@/api/client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import FormRenderer from '@/components/preview/FormRenderer'
+import MultiPageFormRenderer from '@/components/preview/MultiPageFormRenderer'
 
 export default function PublicFormPage() {
   const { formId } = useParams<{ formId: string }>()
@@ -60,6 +61,8 @@ export default function PublicFormPage() {
     )
   }
 
+  const hasMultiplePages = form.pages && form.pages.length > 1
+
   return (
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="container mx-auto px-4 max-w-2xl">
@@ -71,11 +74,19 @@ export default function PublicFormPage() {
             )}
           </CardHeader>
           <CardContent>
-            <FormRenderer
-              form={form}
-              onSubmit={(data) => submitMutation.mutate(data)}
-              isSubmitting={submitMutation.isPending}
-            />
+            {hasMultiplePages ? (
+              <MultiPageFormRenderer
+                pages={form.pages!}
+                onSubmit={(data) => submitMutation.mutate(data)}
+                isSubmitting={submitMutation.isPending}
+              />
+            ) : (
+              <FormRenderer
+                form={form}
+                onSubmit={(data) => submitMutation.mutate(data)}
+                isSubmitting={submitMutation.isPending}
+              />
+            )}
             {submitMutation.isError && (
               <p className="text-red-500 text-center mt-4">
                 Failed to submit form. Please try again.

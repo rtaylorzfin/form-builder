@@ -1,0 +1,16 @@
+CREATE TABLE users (
+    id UUID PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    role VARCHAR(20) NOT NULL DEFAULT 'USER',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE UNIQUE INDEX idx_users_email ON users(email);
+
+ALTER TABLE forms ADD COLUMN user_id UUID;
+ALTER TABLE forms ADD CONSTRAINT fk_forms_user
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL;
+CREATE INDEX idx_forms_user_id ON forms(user_id);

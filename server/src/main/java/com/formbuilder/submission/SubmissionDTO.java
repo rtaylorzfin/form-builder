@@ -18,6 +18,8 @@ public class SubmissionDTO {
         private UUID formId;
         private Map<String, Object> data;
         private LocalDateTime submittedAt;
+        private LocalDateTime updatedAt;
+        private SubmissionStatus status;
         private String ipAddress;
     }
 
@@ -39,5 +41,17 @@ public class SubmissionDTO {
     public static class CreateRequest {
         @NotNull(message = "Form data is required")
         private Map<String, Object> data;
+
+        private SubmissionStatus status;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UpdateRequest {
+        @NotNull(message = "Form data is required")
+        private Map<String, Object> data;
+
+        private SubmissionStatus status;
     }
 }

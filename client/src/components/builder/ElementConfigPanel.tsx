@@ -9,13 +9,29 @@ import { Checkbox } from '@/components/ui/checkbox'
 
 export default function ElementConfigPanel() {
   const { selectedElementId, elements, updateElement } = useFormBuilderStore()
-  const selectedElement = elements.find((e) => e.id === selectedElementId)
+
+  // Find element in tree (including children)
+  function findElement(els: typeof elements, id: string): typeof elements[0] | undefined {
+    for (const e of els) {
+      if (e.id === id) return e
+      if (e.children) {
+        const found = findElement(e.children, id)
+        if (found) return found
+      }
+    }
+    return undefined
+  }
+
+  const selectedElement = selectedElementId ? findElement(elements, selectedElementId) : undefined
 
   const [label, setLabel] = useState('')
   const [fieldName, setFieldName] = useState('')
   const [placeholder, setPlaceholder] = useState('')
   const [required, setRequired] = useState(false)
   const [options, setOptions] = useState<ElementOption[]>([])
+  const [repeatable, setRepeatable] = useState(false)
+  const [minInstances, setMinInstances] = useState(1)
+  const [maxInstances, setMaxInstances] = useState(5)
 
   useEffect(() => {
     if (selectedElement) {
@@ -24,6 +40,9 @@ export default function ElementConfigPanel() {
       setPlaceholder(selectedElement.configuration?.placeholder || '')
       setRequired(selectedElement.configuration?.required || false)
       setOptions(selectedElement.configuration?.options || [])
+      setRepeatable(selectedElement.configuration?.repeatable || false)
+      setMinInstances(selectedElement.configuration?.minInstances || 1)
+      setMaxInstances(selectedElement.configuration?.maxInstances || 5)
     }
   }, [selectedElement])
 
@@ -35,6 +54,7 @@ export default function ElementConfigPanel() {
     )
   }
 
+  const isGroup = selectedElement.type === 'ELEMENT_GROUP'
   const hasOptions = ['RADIO_GROUP', 'SELECT'].includes(selectedElement.type)
 
   const handleUpdate = (updates: Partial<{ label: string; fieldName: string; configuration: ElementConfiguration }>) => {
@@ -62,6 +82,32 @@ export default function ElementConfigPanel() {
     setRequired(checked)
     handleUpdate({
       configuration: { ...selectedElement.configuration, required: checked },
+    })
+  }
+
+  const handleRepeatableChange = (checked: boolean) => {
+    setRepeatable(checked)
+    handleUpdate({
+      configuration: {
+        ...selectedElement.configuration,
+        repeatable: checked,
+        minInstances: checked ? minInstances : undefined,
+        maxInstances: checked ? maxInstances : undefined,
+      },
+    })
+  }
+
+  const handleMinInstancesChange = (value: number) => {
+    setMinInstances(value)
+    handleUpdate({
+      configuration: { ...selectedElement.configuration, minInstances: value },
+    })
+  }
+
+  const handleMaxInstancesChange = (value: number) => {
+    setMaxInstances(value)
+    handleUpdate({
+      configuration: { ...selectedElement.configuration, maxInstances: value },
     })
   }
 
@@ -115,7 +161,7 @@ export default function ElementConfigPanel() {
           />
         </div>
 
-        {!hasOptions && selectedElement.type !== 'CHECKBOX' && (
+        {!isGroup && !hasOptions && selectedElement.type !== 'CHECKBOX' && (
           <div>
             <Label htmlFor="placeholder">Placeholder</Label>
             <Input
@@ -127,16 +173,60 @@ export default function ElementConfigPanel() {
           </div>
         )}
 
-        <div className="flex items-center gap-2">
-          <Checkbox
-            id="required"
-            checked={required}
-            onCheckedChange={(checked) => handleRequiredChange(checked as boolean)}
-          />
-          <Label htmlFor="required" className="cursor-pointer">
-            Required
-          </Label>
-        </div>
+        {!isGroup && (
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="required"
+              checked={required}
+              onCheckedChange={(checked) => handleRequiredChange(checked as boolean)}
+            />
+            <Label htmlFor="required" className="cursor-pointer">
+              Required
+            </Label>
+          </div>
+        )}
+
+        {isGroup && (
+          <div className="space-y-4 border-t pt-4">
+            <h3 className="font-medium text-sm text-gray-600">Group Settings</h3>
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="repeatable"
+                checked={repeatable}
+                onCheckedChange={(checked) => handleRepeatableChange(checked as boolean)}
+              />
+              <Label htmlFor="repeatable" className="cursor-pointer">
+                Allow multiple instances
+              </Label>
+            </div>
+            {repeatable && (
+              <>
+                <div>
+                  <Label htmlFor="minInstances">Min Instances</Label>
+                  <Input
+                    id="minInstances"
+                    type="number"
+                    min={1}
+                    value={minInstances}
+                    onChange={(e) => handleMinInstancesChange(parseInt(e.target.value) || 1)}
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="maxInstances">Max Instances</Label>
+                  <Input
+                    id="maxInstances"
+                    type="number"
+                    min={1}
+                    value={maxInstances}
+                    onChange={(e) => handleMaxInstancesChange(parseInt(e.target.value) || 5)}
+                    className="mt-1"
+                  />
+                </div>
+              </>
+            )}
+          </div>
+        )}
 
         {hasOptions && (
           <div>

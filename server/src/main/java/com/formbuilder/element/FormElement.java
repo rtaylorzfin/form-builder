@@ -1,10 +1,13 @@
 package com.formbuilder.element;
 
 import com.formbuilder.form.Form;
+import com.formbuilder.page.FormPage;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -42,6 +45,19 @@ public class FormElement {
     @Column(columnDefinition = "TEXT")
     @Builder.Default
     private ElementConfiguration configuration = new ElementConfiguration();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "page_id")
+    private FormPage page;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_element_id")
+    private FormElement parentElement;
+
+    @OneToMany(mappedBy = "parentElement", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("sortOrder ASC")
+    @Builder.Default
+    private List<FormElement> children = new ArrayList<>();
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

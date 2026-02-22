@@ -1,8 +1,11 @@
 package com.formbuilder.element;
 
 import com.formbuilder.exception.ResourceNotFoundException;
+import com.formbuilder.exception.ValidationException;
 import com.formbuilder.form.Form;
 import com.formbuilder.form.FormRepository;
+import com.formbuilder.page.FormPage;
+import com.formbuilder.page.FormPageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,12 +20,13 @@ public class FormElementService {
 
     private final FormElementRepository elementRepository;
     private final FormRepository formRepository;
+    private final FormPageRepository pageRepository;
 
     @Transactional(readOnly = true)
     public List<FormElementDTO.Response> getElements(UUID formId) {
         validateFormExists(formId);
-        return elementRepository.findByFormIdOrderBySortOrderAsc(formId).stream()
-                .map(FormElementDTO::toResponse)
+        return elementRepository.findByFormIdAndParentElementIsNullOrderBySortOrderAsc(formId).stream()
+                .map(FormElementDTO::toTreeResponse)
                 .collect(Collectors.toList());
     }
 
@@ -31,9 +35,38 @@ public class FormElementService {
         Form form = formRepository.findById(formId)
                 .orElseThrow(() -> new ResourceNotFoundException("Form not found: " + formId));
 
+        FormElement parentElement = null;
+        if (request.getParentElementId() != null) {
+            parentElement = elementRepository.findByIdAndFormId(request.getParentElementId(), formId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Parent element not found: " + request.getParentElementId()));
+
+            if (parentElement.getType() != ElementType.ELEMENT_GROUP) {
+                throw new ValidationException("Only ELEMENT_GROUP elements can have children");
+            }
+            if (parentElement.getParentElement() != null) {
+                throw new ValidationException("Nested groups are not allowed (1 level max)");
+            }
+            if (request.getType() == ElementType.ELEMENT_GROUP) {
+                throw new ValidationException("Cannot nest groups inside groups");
+            }
+        }
+
         Integer sortOrder = request.getSortOrder();
         if (sortOrder == null) {
-            sortOrder = elementRepository.findMaxSortOrder(formId) + 1;
+            if (parentElement != null) {
+                sortOrder = elementRepository.findMaxSortOrderByParent(parentElement.getId()) + 1;
+            } else {
+                sortOrder = elementRepository.findMaxSortOrder(formId) + 1;
+            }
+        }
+
+        ElementConfiguration config = request.getConfiguration() != null ? request.getConfiguration() : new ElementConfiguration();
+        validateRepeatableConfig(request.getType(), config);
+
+        FormPage page = null;
+        if (request.getPageId() != null) {
+            page = pageRepository.findByIdAndFormId(request.getPageId(), formId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Page not found: " + request.getPageId()));
         }
 
         FormElement element = FormElement.builder()
@@ -42,7 +75,9 @@ public class FormElementService {
                 .label(request.getLabel())
                 .fieldName(request.getFieldName())
                 .sortOrder(sortOrder)
-                .configuration(request.getConfiguration() != null ? request.getConfiguration() : new ElementConfiguration())
+                .configuration(config)
+                .parentElement(parentElement)
+                .page(page)
                 .build();
 
         FormElement saved = elementRepository.save(element);
@@ -70,6 +105,14 @@ public class FormElementService {
         }
         if (request.getConfiguration() != null) {
             element.setConfiguration(request.getConfiguration());
+        }
+        if (request.getParentElementId() != null) {
+            FormElement parentElement = elementRepository.findByIdAndFormId(request.getParentElementId(), formId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Parent element not found: " + request.getParentElementId()));
+            if (parentElement.getType() != ElementType.ELEMENT_GROUP) {
+                throw new ValidationException("Only ELEMENT_GROUP elements can have children");
+            }
+            element.setParentElement(parentElement);
         }
 
         FormElement saved = elementRepository.save(element);
@@ -104,9 +147,25 @@ public class FormElementService {
 
         elementRepository.saveAll(elements);
 
-        return elementRepository.findByFormIdOrderBySortOrderAsc(formId).stream()
-                .map(FormElementDTO::toResponse)
+        return elementRepository.findByFormIdAndParentElementIsNullOrderBySortOrderAsc(formId).stream()
+                .map(FormElementDTO::toTreeResponse)
                 .collect(Collectors.toList());
+    }
+
+    private void validateRepeatableConfig(ElementType type, ElementConfiguration config) {
+        if (config == null) return;
+        if (Boolean.TRUE.equals(config.getRepeatable())) {
+            if (type != ElementType.ELEMENT_GROUP) {
+                throw new ValidationException("Only ELEMENT_GROUP elements can be repeatable");
+            }
+            if (config.getMinInstances() != null && config.getMinInstances() < 1) {
+                throw new ValidationException("minInstances must be at least 1");
+            }
+            if (config.getMaxInstances() != null && config.getMinInstances() != null
+                    && config.getMaxInstances() < config.getMinInstances()) {
+                throw new ValidationException("maxInstances must be >= minInstances");
+            }
+        }
     }
 
     private void validateFormExists(UUID formId) {

@@ -11,6 +11,7 @@ import type {
   Submission,
   SubmissionPage,
   SubmitFormRequest,
+  UpdateSubmissionRequest,
 } from './types'
 
 const api = axios.create({
@@ -19,6 +20,75 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 })
+
+// Request interceptor to add auth token
+api.interceptors.request.use((config) => {
+  const authStorage = localStorage.getItem('auth-storage')
+  if (authStorage) {
+    try {
+      const { state } = JSON.parse(authStorage)
+      if (state?.token) {
+        config.headers.Authorization = `Bearer ${state.token}`
+      }
+    } catch {
+      // ignore parse errors
+    }
+  }
+  return config
+})
+
+// Response interceptor to handle 401
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      const authStorage = localStorage.getItem('auth-storage')
+      if (authStorage) {
+        try {
+          const parsed = JSON.parse(authStorage)
+          if (parsed.state?.token) {
+            // Token expired or invalid - clear auth and redirect
+            localStorage.removeItem('auth-storage')
+            window.location.href = '/login'
+          }
+        } catch {
+          // ignore
+        }
+      }
+    }
+    return Promise.reject(error)
+  }
+)
+
+// Auth API
+interface AuthResponse {
+  token: string
+  user: { id: string; email: string; name: string; role: string }
+}
+
+interface UserResponse {
+  id: string
+  email: string
+  name: string
+  role: string
+}
+
+export const authApi = {
+  register: async (request: { name: string; email: string; password: string }): Promise<AuthResponse> => {
+    const { data } = await api.post<AuthResponse>('/auth/register', request)
+    return data
+  },
+
+  login: async (request: { email: string; password: string }): Promise<AuthResponse> => {
+    const { data } = await api.post<AuthResponse>('/auth/login', request)
+    return data
+  },
+
+  me: async (): Promise<UserResponse> => {
+    const { data } = await api.get<UserResponse>('/auth/me')
+    return data
+  },
+}
 
 // Forms API
 export const formsApi = {
@@ -83,6 +153,33 @@ export const elementsApi = {
   },
 }
 
+// Pages API
+export const pagesApi = {
+  list: async (formId: string) => {
+    const { data } = await api.get(`/forms/${formId}/pages`)
+    return data
+  },
+
+  create: async (formId: string, request: { title?: string; description?: string }) => {
+    const { data } = await api.post(`/forms/${formId}/pages`, request)
+    return data
+  },
+
+  update: async (formId: string, pageId: string, request: { title?: string; description?: string }) => {
+    const { data } = await api.put(`/forms/${formId}/pages/${pageId}`, request)
+    return data
+  },
+
+  delete: async (formId: string, pageId: string): Promise<void> => {
+    await api.delete(`/forms/${formId}/pages/${pageId}`)
+  },
+
+  reorder: async (formId: string, request: { pageIds: string[] }) => {
+    const { data } = await api.put(`/forms/${formId}/pages/reorder`, request)
+    return data
+  },
+}
+
 // Public API
 export const publicApi = {
   getForm: async (id: string): Promise<Form> => {
@@ -102,6 +199,16 @@ export const submissionsApi = {
     const { data } = await api.get<SubmissionPage>(`/forms/${formId}/submissions`, {
       params: { page, size },
     })
+    return data
+  },
+
+  get: async (formId: string, submissionId: string): Promise<Submission> => {
+    const { data } = await api.get<Submission>(`/forms/${formId}/submissions/${submissionId}`)
+    return data
+  },
+
+  update: async (formId: string, submissionId: string, request: UpdateSubmissionRequest): Promise<Submission> => {
+    const { data } = await api.put<Submission>(`/forms/${formId}/submissions/${submissionId}`, request)
     return data
   },
 

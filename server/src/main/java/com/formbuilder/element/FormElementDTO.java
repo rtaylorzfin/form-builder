@@ -21,6 +21,9 @@ public class FormElementDTO {
         private String fieldName;
         private Integer sortOrder;
         private ElementConfiguration configuration;
+        private UUID parentElementId;
+        private UUID pageId;
+        private List<Response> children;
     }
 
     @Data
@@ -40,6 +43,8 @@ public class FormElementDTO {
 
         private Integer sortOrder;
         private ElementConfiguration configuration;
+        private UUID parentElementId;
+        private UUID pageId;
     }
 
     @Data
@@ -56,6 +61,8 @@ public class FormElementDTO {
 
         private Integer sortOrder;
         private ElementConfiguration configuration;
+        private UUID parentElementId;
+        private UUID pageId;
     }
 
     @Data
@@ -74,6 +81,30 @@ public class FormElementDTO {
                 .fieldName(element.getFieldName())
                 .sortOrder(element.getSortOrder())
                 .configuration(element.getConfiguration())
+                .parentElementId(element.getParentElement() != null ? element.getParentElement().getId() : null)
+                .pageId(element.getPage() != null ? element.getPage().getId() : null)
+                .children(null)
+                .build();
+    }
+
+    public static Response toTreeResponse(FormElement element) {
+        List<Response> childResponses = null;
+        if (element.getChildren() != null && !element.getChildren().isEmpty()) {
+            childResponses = element.getChildren().stream()
+                    .map(FormElementDTO::toTreeResponse)
+                    .toList();
+        }
+
+        return Response.builder()
+                .id(element.getId())
+                .type(element.getType())
+                .label(element.getLabel())
+                .fieldName(element.getFieldName())
+                .sortOrder(element.getSortOrder())
+                .configuration(element.getConfiguration())
+                .parentElementId(element.getParentElement() != null ? element.getParentElement().getId() : null)
+                .pageId(element.getPage() != null ? element.getPage().getId() : null)
+                .children(childResponses)
                 .build();
     }
 }

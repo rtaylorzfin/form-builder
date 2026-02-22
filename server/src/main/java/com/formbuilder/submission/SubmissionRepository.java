@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -14,6 +15,8 @@ public interface SubmissionRepository extends JpaRepository<Submission, UUID> {
     Page<Submission> findByFormIdOrderBySubmittedAtDesc(UUID formId, Pageable pageable);
 
     List<Submission> findByFormIdOrderBySubmittedAtDesc(UUID formId);
+
+    Optional<Submission> findByIdAndFormId(UUID id, UUID formId);
 
     int countByFormId(UUID formId);
 }

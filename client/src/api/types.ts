@@ -9,6 +9,7 @@ export type ElementType =
   | 'CHECKBOX'
   | 'RADIO_GROUP'
   | 'SELECT'
+  | 'ELEMENT_GROUP'
 
 export interface ElementOption {
   label: string
@@ -26,6 +27,9 @@ export interface ElementConfiguration {
   patternMessage?: string
   options?: ElementOption[]
   defaultValue?: string
+  repeatable?: boolean
+  minInstances?: number
+  maxInstances?: number
 }
 
 export interface FormElement {
@@ -35,6 +39,19 @@ export interface FormElement {
   fieldName: string
   sortOrder: number
   configuration: ElementConfiguration
+  parentElementId?: string
+  pageId?: string
+  children?: FormElement[]
+}
+
+export interface FormPage {
+  id: string
+  pageNumber: number
+  title?: string
+  description?: string
+  elements: FormElement[]
+  createdAt: string
+  updatedAt: string
 }
 
 export interface Form {
@@ -46,6 +63,7 @@ export interface Form {
   updatedAt: string
   publishedAt?: string
   elements: FormElement[]
+  pages?: FormPage[]
 }
 
 export interface FormListItem {
@@ -75,6 +93,8 @@ export interface CreateElementRequest {
   fieldName: string
   sortOrder?: number
   configuration?: ElementConfiguration
+  parentElementId?: string
+  pageId?: string
 }
 
 export interface UpdateElementRequest {
@@ -83,17 +103,22 @@ export interface UpdateElementRequest {
   fieldName?: string
   sortOrder?: number
   configuration?: ElementConfiguration
+  parentElementId?: string
 }
 
 export interface ReorderElementsRequest {
   elementIds: string[]
 }
 
+export type SubmissionStatus = 'DRAFT' | 'SUBMITTED'
+
 export interface Submission {
   id: string
   formId: string
   data: Record<string, unknown>
   submittedAt: string
+  updatedAt?: string
+  status?: SubmissionStatus
   ipAddress?: string
 }
 
@@ -107,6 +132,12 @@ export interface SubmissionPage {
 
 export interface SubmitFormRequest {
   data: Record<string, unknown>
+  status?: SubmissionStatus
+}
+
+export interface UpdateSubmissionRequest {
+  data: Record<string, unknown>
+  status?: SubmissionStatus
 }
 
 export interface ApiError {

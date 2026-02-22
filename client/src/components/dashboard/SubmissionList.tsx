@@ -1,7 +1,9 @@
+import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { Download } from 'lucide-react'
+import { Download, Pencil } from 'lucide-react'
 import { submissionsApi, formsApi } from '@/api/client'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 
 interface SubmissionListProps {
@@ -65,6 +67,9 @@ export default function SubmissionList({ formId }: SubmissionListProps) {
           <thead>
             <tr className="bg-gray-50">
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 border-b">
+                Status
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 border-b">
                 Submitted At
               </th>
               {elements.map((element) => (
@@ -75,11 +80,19 @@ export default function SubmissionList({ formId }: SubmissionListProps) {
                   {element.label}
                 </th>
               ))}
+              <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 border-b">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>
             {submissions.map((submission) => (
               <tr key={submission.id} className="hover:bg-gray-50">
+                <td className="px-4 py-3 text-sm border-b">
+                  <Badge variant={submission.status === 'SUBMITTED' ? 'success' : 'outline'}>
+                    {submission.status || 'SUBMITTED'}
+                  </Badge>
+                </td>
                 <td className="px-4 py-3 text-sm border-b">
                   {new Date(submission.submittedAt).toLocaleString()}
                 </td>
@@ -88,6 +101,14 @@ export default function SubmissionList({ formId }: SubmissionListProps) {
                     {formatValue(submission.data[element.fieldName])}
                   </td>
                 ))}
+                <td className="px-4 py-3 text-sm border-b">
+                  <Button variant="ghost" size="sm" asChild>
+                    <Link to={`/forms/${formId}/submissions/${submission.id}/edit`}>
+                      <Pencil className="h-4 w-4 mr-1" />
+                      Edit
+                    </Link>
+                  </Button>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -103,6 +124,12 @@ function formatValue(value: unknown): string {
   }
   if (typeof value === 'boolean') {
     return value ? 'Yes' : 'No'
+  }
+  if (Array.isArray(value)) {
+    return `${value.length} item${value.length !== 1 ? 's' : ''}`
+  }
+  if (typeof value === 'object') {
+    return JSON.stringify(value)
   }
   return String(value)
 }

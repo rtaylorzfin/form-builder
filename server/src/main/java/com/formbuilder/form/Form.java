@@ -1,6 +1,8 @@
 package com.formbuilder.form;
 
+import com.formbuilder.auth.User;
 import com.formbuilder.element.FormElement;
+import com.formbuilder.page.FormPage;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,6 +30,10 @@ public class Form {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
@@ -46,6 +52,11 @@ public class Form {
     @OrderBy("sortOrder ASC")
     @Builder.Default
     private List<FormElement> elements = new ArrayList<>();
+
+    @OneToMany(mappedBy = "form", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("pageNumber ASC")
+    @Builder.Default
+    private List<FormPage> pages = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {

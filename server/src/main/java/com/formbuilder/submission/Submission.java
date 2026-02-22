@@ -30,6 +30,14 @@ public class Submission {
     @Column(name = "submitted_at", nullable = false)
     private LocalDateTime submittedAt;
 
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private SubmissionStatus status = SubmissionStatus.SUBMITTED;
+
     @Column(name = "ip_address")
     private String ipAddress;
 
@@ -39,5 +47,11 @@ public class Submission {
     @PrePersist
     protected void onCreate() {
         submittedAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.formbuilder.element.ElementConfiguration;
+import com.formbuilder.element.ElementType;
 import com.formbuilder.element.FormElement;
 import com.formbuilder.exception.ResourceNotFoundException;
 import com.formbuilder.exception.ValidationException;
@@ -47,6 +48,14 @@ public class SubmissionService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
+    public SubmissionDTO.Response getSubmission(UUID formId, UUID submissionId) {
+        validateFormExists(formId);
+        Submission submission = submissionRepository.findByIdAndFormId(submissionId, formId)
+                .orElseThrow(() -> new ResourceNotFoundException("Submission not found: " + submissionId));
+        return toResponse(submission);
+    }
+
     @Transactional
     public SubmissionDTO.Response createSubmission(UUID formId, SubmissionDTO.CreateRequest request,
                                                     String ipAddress, String userAgent) {
@@ -57,7 +66,12 @@ public class SubmissionService {
             throw new ValidationException("Form is not published");
         }
 
-        validateSubmission(form, request.getData());
+        SubmissionStatus status = request.getStatus() != null ? request.getStatus() : SubmissionStatus.SUBMITTED;
+
+        // Skip validation for drafts
+        if (status != SubmissionStatus.DRAFT) {
+            validateSubmission(form, request.getData());
+        }
 
         String dataJson;
         try {
@@ -69,9 +83,39 @@ public class SubmissionService {
         Submission submission = Submission.builder()
                 .form(form)
                 .data(dataJson)
+                .status(status)
                 .ipAddress(ipAddress)
                 .userAgent(userAgent)
                 .build();
+
+        Submission saved = submissionRepository.save(submission);
+        return toResponse(saved);
+    }
+
+    @Transactional
+    public SubmissionDTO.Response updateSubmission(UUID formId, UUID submissionId, SubmissionDTO.UpdateRequest request) {
+        Form form = formRepository.findByIdWithElements(formId)
+                .orElseThrow(() -> new ResourceNotFoundException("Form not found: " + formId));
+
+        Submission submission = submissionRepository.findByIdAndFormId(submissionId, formId)
+                .orElseThrow(() -> new ResourceNotFoundException("Submission not found: " + submissionId));
+
+        SubmissionStatus status = request.getStatus() != null ? request.getStatus() : submission.getStatus();
+
+        // Skip validation for drafts
+        if (status != SubmissionStatus.DRAFT) {
+            validateSubmission(form, request.getData());
+        }
+
+        String dataJson;
+        try {
+            dataJson = objectMapper.writeValueAsString(request.getData());
+        } catch (JsonProcessingException e) {
+            throw new ValidationException("Invalid submission data format");
+        }
+
+        submission.setData(dataJson);
+        submission.setStatus(status);
 
         Submission saved = submissionRepository.save(submission);
         return toResponse(saved);
@@ -120,37 +164,106 @@ public class SubmissionService {
         List<String> errors = new ArrayList<>();
 
         for (FormElement element : form.getElements()) {
-            String fieldName = element.getFieldName();
-            Object value = data.get(fieldName);
-            ElementConfiguration config = element.getConfiguration();
-
-            if (config != null && Boolean.TRUE.equals(config.getRequired())) {
-                if (value == null || (value instanceof String && ((String) value).isBlank())) {
-                    errors.add(element.getLabel() + " is required");
-                }
-            }
-
-            if (value != null && value instanceof String strValue && !strValue.isEmpty()) {
-                if (config != null) {
-                    if (config.getMinLength() != null && strValue.length() < config.getMinLength()) {
-                        errors.add(element.getLabel() + " must be at least " + config.getMinLength() + " characters");
-                    }
-                    if (config.getMaxLength() != null && strValue.length() > config.getMaxLength()) {
-                        errors.add(element.getLabel() + " must not exceed " + config.getMaxLength() + " characters");
-                    }
-                    if (config.getPattern() != null && !strValue.matches(config.getPattern())) {
-                        String message = config.getPatternMessage() != null
-                                ? config.getPatternMessage()
-                                : element.getLabel() + " has invalid format";
-                        errors.add(message);
+            if (element.getType() == ElementType.ELEMENT_GROUP) {
+                ElementConfiguration groupConfig = element.getConfiguration();
+                if (groupConfig != null && Boolean.TRUE.equals(groupConfig.getRepeatable())) {
+                    validateRepeatableGroup(element, data, errors);
+                } else {
+                    // Non-repeatable group: validate children as flat fields
+                    if (element.getChildren() != null) {
+                        for (FormElement child : element.getChildren()) {
+                            validateField(child, data.get(child.getFieldName()), errors);
+                        }
                     }
                 }
+                continue;
             }
+
+            validateField(element, data.get(element.getFieldName()), errors);
         }
 
         if (!errors.isEmpty()) {
             throw new ValidationException(String.join("; ", errors));
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void validateRepeatableGroup(FormElement group, Map<String, Object> data, List<String> errors) {
+        Object value = data.get(group.getFieldName());
+        ElementConfiguration config = group.getConfiguration();
+        int minInstances = config.getMinInstances() != null ? config.getMinInstances() : 1;
+        int maxInstances = config.getMaxInstances() != null ? config.getMaxInstances() : Integer.MAX_VALUE;
+
+        if (!(value instanceof List)) {
+            errors.add(group.getLabel() + " must be an array");
+            return;
+        }
+
+        List<Object> instances = (List<Object>) value;
+        if (instances.size() < minInstances) {
+            errors.add(group.getLabel() + " requires at least " + minInstances + " instance(s)");
+        }
+        if (instances.size() > maxInstances) {
+            errors.add(group.getLabel() + " allows at most " + maxInstances + " instance(s)");
+        }
+
+        List<FormElement> children = group.getChildren() != null ? group.getChildren() : List.of();
+        for (int i = 0; i < instances.size(); i++) {
+            Object instance = instances.get(i);
+            if (!(instance instanceof Map)) {
+                errors.add(group.getLabel() + " instance " + (i + 1) + " is invalid");
+                continue;
+            }
+            Map<String, Object> instanceData = (Map<String, Object>) instance;
+            for (FormElement child : children) {
+                validateField(child, instanceData.get(child.getFieldName()), errors, group.getLabel() + "[" + (i + 1) + "].");
+            }
+        }
+    }
+
+    private void validateField(FormElement element, Object value, List<String> errors) {
+        validateField(element, value, errors, "");
+    }
+
+    private void validateField(FormElement element, Object value, List<String> errors, String prefix) {
+        if (element.getType() == ElementType.ELEMENT_GROUP) return;
+
+        ElementConfiguration config = element.getConfiguration();
+        String label = prefix + element.getLabel();
+
+        if (config != null && Boolean.TRUE.equals(config.getRequired())) {
+            if (value == null || (value instanceof String && ((String) value).isBlank())) {
+                errors.add(label + " is required");
+            }
+        }
+
+        if (value != null && value instanceof String strValue && !strValue.isEmpty()) {
+            if (config != null) {
+                if (config.getMinLength() != null && strValue.length() < config.getMinLength()) {
+                    errors.add(label + " must be at least " + config.getMinLength() + " characters");
+                }
+                if (config.getMaxLength() != null && strValue.length() > config.getMaxLength()) {
+                    errors.add(label + " must not exceed " + config.getMaxLength() + " characters");
+                }
+                if (config.getPattern() != null && !strValue.matches(config.getPattern())) {
+                    String message = config.getPatternMessage() != null
+                            ? config.getPatternMessage()
+                            : label + " has invalid format";
+                    errors.add(message);
+                }
+            }
+        }
+    }
+
+    private List<FormElement> flattenElements(List<FormElement> elements) {
+        List<FormElement> flat = new ArrayList<>();
+        for (FormElement element : elements) {
+            flat.add(element);
+            if (element.getChildren() != null && !element.getChildren().isEmpty()) {
+                flat.addAll(flattenElements(element.getChildren()));
+            }
+        }
+        return flat;
     }
 
     private SubmissionDTO.Response toResponse(Submission submission) {
@@ -161,6 +274,8 @@ public class SubmissionService {
                 .formId(submission.getForm().getId())
                 .data(data)
                 .submittedAt(submission.getSubmittedAt())
+                .updatedAt(submission.getUpdatedAt())
+                .status(submission.getStatus())
                 .ipAddress(submission.getIpAddress())
                 .build();
     }

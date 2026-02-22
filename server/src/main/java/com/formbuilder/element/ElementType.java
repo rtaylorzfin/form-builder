@@ -8,5 +8,6 @@ public enum ElementType {
     DATE,
     CHECKBOX,
     RADIO_GROUP,
-    SELECT
+    SELECT,
+    ELEMENT_GROUP
 }

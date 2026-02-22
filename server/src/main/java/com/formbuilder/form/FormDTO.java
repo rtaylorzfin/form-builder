@@ -1,6 +1,7 @@
 package com.formbuilder.form;
 
 import com.formbuilder.element.FormElementDTO;
+import com.formbuilder.page.FormPageDTO;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -22,6 +23,7 @@ public class FormDTO {
         private LocalDateTime updatedAt;
         private LocalDateTime publishedAt;
         private List<FormElementDTO.Response> elements;
+        private List<FormPageDTO.Response> pages;
     }
 
     @Data

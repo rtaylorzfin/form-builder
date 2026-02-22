@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import {
   DndContext,
   DragEndEvent,
@@ -10,12 +10,13 @@ import {
 } from '@dnd-kit/core'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
-import { Eye, Save, Send } from 'lucide-react'
-import { formsApi, elementsApi } from '@/api/client'
-import type { ElementType } from '@/api/types'
+import { Eye, Save, Send, Plus, X } from 'lucide-react'
+import { formsApi, elementsApi, pagesApi } from '@/api/client'
+import type { ElementType, FormPage } from '@/api/types'
 import { useFormBuilderStore, createNewElement } from '@/stores/formBuilderStore'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
 import ElementPalette from './ElementPalette'
 import Canvas from './Canvas'
@@ -32,13 +33,19 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
   const {
     form,
     elements,
+    pages,
+    currentPageIndex,
     setForm,
+    setCurrentPageIndex,
     addElement,
     reorderElements,
     selectElement,
     setDirty,
     isDirty,
   } = useFormBuilderStore()
+
+  const [editingPageTitle, setEditingPageTitle] = useState<string | null>(null)
+  const [pageTitleValue, setPageTitleValue] = useState('')
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -66,6 +73,7 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
       addElement(newElement)
       selectElement(newElement.id)
       setDirty(false)
+      queryClient.invalidateQueries({ queryKey: ['form', formId] })
     },
   })
 
@@ -104,6 +112,33 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
     },
   })
 
+  const addPageMutation = useMutation({
+    mutationFn: () => pagesApi.create(formId, {}),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['form', formId] })
+    },
+  })
+
+  const deletePageMutation = useMutation({
+    mutationFn: (pageId: string) => pagesApi.delete(formId, pageId),
+    onSuccess: () => {
+      setCurrentPageIndex(Math.max(0, currentPageIndex - 1))
+      queryClient.invalidateQueries({ queryKey: ['form', formId] })
+    },
+    onError: () => {
+      toast({ title: 'Cannot delete the last page', variant: 'destructive' })
+    },
+  })
+
+  const updatePageMutation = useMutation({
+    mutationFn: ({ pageId, title }: { pageId: string; title: string }) =>
+      pagesApi.update(formId, pageId, { title }),
+    onSuccess: () => {
+      setEditingPageTitle(null)
+      queryClient.invalidateQueries({ queryKey: ['form', formId] })
+    },
+  })
+
   const handleDragStart = (_event: DragStartEvent) => {
     selectElement(null)
   }
@@ -118,6 +153,7 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
     if (activeData?.fromPalette && over.id === 'canvas') {
       const type = activeData.type as ElementType
       const newElement = createNewElement(type, elements.length)
+      const currentPage = pages[currentPageIndex]
 
       createElementMutation.mutate({
         type: newElement.type,
@@ -125,6 +161,7 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
         fieldName: newElement.fieldName,
         sortOrder: newElement.sortOrder,
         configuration: newElement.configuration,
+        pageId: currentPage?.id,
       })
       return
     }
@@ -149,6 +186,17 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
       return
     }
     publishMutation.mutate()
+  }
+
+  const handleStartEditPageTitle = (page: FormPage) => {
+    setEditingPageTitle(page.id)
+    setPageTitleValue(page.title || '')
+  }
+
+  const handleSavePageTitle = () => {
+    if (editingPageTitle) {
+      updatePageMutation.mutate({ pageId: editingPageTitle, title: pageTitleValue })
+    }
   }
 
   if (isLoading) {
@@ -194,6 +242,60 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
           </Button>
         </div>
       </div>
+
+      {/* Page tabs */}
+      {pages.length > 0 && (
+        <div className="flex items-center gap-1 px-6 py-2 bg-gray-50 border-b overflow-x-auto">
+          {pages.map((page, index) => (
+            <div
+              key={page.id}
+              className={`flex items-center gap-1 px-3 py-1.5 rounded-md text-sm cursor-pointer transition-colors ${
+                index === currentPageIndex
+                  ? 'bg-white border shadow-sm font-medium'
+                  : 'hover:bg-gray-100 text-gray-600'
+              }`}
+              onClick={() => setCurrentPageIndex(index)}
+            >
+              {editingPageTitle === page.id ? (
+                <Input
+                  value={pageTitleValue}
+                  onChange={(e) => setPageTitleValue(e.target.value)}
+                  onBlur={handleSavePageTitle}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSavePageTitle()}
+                  className="h-6 w-24 text-xs"
+                  autoFocus
+                  onClick={(e) => e.stopPropagation()}
+                />
+              ) : (
+                <span onDoubleClick={() => handleStartEditPageTitle(page)}>
+                  {page.title || `Page ${index + 1}`}
+                </span>
+              )}
+              {pages.length > 1 && index === currentPageIndex && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    if (confirm('Delete this page?')) {
+                      deletePageMutation.mutate(page.id)
+                    }
+                  }}
+                  className="ml-1 text-gray-400 hover:text-red-500"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              )}
+            </div>
+          ))}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 px-2"
+            onClick={() => addPageMutation.mutate()}
+          >
+            <Plus className="h-3 w-3" />
+          </Button>
+        </div>
+      )}
 
       <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         <div className="flex-1 flex overflow-hidden">

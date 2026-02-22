@@ -20,6 +20,9 @@ public class ElementConfiguration {
     private String patternMessage;
     private List<Option> options;
     private String defaultValue;
+    private Boolean repeatable;
+    private Integer minInstances;
+    private Integer maxInstances;
 
     @Data
     @NoArgsConstructor

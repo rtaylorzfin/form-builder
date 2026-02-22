@@ -13,6 +13,8 @@ public interface FormRepository extends JpaRepository<Form, UUID> {
 
     List<Form> findAllByOrderByUpdatedAtDesc();
 
+    List<Form> findByUserIdOrderByUpdatedAtDesc(UUID userId);
+
     List<Form> findByStatusOrderByUpdatedAtDesc(FormStatus status);
 
     @Query("SELECT f FROM Form f LEFT JOIN FETCH f.elements WHERE f.id = :id")
