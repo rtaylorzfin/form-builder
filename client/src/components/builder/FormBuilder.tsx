@@ -56,12 +56,13 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
     onSuccess: (newElement, variables) => {
       if (variables.parentElementId) {
         addElementToGroup(newElement, variables.parentElementId)
+        // Keep the group selected so the user can continue adding children
+        selectElement(variables.parentElementId)
       } else {
         addElement(newElement)
+        selectElement(newElement.id)
       }
-      selectElement(newElement.id)
       setDirty(false)
-      queryClient.invalidateQueries({ queryKey: ['form', formId] })
     },
   })
 
@@ -76,6 +77,16 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
           fieldName: element.fieldName,
           configuration: element.configuration,
         })
+        // Also save child elements (e.g. inside groups)
+        if (element.children) {
+          for (const child of element.children) {
+            await elementsApi.update(formId, child.id, {
+              label: child.label,
+              fieldName: child.fieldName,
+              configuration: child.configuration,
+            })
+          }
+        }
       }
     },
     onSuccess: () => {
@@ -243,58 +254,56 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
       </div>
 
       {/* Page tabs */}
-      {pages.length > 0 && (
-        <div className="flex items-center gap-1 px-6 py-2 bg-gray-50 border-b overflow-x-auto">
-          {pages.map((page, index) => (
-            <div
-              key={page.id}
-              className={`flex items-center gap-1 px-3 py-1.5 rounded-md text-sm cursor-pointer transition-colors ${
-                index === currentPageIndex
-                  ? 'bg-white border shadow-sm font-medium'
-                  : 'hover:bg-gray-100 text-gray-600'
-              }`}
-              onClick={() => setCurrentPageIndex(index)}
-            >
-              {editingPageTitle === page.id ? (
-                <Input
-                  value={pageTitleValue}
-                  onChange={(e) => setPageTitleValue(e.target.value)}
-                  onBlur={handleSavePageTitle}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSavePageTitle()}
-                  className="h-6 w-24 text-xs"
-                  autoFocus
-                  onClick={(e) => e.stopPropagation()}
-                />
-              ) : (
-                <span onDoubleClick={() => handleStartEditPageTitle(page)}>
-                  {page.title || `Page ${index + 1}`}
-                </span>
-              )}
-              {pages.length > 1 && index === currentPageIndex && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    if (confirm('Delete this page?')) {
-                      deletePageMutation.mutate(page.id)
-                    }
-                  }}
-                  className="ml-1 text-gray-400 hover:text-red-500"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              )}
-            </div>
-          ))}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-7 px-2"
-            onClick={() => addPageMutation.mutate()}
+      <div className="flex items-center gap-1 px-6 py-2 bg-gray-50 border-b overflow-x-auto">
+        {pages.map((page, index) => (
+          <div
+            key={page.id}
+            className={`flex items-center gap-1 px-3 py-1.5 rounded-md text-sm cursor-pointer transition-colors ${
+              index === currentPageIndex
+                ? 'bg-white border shadow-sm font-medium'
+                : 'hover:bg-gray-100 text-gray-600'
+            }`}
+            onClick={() => setCurrentPageIndex(index)}
           >
-            <Plus className="h-3 w-3" />
-          </Button>
-        </div>
-      )}
+            {editingPageTitle === page.id ? (
+              <Input
+                value={pageTitleValue}
+                onChange={(e) => setPageTitleValue(e.target.value)}
+                onBlur={handleSavePageTitle}
+                onKeyDown={(e) => e.key === 'Enter' && handleSavePageTitle()}
+                className="h-6 w-24 text-xs"
+                autoFocus
+                onClick={(e) => e.stopPropagation()}
+              />
+            ) : (
+              <span onDoubleClick={() => handleStartEditPageTitle(page)}>
+                {page.title || `Page ${index + 1}`}
+              </span>
+            )}
+            {pages.length > 1 && index === currentPageIndex && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  if (confirm('Delete this page?')) {
+                    deletePageMutation.mutate(page.id)
+                  }
+                }}
+                className="ml-1 text-gray-400 hover:text-red-500"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            )}
+          </div>
+        ))}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-7 px-2"
+          onClick={() => addPageMutation.mutate()}
+        >
+          <Plus className="h-3 w-3" />
+        </Button>
+      </div>
 
       <div className="flex-1 flex overflow-hidden">
         <ElementPalette onAddElement={handleAddElement} targetGroupLabel={targetGroupLabel} />

@@ -42,7 +42,7 @@ export interface FormElement {
   sortOrder: number
   configuration: ElementConfiguration
   parentElementId?: string
-  pageId?: string
+  pageId: string
   children?: FormElement[]
 }
 
@@ -65,7 +65,7 @@ export interface Form {
   updatedAt: string
   publishedAt?: string
   elements: FormElement[]
-  pages?: FormPage[]
+  pages: FormPage[]
 }
 
 export interface FormListItem {

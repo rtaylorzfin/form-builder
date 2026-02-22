@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useToast } from '@/components/ui/use-toast'
 import FormRenderer from '@/components/preview/FormRenderer'
+import MultiPageFormRenderer from '@/components/preview/MultiPageFormRenderer'
 
 export default function SubmissionEditPage() {
   const { formId, submissionId } = useParams<{ formId: string; submissionId: string }>()
@@ -73,13 +74,22 @@ export default function SubmissionEditPage() {
           </p>
         </CardHeader>
         <CardContent>
-          <FormRenderer
-            form={form}
-            onSubmit={(data) => updateMutation.mutate(data)}
-            isSubmitting={updateMutation.isPending}
-            defaultValues={submission.data as Record<string, unknown>}
-            submitLabel="Update Submission"
-          />
+          {form.pages.length > 1 ? (
+            <MultiPageFormRenderer
+              pages={form.pages}
+              onSubmit={(data) => updateMutation.mutate(data)}
+              isSubmitting={updateMutation.isPending}
+              defaultValues={submission.data as Record<string, unknown>}
+            />
+          ) : (
+            <FormRenderer
+              form={form}
+              onSubmit={(data) => updateMutation.mutate(data)}
+              isSubmitting={updateMutation.isPending}
+              defaultValues={submission.data as Record<string, unknown>}
+              submitLabel="Update Submission"
+            />
+          )}
         </CardContent>
       </Card>
     </div>

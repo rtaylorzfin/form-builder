@@ -46,8 +46,8 @@ public class FormElement {
     @Builder.Default
     private ElementConfiguration configuration = new ElementConfiguration();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "page_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "page_id", nullable = false)
     private FormPage page;
 
     @ManyToOne(fetch = FetchType.LAZY)

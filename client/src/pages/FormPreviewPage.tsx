@@ -5,6 +5,7 @@ import { formsApi } from '@/api/client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import FormRenderer from '@/components/preview/FormRenderer'
+import MultiPageFormRenderer from '@/components/preview/MultiPageFormRenderer'
 
 export default function FormPreviewPage() {
   const { formId } = useParams<{ formId: string }>()
@@ -54,6 +55,12 @@ export default function FormPreviewPage() {
             <p className="text-gray-500 text-center py-8">
               This form has no elements yet. Add some elements in the editor.
             </p>
+          ) : form.pages.length > 1 ? (
+            <MultiPageFormRenderer
+              pages={form.pages}
+              onSubmit={(data) => console.log('Preview submit:', data)}
+              readOnly={false}
+            />
           ) : (
             <FormRenderer
               form={form}

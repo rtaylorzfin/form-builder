@@ -69,7 +69,7 @@ function updateElementInTree(elements: FormElement[], id: string, updates: Parti
 export const useFormBuilderStore = create<FormBuilderState>((set, get) => ({
   ...initialState,
 
-  setForm: (form) => set({ form, elements: form.elements || [], pages: form.pages || [] }),
+  setForm: (form) => set({ form, elements: form.elements || [], pages: form.pages }),
 
   setElements: (elements) => set({ elements }),
 
@@ -122,8 +122,18 @@ export const useFormBuilderStore = create<FormBuilderState>((set, get) => ({
       // Check if it's a root element
       const rootIndex = state.elements.findIndex((el) => el.id === id)
       if (rootIndex > 0) {
+        const element = state.elements[rootIndex]
+        // Find the nearest previous element on the same page
+        let swapIndex = -1
+        for (let i = rootIndex - 1; i >= 0; i--) {
+          if (state.elements[i].pageId === element.pageId) {
+            swapIndex = i
+            break
+          }
+        }
+        if (swapIndex === -1) return state
         const newElements = [...state.elements]
-        ;[newElements[rootIndex - 1], newElements[rootIndex]] = [newElements[rootIndex], newElements[rootIndex - 1]]
+        ;[newElements[swapIndex], newElements[rootIndex]] = [newElements[rootIndex], newElements[swapIndex]]
         return {
           elements: newElements.map((el, i) => ({ ...el, sortOrder: i })),
           isDirty: true,
@@ -147,9 +157,19 @@ export const useFormBuilderStore = create<FormBuilderState>((set, get) => ({
     set((state) => {
       // Check if it's a root element
       const rootIndex = state.elements.findIndex((el) => el.id === id)
-      if (rootIndex !== -1 && rootIndex < state.elements.length - 1) {
+      if (rootIndex !== -1) {
+        const element = state.elements[rootIndex]
+        // Find the nearest next element on the same page
+        let swapIndex = -1
+        for (let i = rootIndex + 1; i < state.elements.length; i++) {
+          if (state.elements[i].pageId === element.pageId) {
+            swapIndex = i
+            break
+          }
+        }
+        if (swapIndex === -1) return state
         const newElements = [...state.elements]
-        ;[newElements[rootIndex], newElements[rootIndex + 1]] = [newElements[rootIndex + 1], newElements[rootIndex]]
+        ;[newElements[rootIndex], newElements[swapIndex]] = [newElements[swapIndex], newElements[rootIndex]]
         return {
           elements: newElements.map((el, i) => ({ ...el, sortOrder: i })),
           isDirty: true,
@@ -183,7 +203,7 @@ export const useFormBuilderStore = create<FormBuilderState>((set, get) => ({
 }))
 
 // Helper to create a new element with defaults
-export function createNewElement(type: ElementType, sortOrder: number): Omit<FormElement, 'id'> {
+export function createNewElement(type: ElementType, sortOrder: number): Omit<FormElement, 'id' | 'pageId'> {
   const baseConfig: ElementConfiguration = {
     required: false,
   }

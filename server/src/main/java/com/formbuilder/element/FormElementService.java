@@ -63,10 +63,13 @@ public class FormElementService {
         ElementConfiguration config = request.getConfiguration() != null ? request.getConfiguration() : new ElementConfiguration();
         validateRepeatableConfig(request.getType(), config);
 
-        FormPage page = null;
+        FormPage page;
         if (request.getPageId() != null) {
             page = pageRepository.findByIdAndFormId(request.getPageId(), formId)
                     .orElseThrow(() -> new ResourceNotFoundException("Page not found: " + request.getPageId()));
+        } else {
+            page = pageRepository.findFirstByFormIdOrderByPageNumberAsc(formId)
+                    .orElseThrow(() -> new IllegalStateException("Form has no pages"));
         }
 
         FormElement element = FormElement.builder()

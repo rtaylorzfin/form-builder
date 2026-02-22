@@ -68,6 +68,12 @@ public class FormService {
                 .user(user)
                 .build();
         Form saved = formRepository.save(form);
+
+        FormPage defaultPage = FormPage.builder()
+                .form(saved).pageNumber(0).title("Page 1").build();
+        pageRepository.save(defaultPage);
+        saved.getPages().add(defaultPage);
+
         return toResponse(saved);
     }
 
@@ -176,6 +182,13 @@ public class FormService {
             }
         }
 
+        // Ensure at least one page exists
+        if (savedPages.isEmpty()) {
+            FormPage defaultPage = FormPage.builder()
+                    .form(savedForm).pageNumber(0).title("Page 1").build();
+            savedPages.add(pageRepository.save(defaultPage));
+        }
+
         // Create elements recursively
         if (request.getElements() != null) {
             for (FormDTO.ExportElement exportElement : request.getElements()) {
@@ -187,9 +200,11 @@ public class FormService {
     }
 
     private void createElementFromExport(FormDTO.ExportElement exportElement, Form form, FormElement parent, List<FormPage> pages) {
-        FormPage page = null;
+        FormPage page;
         if (exportElement.getPageIndex() != null && exportElement.getPageIndex() < pages.size()) {
             page = pages.get(exportElement.getPageIndex());
+        } else {
+            page = pages.get(0);
         }
 
         FormElement element = FormElement.builder()

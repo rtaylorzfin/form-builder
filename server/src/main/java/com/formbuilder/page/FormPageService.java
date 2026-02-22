@@ -1,5 +1,7 @@
 package com.formbuilder.page;
 
+import com.formbuilder.element.FormElement;
+import com.formbuilder.element.FormElementRepository;
 import com.formbuilder.exception.ResourceNotFoundException;
 import com.formbuilder.form.Form;
 import com.formbuilder.form.FormRepository;
@@ -17,6 +19,7 @@ public class FormPageService {
 
     private final FormPageRepository pageRepository;
     private final FormRepository formRepository;
+    private final FormElementRepository elementRepository;
 
     @Transactional(readOnly = true)
     public List<FormPageDTO.Response> getPages(UUID formId) {
@@ -71,6 +74,21 @@ public class FormPageService {
 
         if (pageRepository.countByFormId(formId) <= 1) {
             throw new IllegalStateException("Cannot delete the last page");
+        }
+
+        // Reassign elements from this page to the first remaining page
+        List<FormPage> otherPages = pageRepository.findByFormIdOrderByPageNumberAsc(formId).stream()
+                .filter(p -> !p.getId().equals(pageId))
+                .toList();
+        if (!otherPages.isEmpty()) {
+            FormPage targetPage = otherPages.get(0);
+            List<FormElement> orphanedElements = elementRepository.findByFormIdOrderBySortOrderAsc(formId).stream()
+                    .filter(e -> pageId.equals(e.getPage().getId()))
+                    .toList();
+            for (FormElement element : orphanedElements) {
+                element.setPage(targetPage);
+            }
+            elementRepository.saveAll(orphanedElements);
         }
 
         pageRepository.delete(page);

@@ -61,7 +61,7 @@ export default function PublicFormPage() {
     )
   }
 
-  const hasMultiplePages = form.pages && form.pages.length > 1
+  const hasMultiplePages = form.pages.length > 1
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
@@ -76,7 +76,7 @@ export default function PublicFormPage() {
           <CardContent>
             {hasMultiplePages ? (
               <MultiPageFormRenderer
-                pages={form.pages!}
+                pages={form.pages}
                 onSubmit={(data) => submitMutation.mutate(data)}
                 isSubmitting={submitMutation.isPending}
               />

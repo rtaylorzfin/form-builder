@@ -65,6 +65,8 @@ class FormBuilderApplicationTests {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("Test Contact Form"))
                 .andExpect(jsonPath("$.status").value("DRAFT"))
+                .andExpect(jsonPath("$.pages.length()").value(1))
+                .andExpect(jsonPath("$.pages[0].title").value("Page 1"))
                 .andReturn();
 
         FormDTO.Response form = objectMapper.readValue(

@@ -105,7 +105,7 @@ function CanvasElement({ element, isSelected, onSelect, onDelete, onMoveUp, onMo
         'flex items-center gap-2 p-4 bg-white border rounded-lg transition-all',
         isSelected && 'ring-2 ring-primary'
       )}
-      onClick={onSelect}
+      onClick={(e) => { e.stopPropagation(); onSelect() }}
     >
       <div className="flex flex-col">
         <Button
@@ -152,21 +152,26 @@ function CanvasElement({ element, isSelected, onSelect, onDelete, onMoveUp, onMo
 }
 
 export default function Canvas() {
-  const { elements, selectedElementId, selectElement, removeElement, moveElementUp, moveElementDown } = useFormBuilderStore()
+  const { elements, pages, currentPageIndex, selectedElementId, selectElement, removeElement, moveElementUp, moveElementDown } = useFormBuilderStore()
+
+  const currentPage = pages[currentPageIndex]
+  const pageElements = currentPage
+    ? elements.filter((e) => e.pageId === currentPage.id)
+    : elements
 
   return (
     <div className="flex-1 p-6 overflow-y-auto">
       <div
         className={cn(
           'min-h-[400px] p-4 border-2 border-dashed rounded-lg transition-colors border-gray-200',
-          elements.length === 0 && 'flex items-center justify-center'
+          pageElements.length === 0 && 'flex items-center justify-center'
         )}
       >
-        {elements.length === 0 ? (
+        {pageElements.length === 0 ? (
           <p className="text-gray-400">Click elements in the palette to add them to your form</p>
         ) : (
           <div className="space-y-3">
-            {elements.map((element, index) => (
+            {pageElements.map((element, index) => (
               <CanvasElement
                 key={element.id}
                 element={element}
@@ -176,7 +181,7 @@ export default function Canvas() {
                 onMoveUp={() => moveElementUp(element.id)}
                 onMoveDown={() => moveElementDown(element.id)}
                 isFirst={index === 0}
-                isLast={index === elements.length - 1}
+                isLast={index === pageElements.length - 1}
               />
             ))}
           </div>
