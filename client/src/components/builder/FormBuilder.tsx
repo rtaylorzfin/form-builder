@@ -29,7 +29,9 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
     setForm,
     setCurrentPageIndex,
     addElement,
+    addElementToGroup,
     selectElement,
+    getSelectedElement,
     setDirty,
     isDirty,
   } = useFormBuilderStore()
@@ -51,8 +53,12 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
   const createElementMutation = useMutation({
     mutationFn: (data: Parameters<typeof elementsApi.create>[1]) =>
       elementsApi.create(formId, data),
-    onSuccess: (newElement) => {
-      addElement(newElement)
+    onSuccess: (newElement, variables) => {
+      if (variables.parentElementId) {
+        addElementToGroup(newElement, variables.parentElementId)
+      } else {
+        addElement(newElement)
+      }
       selectElement(newElement.id)
       setDirty(false)
       queryClient.invalidateQueries({ queryKey: ['form', formId] })
@@ -122,7 +128,13 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
   })
 
   const handleAddElement = (type: ElementType) => {
-    const newElement = createNewElement(type, elements.length)
+    const selectedElement = getSelectedElement()
+    const isAddingToGroup = selectedElement?.type === 'ELEMENT_GROUP' && type !== 'ELEMENT_GROUP'
+
+    const sortOrder = isAddingToGroup
+      ? (selectedElement.children?.length ?? 0)
+      : elements.length
+    const newElement = createNewElement(type, sortOrder)
     const currentPage = pages[currentPageIndex]
 
     createElementMutation.mutate({
@@ -132,6 +144,7 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
       sortOrder: newElement.sortOrder,
       configuration: newElement.configuration,
       pageId: currentPage?.id,
+      parentElementId: isAddingToGroup ? selectedElement.id : undefined,
     })
   }
 
@@ -184,6 +197,8 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
     return <div className="flex items-center justify-center h-96 text-red-500">Failed to load form</div>
   }
 
+  const selectedElement = getSelectedElement()
+  const targetGroupLabel = selectedElement?.type === 'ELEMENT_GROUP' ? selectedElement.label : undefined
   const statusVariant = form?.status === 'PUBLISHED' ? 'success' : 'secondary'
 
   return (
@@ -282,7 +297,7 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
       )}
 
       <div className="flex-1 flex overflow-hidden">
-        <ElementPalette onAddElement={handleAddElement} />
+        <ElementPalette onAddElement={handleAddElement} targetGroupLabel={targetGroupLabel} />
         <Canvas />
         <ElementConfigPanel />
       </div>

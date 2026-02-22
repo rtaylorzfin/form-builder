@@ -31,23 +31,37 @@ const elementTypes: ElementTypeConfig[] = [
 
 interface ElementPaletteProps {
   onAddElement: (type: ElementType) => void
+  targetGroupLabel?: string
 }
 
-export default function ElementPalette({ onAddElement }: ElementPaletteProps) {
+export default function ElementPalette({ onAddElement, targetGroupLabel }: ElementPaletteProps) {
   return (
     <div className="w-64 bg-gray-50 border-r p-4 overflow-y-auto">
       <h2 className="font-semibold mb-4">Elements</h2>
+      {targetGroupLabel && (
+        <p className="text-xs text-blue-600 bg-blue-50 border border-blue-200 rounded px-2 py-1 mb-3">
+          Adding to: <strong>{targetGroupLabel}</strong>
+        </p>
+      )}
       <div className="space-y-2">
-        {elementTypes.map((element) => (
-          <button
-            key={element.type}
-            onClick={() => onAddElement(element.type)}
-            className="flex items-center gap-2 p-3 w-full bg-white border rounded-lg cursor-pointer hover:border-primary hover:shadow-sm transition-all text-left"
-          >
-            {element.icon}
-            <span className="text-sm font-medium">{element.label}</span>
-          </button>
-        ))}
+        {elementTypes.map((element) => {
+          const disabled = targetGroupLabel && element.type === 'ELEMENT_GROUP'
+          return (
+            <button
+              key={element.type}
+              onClick={() => !disabled && onAddElement(element.type)}
+              disabled={!!disabled}
+              className={`flex items-center gap-2 p-3 w-full border rounded-lg transition-all text-left ${
+                disabled
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  : 'bg-white cursor-pointer hover:border-primary hover:shadow-sm'
+              }`}
+            >
+              {element.icon}
+              <span className="text-sm font-medium">{element.label}</span>
+            </button>
+          )
+        })}
       </div>
     </div>
   )
