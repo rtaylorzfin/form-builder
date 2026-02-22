@@ -1,7 +1,9 @@
-import { Link } from 'react-router-dom'
+import { useRef } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Pencil, Eye, Trash2, BarChart2, ExternalLink } from 'lucide-react'
+import { Pencil, Eye, Trash2, BarChart2, ExternalLink, Upload } from 'lucide-react'
 import { formsApi } from '@/api/client'
+import type { FormExportData } from '@/api/types'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -15,7 +17,9 @@ import { useToast } from '@/components/ui/use-toast'
 
 export default function FormList() {
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
   const { toast } = useToast()
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const { data: forms, isLoading } = useQuery({
     queryKey: ['forms'],
@@ -32,6 +36,25 @@ export default function FormList() {
       toast({ title: 'Failed to delete form', variant: 'destructive' })
     },
   })
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    try {
+      const text = await file.text()
+      const importData: FormExportData = JSON.parse(text)
+      const newForm = await formsApi.import(importData)
+      queryClient.invalidateQueries({ queryKey: ['forms'] })
+      toast({ title: 'Form imported successfully' })
+      navigate(`/forms/${newForm.id}/edit`)
+    } catch {
+      toast({ title: 'Failed to import form. Check JSON format.', variant: 'destructive' })
+    }
+
+    // Reset input so same file can be re-imported
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
 
   const handleDelete = (id: string, name: string) => {
     if (confirm(`Are you sure you want to delete "${name}"?`)) {
@@ -54,16 +77,35 @@ export default function FormList() {
     return <div className="text-center py-8">Loading forms...</div>
   }
 
+  const importButton = (
+    <>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".json"
+        className="hidden"
+        onChange={handleFileChange}
+      />
+      <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
+        <Upload className="h-4 w-4 mr-1" />
+        Import Form
+      </Button>
+    </>
+  )
+
   if (!forms || forms.length === 0) {
     return (
       <div className="text-center py-12">
         <p className="text-gray-500 mb-4">No forms yet. Create your first form to get started.</p>
+        <div className="flex justify-center">{importButton}</div>
       </div>
     )
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div>
+      <div className="flex justify-end mb-4">{importButton}</div>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {forms.map((form) => (
         <Card key={form.id} className="hover:shadow-md transition-shadow">
           <CardHeader className="pb-2">
@@ -120,6 +162,7 @@ export default function FormList() {
           </CardContent>
         </Card>
       ))}
+      </div>
     </div>
   )
 }

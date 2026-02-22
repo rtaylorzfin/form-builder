@@ -1,16 +1,7 @@
 import { useEffect, useState } from 'react'
-import {
-  DndContext,
-  DragEndEvent,
-  DragOverlay,
-  DragStartEvent,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
-import { Eye, Save, Send, Plus, X } from 'lucide-react'
+import { Eye, Save, Send, Plus, X, Download } from 'lucide-react'
 import { formsApi, elementsApi, pagesApi } from '@/api/client'
 import type { ElementType, FormPage } from '@/api/types'
 import { useFormBuilderStore, createNewElement } from '@/stores/formBuilderStore'
@@ -38,7 +29,6 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
     setForm,
     setCurrentPageIndex,
     addElement,
-    reorderElements,
     selectElement,
     setDirty,
     isDirty,
@@ -46,14 +36,6 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
 
   const [editingPageTitle, setEditingPageTitle] = useState<string | null>(null)
   const [pageTitleValue, setPageTitleValue] = useState('')
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    })
-  )
 
   const { data: formData, isLoading, error } = useQuery({
     queryKey: ['form', formId],
@@ -139,40 +121,35 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
     },
   })
 
-  const handleDragStart = (_event: DragStartEvent) => {
-    selectElement(null)
+  const handleAddElement = (type: ElementType) => {
+    const newElement = createNewElement(type, elements.length)
+    const currentPage = pages[currentPageIndex]
+
+    createElementMutation.mutate({
+      type: newElement.type,
+      label: newElement.label,
+      fieldName: newElement.fieldName,
+      sortOrder: newElement.sortOrder,
+      configuration: newElement.configuration,
+      pageId: currentPage?.id,
+    })
   }
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event
-
-    if (!over) return
-
-    const activeData = active.data.current
-
-    if (activeData?.fromPalette && over.id === 'canvas') {
-      const type = activeData.type as ElementType
-      const newElement = createNewElement(type, elements.length)
-      const currentPage = pages[currentPageIndex]
-
-      createElementMutation.mutate({
-        type: newElement.type,
-        label: newElement.label,
-        fieldName: newElement.fieldName,
-        sortOrder: newElement.sortOrder,
-        configuration: newElement.configuration,
-        pageId: currentPage?.id,
-      })
-      return
-    }
-
-    if (active.id !== over.id) {
-      const oldIndex = elements.findIndex((e) => e.id === active.id)
-      const newIndex = elements.findIndex((e) => e.id === over.id)
-
-      if (oldIndex !== -1 && newIndex !== -1) {
-        reorderElements(oldIndex, newIndex)
-      }
+  const handleExport = async () => {
+    try {
+      const exportData = await formsApi.export(formId)
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${form?.name || 'form'}.json`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+      toast({ title: 'Form exported successfully' })
+    } catch {
+      toast({ title: 'Failed to export form', variant: 'destructive' })
     }
   }
 
@@ -218,6 +195,13 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
           {isDirty && <span className="text-sm text-gray-500">(unsaved changes)</span>}
         </div>
         <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={handleExport}
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Export
+          </Button>
           <Button
             variant="outline"
             onClick={() => navigate(`/forms/${formId}/preview`)}
@@ -297,14 +281,11 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
         </div>
       )}
 
-      <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-        <div className="flex-1 flex overflow-hidden">
-          <ElementPalette />
-          <Canvas />
-          <ElementConfigPanel />
-        </div>
-        <DragOverlay />
-      </DndContext>
+      <div className="flex-1 flex overflow-hidden">
+        <ElementPalette onAddElement={handleAddElement} />
+        <Canvas />
+        <ElementConfigPanel />
+      </div>
     </div>
   )
 }

@@ -147,3 +147,27 @@ export interface ApiError {
   timestamp: string
   fieldErrors?: Record<string, string>
 }
+
+// Import/Export types
+export interface FormExportElement {
+  type: ElementType
+  label: string
+  fieldName: string
+  sortOrder: number
+  configuration: ElementConfiguration
+  pageIndex?: number
+  children?: FormExportElement[]
+}
+
+export interface FormExportPage {
+  pageNumber: number
+  title?: string
+  description?: string
+}
+
+export interface FormExportData {
+  name: string
+  description?: string
+  pages: FormExportPage[]
+  elements: FormExportElement[]
+}

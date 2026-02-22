@@ -19,6 +19,8 @@ interface FormBuilderState {
   updateElement: (id: string, updates: Partial<FormElement>) => void
   removeElement: (id: string) => void
   reorderElements: (oldIndex: number, newIndex: number) => void
+  moveElementUp: (id: string) => void
+  moveElementDown: (id: string) => void
   selectElement: (id: string | null) => void
   getSelectedElement: () => FormElement | null
   setDirty: (dirty: boolean) => void
@@ -113,6 +115,58 @@ export const useFormBuilderStore = create<FormBuilderState>((set, get) => ({
         elements: newElements.map((el, index) => ({ ...el, sortOrder: index })),
         isDirty: true,
       }
+    }),
+
+  moveElementUp: (id) =>
+    set((state) => {
+      // Check if it's a root element
+      const rootIndex = state.elements.findIndex((el) => el.id === id)
+      if (rootIndex > 0) {
+        const newElements = [...state.elements]
+        ;[newElements[rootIndex - 1], newElements[rootIndex]] = [newElements[rootIndex], newElements[rootIndex - 1]]
+        return {
+          elements: newElements.map((el, i) => ({ ...el, sortOrder: i })),
+          isDirty: true,
+        }
+      }
+      // Check if it's a child element
+      const newElements = state.elements.map((parent) => {
+        if (!parent.children) return parent
+        const childIndex = parent.children.findIndex((c) => c.id === id)
+        if (childIndex > 0) {
+          const newChildren = [...parent.children]
+          ;[newChildren[childIndex - 1], newChildren[childIndex]] = [newChildren[childIndex], newChildren[childIndex - 1]]
+          return { ...parent, children: newChildren.map((c, i) => ({ ...c, sortOrder: i })) }
+        }
+        return parent
+      })
+      return { elements: newElements, isDirty: true }
+    }),
+
+  moveElementDown: (id) =>
+    set((state) => {
+      // Check if it's a root element
+      const rootIndex = state.elements.findIndex((el) => el.id === id)
+      if (rootIndex !== -1 && rootIndex < state.elements.length - 1) {
+        const newElements = [...state.elements]
+        ;[newElements[rootIndex], newElements[rootIndex + 1]] = [newElements[rootIndex + 1], newElements[rootIndex]]
+        return {
+          elements: newElements.map((el, i) => ({ ...el, sortOrder: i })),
+          isDirty: true,
+        }
+      }
+      // Check if it's a child element
+      const newElements = state.elements.map((parent) => {
+        if (!parent.children) return parent
+        const childIndex = parent.children.findIndex((c) => c.id === id)
+        if (childIndex !== -1 && childIndex < parent.children.length - 1) {
+          const newChildren = [...parent.children]
+          ;[newChildren[childIndex], newChildren[childIndex + 1]] = [newChildren[childIndex + 1], newChildren[childIndex]]
+          return { ...parent, children: newChildren.map((c, i) => ({ ...c, sortOrder: i })) }
+        }
+        return parent
+      })
+      return { elements: newElements, isDirty: true }
     }),
 
   selectElement: (id) => set({ selectedElementId: id }),

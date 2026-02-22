@@ -1,5 +1,7 @@
 package com.formbuilder.form;
 
+import com.formbuilder.element.ElementConfiguration;
+import com.formbuilder.element.ElementType;
 import com.formbuilder.element.FormElementDTO;
 import com.formbuilder.page.FormPageDTO;
 import lombok.*;
@@ -63,5 +65,51 @@ public class FormDTO {
         private String description;
 
         private FormStatus status;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class ExportResponse {
+        private String name;
+        private String description;
+        private List<ExportPage> pages;
+        private List<ExportElement> elements;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class ExportPage {
+        private Integer pageNumber;
+        private String title;
+        private String description;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class ExportElement {
+        private ElementType type;
+        private String label;
+        private String fieldName;
+        private Integer sortOrder;
+        private ElementConfiguration configuration;
+        private Integer pageIndex;
+        private List<ExportElement> children;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ImportRequest {
+        @jakarta.validation.constraints.NotBlank(message = "Form name is required")
+        private String name;
+        private String description;
+        private List<ExportPage> pages;
+        private List<ExportElement> elements;
     }
 }

@@ -1,5 +1,3 @@
-import { useDraggable } from '@dnd-kit/core'
-import { CSS } from '@dnd-kit/utilities'
 import {
   Type,
   AlignLeft,
@@ -12,7 +10,6 @@ import {
   Layers,
 } from 'lucide-react'
 import type { ElementType } from '@/api/types'
-import { cn } from '@/lib/utils'
 
 interface ElementTypeConfig {
   type: ElementType
@@ -32,53 +29,24 @@ const elementTypes: ElementTypeConfig[] = [
   { type: 'ELEMENT_GROUP', label: 'Group', icon: <Layers className="h-4 w-4" /> },
 ]
 
-interface DraggableElementProps {
-  type: ElementType
-  label: string
-  icon: React.ReactNode
+interface ElementPaletteProps {
+  onAddElement: (type: ElementType) => void
 }
 
-function DraggableElement({ type, label, icon }: DraggableElementProps) {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-    id: `palette-${type}`,
-    data: { type, fromPalette: true },
-  })
-
-  const style = transform
-    ? {
-        transform: CSS.Translate.toString(transform),
-      }
-    : undefined
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...listeners}
-      {...attributes}
-      className={cn(
-        'flex items-center gap-2 p-3 bg-white border rounded-lg cursor-grab hover:border-primary hover:shadow-sm transition-all',
-        isDragging && 'opacity-50 cursor-grabbing'
-      )}
-    >
-      {icon}
-      <span className="text-sm font-medium">{label}</span>
-    </div>
-  )
-}
-
-export default function ElementPalette() {
+export default function ElementPalette({ onAddElement }: ElementPaletteProps) {
   return (
     <div className="w-64 bg-gray-50 border-r p-4 overflow-y-auto">
       <h2 className="font-semibold mb-4">Elements</h2>
       <div className="space-y-2">
         {elementTypes.map((element) => (
-          <DraggableElement
+          <button
             key={element.type}
-            type={element.type}
-            label={element.label}
-            icon={element.icon}
-          />
+            onClick={() => onAddElement(element.type)}
+            className="flex items-center gap-2 p-3 w-full bg-white border rounded-lg cursor-pointer hover:border-primary hover:shadow-sm transition-all text-left"
+          >
+            {element.icon}
+            <span className="text-sm font-medium">{element.label}</span>
+          </button>
         ))}
       </div>
     </div>

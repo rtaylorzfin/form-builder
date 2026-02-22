@@ -107,6 +107,19 @@ function buildValidationSchema(elements: FormElement[]) {
       continue
     }
 
+    // Non-group repeatable elements: array of primitives
+    if (element.configuration?.repeatable) {
+      let arraySchema = z.array(buildFieldSchema(element))
+      if (element.configuration.minInstances) {
+        arraySchema = arraySchema.min(element.configuration.minInstances, `At least ${element.configuration.minInstances} value(s) required`)
+      }
+      if (element.configuration.maxInstances) {
+        arraySchema = arraySchema.max(element.configuration.maxInstances, `At most ${element.configuration.maxInstances} value(s) allowed`)
+      }
+      shape[element.fieldName] = arraySchema
+      continue
+    }
+
     shape[element.fieldName] = buildFieldSchema(element)
   }
 
@@ -370,6 +383,86 @@ function RepeatableGroupField({
   )
 }
 
+function RepeatableFieldArray({
+  element,
+  register,
+  errors,
+  setValue,
+  watch,
+  readOnly,
+}: {
+  element: FormElement
+  register: ReturnType<typeof useForm>['register']
+  errors: Record<string, unknown>
+  setValue: ReturnType<typeof useForm>['setValue']
+  watch: ReturnType<typeof useForm>['watch']
+  readOnly?: boolean
+}) {
+  const config = element.configuration || {}
+  const minInstances = config.minInstances || 1
+  const maxInstances = config.maxInstances || 10
+  const values: unknown[] = watch(element.fieldName) || []
+
+  const addValue = () => {
+    const newValues = [...values, '']
+    setValue(element.fieldName, newValues, { shouldValidate: true })
+  }
+
+  const removeValue = (index: number) => {
+    const newValues = values.filter((_: unknown, i: number) => i !== index)
+    setValue(element.fieldName, newValues, { shouldValidate: true })
+  }
+
+  const updateValue = (index: number, val: string) => {
+    const newValues = [...values]
+    newValues[index] = val
+    setValue(element.fieldName, newValues, { shouldValidate: true })
+  }
+
+  const fieldErrors = errors as Record<string, { message?: string } & Record<string, { message?: string }>>
+
+  return (
+    <div className="space-y-2">
+      <Label>
+        {element.label}
+        {config.required && <span className="text-red-500 ml-1">*</span>}
+      </Label>
+      {values.map((_val: unknown, index: number) => (
+        <div key={index} className="flex items-center gap-2">
+          <Input
+            {...register(`${element.fieldName}.${index}`)}
+            type={element.type === 'NUMBER' ? 'number' : element.type === 'EMAIL' ? 'email' : element.type === 'DATE' ? 'date' : 'text'}
+            placeholder={config.placeholder}
+            disabled={readOnly}
+            onChange={(e) => updateValue(index, e.target.value)}
+            className={cn(fieldErrors?.[element.fieldName]?.[index]?.message && 'border-red-500')}
+          />
+          {!readOnly && values.length > minInstances && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-10 w-10 text-red-500 hover:text-red-600"
+              onClick={() => removeValue(index)}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+      ))}
+      {!readOnly && values.length < maxInstances && (
+        <Button type="button" variant="outline" size="sm" onClick={addValue} className="w-full">
+          <Plus className="h-4 w-4 mr-1" />
+          Add {element.label}
+        </Button>
+      )}
+      {fieldErrors?.[element.fieldName]?.message && (
+        <p className="text-sm text-red-500">{(fieldErrors[element.fieldName] as { message?: string }).message}</p>
+      )}
+    </div>
+  )
+}
+
 export default function FormRenderer({
   form,
   onSubmit,
@@ -380,13 +473,16 @@ export default function FormRenderer({
 }: FormRendererProps) {
   const schema = buildValidationSchema(form.elements)
 
-  // Build default values for repeatable groups
+  // Build default values for repeatable groups and repeatable fields
   const builtDefaults: Record<string, unknown> = { ...defaultValues }
   for (const element of form.elements) {
     if (element.type === 'ELEMENT_GROUP' && element.configuration?.repeatable && !builtDefaults[element.fieldName]) {
       const minInstances = element.configuration.minInstances || 1
       const childDefaults = getDefaultValuesForGroup(element.children || [])
       builtDefaults[element.fieldName] = Array.from({ length: minInstances }, () => ({ ...childDefaults }))
+    } else if (element.type !== 'ELEMENT_GROUP' && element.configuration?.repeatable && !builtDefaults[element.fieldName]) {
+      const minInstances = element.configuration.minInstances || 1
+      builtDefaults[element.fieldName] = Array.from({ length: minInstances }, () => '')
     }
   }
 
@@ -437,6 +533,21 @@ export default function FormRenderer({
                 />
               ))}
             </fieldset>
+          )
+        }
+
+        // Non-group repeatable element
+        if (element.configuration?.repeatable) {
+          return (
+            <RepeatableFieldArray
+              key={element.id}
+              element={element}
+              register={register}
+              errors={errors}
+              setValue={setValue}
+              watch={watch}
+              readOnly={readOnly}
+            />
           )
         }
 

@@ -5,7 +5,7 @@ A full-stack web application for building, managing, and rendering dynamic forms
 ## Features
 
 ### Form Builder
-- **Drag & Drop Interface**: Drag form elements (Text Input, Textarea, Number, Email, Date, Checkbox, Radio Group, Select, Element Group) onto a canvas
+- **Click-to-Add Interface**: Add form elements (Text Input, Textarea, Number, Email, Date, Checkbox, Radio Group, Select, Element Group) to the canvas with a single click, reorder with up/down arrows
 - **Element Configuration**: Customize labels, placeholders, validation rules, and field names
 - **Element Grouping**: Group related fields together; mark groups as repeatable so users can add/remove instances
 - **Multi-page Forms**: Create wizard-style forms with multiple pages, per-page validation, and a progress bar
@@ -29,11 +29,79 @@ A full-stack web application for building, managing, and rendering dynamic forms
 |----------|----------------------------------------------------|
 | Backend  | Spring Boot 3.2, Java 17, Spring Security, JPA     |
 | Frontend | React 18, TypeScript, Vite, Tailwind CSS            |
-| UI       | shadcn/ui (Radix), react-hook-form, zod, dnd-kit    |
+| UI       | shadcn/ui (Radix), react-hook-form, zod              |
 | State    | Zustand, TanStack React Query                       |
 | Database | H2 (dev) / PostgreSQL 16 (prod), Flyway             |
 | Auth     | JWT (jjwt 0.12.3), BCrypt                            |
 | API Docs | SpringDoc OpenAPI (Swagger UI)                       |
+
+## Entity Relationship Diagram
+
+```mermaid
+erDiagram
+    users {
+        UUID id PK
+        VARCHAR email UK
+        VARCHAR password
+        VARCHAR name
+        VARCHAR role
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+
+    forms {
+        UUID id PK
+        VARCHAR name
+        TEXT description
+        UUID user_id FK
+        VARCHAR status
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+        TIMESTAMP published_at
+    }
+
+    form_pages {
+        UUID id PK
+        UUID form_id FK
+        INT page_number
+        VARCHAR title
+        TEXT description
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+
+    form_elements {
+        UUID id PK
+        UUID form_id FK
+        VARCHAR type
+        VARCHAR label
+        VARCHAR field_name
+        INT sort_order
+        TEXT configuration
+        UUID page_id FK
+        UUID parent_element_id FK
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+
+    submissions {
+        UUID id PK
+        UUID form_id FK
+        TEXT data
+        VARCHAR status
+        TIMESTAMP submitted_at
+        TIMESTAMP updated_at
+        VARCHAR ip_address
+        VARCHAR user_agent
+    }
+
+    users ||--o{ forms : "creates"
+    forms ||--o{ form_pages : "has"
+    forms ||--o{ form_elements : "contains"
+    forms ||--o{ submissions : "receives"
+    form_pages ||--o{ form_elements : "contains"
+    form_elements ||--o{ form_elements : "parent-child"
+```
 
 ## Prerequisites
 
@@ -81,7 +149,7 @@ The frontend starts on **http://localhost:5173** and proxies API requests to the
 2. **Register** a new account (click "Register" on the login page)
 3. **Login** with your credentials
 4. **Create a form** from the dashboard
-5. **Drag elements** from the palette onto the canvas to build your form
+5. **Click elements** in the palette to add them to the canvas, use arrows to reorder
 6. **Configure elements** by clicking on them in the canvas (right panel)
 7. **Add pages** using the page tabs above the canvas for multi-page forms
 8. **Preview** your form using the Preview button

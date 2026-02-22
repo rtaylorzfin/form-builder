@@ -186,9 +186,9 @@ export default function ElementConfigPanel() {
           </div>
         )}
 
-        {isGroup && (
+        {(isGroup || selectedElement.type !== 'CHECKBOX') && (
           <div className="space-y-4 border-t pt-4">
-            <h3 className="font-medium text-sm text-gray-600">Group Settings</h3>
+            {isGroup && <h3 className="font-medium text-sm text-gray-600">Group Settings</h3>}
             <div className="flex items-center gap-2">
               <Checkbox
                 id="repeatable"
@@ -196,13 +196,13 @@ export default function ElementConfigPanel() {
                 onCheckedChange={(checked) => handleRepeatableChange(checked as boolean)}
               />
               <Label htmlFor="repeatable" className="cursor-pointer">
-                Allow multiple instances
+                {isGroup ? 'Allow multiple instances' : 'Allow multiple values'}
               </Label>
             </div>
             {repeatable && (
               <>
                 <div>
-                  <Label htmlFor="minInstances">Min Instances</Label>
+                  <Label htmlFor="minInstances">{isGroup ? 'Min Instances' : 'Min Values'}</Label>
                   <Input
                     id="minInstances"
                     type="number"
@@ -213,7 +213,7 @@ export default function ElementConfigPanel() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="maxInstances">Max Instances</Label>
+                  <Label htmlFor="maxInstances">{isGroup ? 'Max Instances' : 'Max Values'}</Label>
                   <Input
                     id="maxInstances"
                     type="number"

@@ -179,11 +179,43 @@ public class SubmissionService {
                 continue;
             }
 
+            // Non-group repeatable elements: expect array of primitive values
+            ElementConfiguration elConfig = element.getConfiguration();
+            if (elConfig != null && Boolean.TRUE.equals(elConfig.getRepeatable())) {
+                validateRepeatableField(element, data, errors);
+                continue;
+            }
+
             validateField(element, data.get(element.getFieldName()), errors);
         }
 
         if (!errors.isEmpty()) {
             throw new ValidationException(String.join("; ", errors));
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void validateRepeatableField(FormElement element, Map<String, Object> data, List<String> errors) {
+        Object value = data.get(element.getFieldName());
+        ElementConfiguration config = element.getConfiguration();
+        int minInstances = config.getMinInstances() != null ? config.getMinInstances() : 1;
+        int maxInstances = config.getMaxInstances() != null ? config.getMaxInstances() : Integer.MAX_VALUE;
+
+        if (!(value instanceof List)) {
+            errors.add(element.getLabel() + " must be an array");
+            return;
+        }
+
+        List<Object> values = (List<Object>) value;
+        if (values.size() < minInstances) {
+            errors.add(element.getLabel() + " requires at least " + minInstances + " value(s)");
+        }
+        if (values.size() > maxInstances) {
+            errors.add(element.getLabel() + " allows at most " + maxInstances + " value(s)");
+        }
+
+        for (int i = 0; i < values.size(); i++) {
+            validateField(element, values.get(i), errors, element.getLabel() + "[" + (i + 1) + "].");
         }
     }
 

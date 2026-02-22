@@ -155,9 +155,6 @@ public class FormElementService {
     private void validateRepeatableConfig(ElementType type, ElementConfiguration config) {
         if (config == null) return;
         if (Boolean.TRUE.equals(config.getRepeatable())) {
-            if (type != ElementType.ELEMENT_GROUP) {
-                throw new ValidationException("Only ELEMENT_GROUP elements can be repeatable");
-            }
             if (config.getMinInstances() != null && config.getMinInstances() < 1) {
                 throw new ValidationException("minInstances must be at least 1");
             }

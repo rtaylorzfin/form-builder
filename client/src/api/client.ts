@@ -12,6 +12,7 @@ import type {
   SubmissionPage,
   SubmitFormRequest,
   UpdateSubmissionRequest,
+  FormExportData,
 } from './types'
 
 const api = axios.create({
@@ -119,6 +120,16 @@ export const formsApi = {
 
   delete: async (id: string): Promise<void> => {
     await api.delete(`/forms/${id}`)
+  },
+
+  export: async (id: string): Promise<FormExportData> => {
+    const { data } = await api.get<FormExportData>(`/forms/${id}/export`)
+    return data
+  },
+
+  import: async (data: FormExportData): Promise<Form> => {
+    const { data: result } = await api.post<Form>('/forms/import', data)
+    return result
   },
 }
 

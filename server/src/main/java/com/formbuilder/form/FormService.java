@@ -2,14 +2,19 @@ package com.formbuilder.form;
 
 import com.formbuilder.auth.AuthService;
 import com.formbuilder.auth.User;
+import com.formbuilder.element.FormElement;
 import com.formbuilder.element.FormElementDTO;
+import com.formbuilder.element.FormElementRepository;
 import com.formbuilder.exception.ResourceNotFoundException;
+import com.formbuilder.page.FormPage;
 import com.formbuilder.page.FormPageDTO;
+import com.formbuilder.page.FormPageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -19,6 +24,8 @@ import java.util.stream.Collectors;
 public class FormService {
 
     private final FormRepository formRepository;
+    private final FormPageRepository pageRepository;
+    private final FormElementRepository elementRepository;
     private final AuthService authService;
 
     @Transactional(readOnly = true)
@@ -107,6 +114,131 @@ public class FormService {
                 .orElseThrow(() -> new ResourceNotFoundException("Form not found: " + id));
         verifyOwnership(form);
         formRepository.deleteById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public FormDTO.ExportResponse exportForm(UUID id) {
+        Form form = formRepository.findByIdWithElements(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Form not found: " + id));
+        verifyOwnership(form);
+
+        List<FormPage> pages = form.getPages() != null ? form.getPages() : List.of();
+        List<FormDTO.ExportPage> exportPages = pages.stream()
+                .map(p -> FormDTO.ExportPage.builder()
+                        .pageNumber(p.getPageNumber())
+                        .title(p.getTitle())
+                        .description(p.getDescription())
+                        .build())
+                .collect(Collectors.toList());
+
+        List<FormElement> rootElements = form.getElements() != null
+                ? form.getElements().stream()
+                    .filter(e -> e.getParentElement() == null)
+                    .sorted((a, b) -> Integer.compare(a.getSortOrder(), b.getSortOrder()))
+                    .collect(Collectors.toList())
+                : List.of();
+
+        List<FormDTO.ExportElement> exportElements = rootElements.stream()
+                .map(e -> toExportElement(e, pages))
+                .collect(Collectors.toList());
+
+        return FormDTO.ExportResponse.builder()
+                .name(form.getName())
+                .description(form.getDescription())
+                .pages(exportPages)
+                .elements(exportElements)
+                .build();
+    }
+
+    @Transactional
+    public FormDTO.Response importForm(FormDTO.ImportRequest request) {
+        User user = authService.getAuthenticatedUser();
+
+        Form form = Form.builder()
+                .name(request.getName())
+                .description(request.getDescription())
+                .status(FormStatus.DRAFT)
+                .user(user)
+                .build();
+        Form savedForm = formRepository.save(form);
+
+        // Create pages
+        List<FormPage> savedPages = new ArrayList<>();
+        if (request.getPages() != null) {
+            for (FormDTO.ExportPage exportPage : request.getPages()) {
+                FormPage page = FormPage.builder()
+                        .form(savedForm)
+                        .pageNumber(exportPage.getPageNumber())
+                        .title(exportPage.getTitle())
+                        .description(exportPage.getDescription())
+                        .build();
+                savedPages.add(pageRepository.save(page));
+            }
+        }
+
+        // Create elements recursively
+        if (request.getElements() != null) {
+            for (FormDTO.ExportElement exportElement : request.getElements()) {
+                createElementFromExport(exportElement, savedForm, null, savedPages);
+            }
+        }
+
+        return toResponse(formRepository.findByIdWithElements(savedForm.getId()).orElse(savedForm));
+    }
+
+    private void createElementFromExport(FormDTO.ExportElement exportElement, Form form, FormElement parent, List<FormPage> pages) {
+        FormPage page = null;
+        if (exportElement.getPageIndex() != null && exportElement.getPageIndex() < pages.size()) {
+            page = pages.get(exportElement.getPageIndex());
+        }
+
+        FormElement element = FormElement.builder()
+                .form(form)
+                .type(exportElement.getType())
+                .label(exportElement.getLabel())
+                .fieldName(exportElement.getFieldName())
+                .sortOrder(exportElement.getSortOrder())
+                .configuration(exportElement.getConfiguration())
+                .parentElement(parent)
+                .page(page)
+                .build();
+        FormElement saved = elementRepository.save(element);
+
+        if (exportElement.getChildren() != null) {
+            for (FormDTO.ExportElement child : exportElement.getChildren()) {
+                createElementFromExport(child, form, saved, pages);
+            }
+        }
+    }
+
+    private FormDTO.ExportElement toExportElement(FormElement element, List<FormPage> pages) {
+        Integer pageIndex = null;
+        if (element.getPage() != null) {
+            for (int i = 0; i < pages.size(); i++) {
+                if (pages.get(i).getId().equals(element.getPage().getId())) {
+                    pageIndex = i;
+                    break;
+                }
+            }
+        }
+
+        List<FormDTO.ExportElement> children = null;
+        if (element.getChildren() != null && !element.getChildren().isEmpty()) {
+            children = element.getChildren().stream()
+                    .sorted((a, b) -> Integer.compare(a.getSortOrder(), b.getSortOrder()))
+                    .map(c -> toExportElement(c, pages))
+                    .collect(Collectors.toList());
+        }
+
+        return FormDTO.ExportElement.builder()
+                .type(element.getType())
+                .label(element.getLabel())
+                .fieldName(element.getFieldName())
+                .sortOrder(element.getSortOrder())
+                .configuration(element.getConfiguration())
+                .pageIndex(pageIndex)
+                .children(children)
+                .build();
     }
 
     private void verifyOwnership(Form form) {

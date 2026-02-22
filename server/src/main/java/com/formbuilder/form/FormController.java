@@ -58,4 +58,17 @@ public class FormController {
         formService.deleteForm(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/{id}/export")
+    @Operation(summary = "Export form definition as JSON")
+    public ResponseEntity<FormDTO.ExportResponse> exportForm(@PathVariable UUID id) {
+        return ResponseEntity.ok(formService.exportForm(id));
+    }
+
+    @PostMapping("/import")
+    @Operation(summary = "Import form definition from JSON")
+    public ResponseEntity<FormDTO.Response> importForm(@Valid @RequestBody FormDTO.ImportRequest request) {
+        FormDTO.Response response = formService.importForm(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
 }
