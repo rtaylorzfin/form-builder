@@ -1,0 +1,21 @@
+# Server
+server/target/
+server/data/
+*.log
+
+# Client
+client/node_modules/
+client/dist/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.local
