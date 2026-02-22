@@ -84,6 +84,8 @@ function buildValidationSchema(elements: FormElement[]) {
   const shape: Record<string, z.ZodTypeAny> = {}
 
   for (const element of elements) {
+    if (element.type === 'STATIC_TEXT') continue
+
     if (element.type === 'ELEMENT_GROUP') {
       const children = element.children || []
       const groupObj = buildGroupObjectSchema(children)
@@ -277,6 +279,14 @@ function RenderElement({
         </Select>
       )
       break
+
+    case 'STATIC_TEXT':
+      return (
+        <div
+          className="prose prose-sm max-w-none"
+          dangerouslySetInnerHTML={{ __html: config.content || '' }}
+        />
+      )
 
     default:
       return null

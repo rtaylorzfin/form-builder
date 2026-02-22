@@ -164,6 +164,9 @@ public class SubmissionService {
         List<String> errors = new ArrayList<>();
 
         for (FormElement element : form.getElements()) {
+            if (element.getType() == ElementType.STATIC_TEXT) {
+                continue;
+            }
             if (element.getType() == ElementType.ELEMENT_GROUP) {
                 ElementConfiguration groupConfig = element.getConfiguration();
                 if (groupConfig != null && Boolean.TRUE.equals(groupConfig.getRepeatable())) {
@@ -259,6 +262,7 @@ public class SubmissionService {
 
     private void validateField(FormElement element, Object value, List<String> errors, String prefix) {
         if (element.getType() == ElementType.ELEMENT_GROUP) return;
+        if (element.getType() == ElementType.STATIC_TEXT) return;
 
         ElementConfiguration config = element.getConfiguration();
         String label = prefix + element.getLabel();

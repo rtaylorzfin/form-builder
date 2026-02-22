@@ -198,6 +198,7 @@ export function createNewElement(type: ElementType, sortOrder: number): Omit<For
     RADIO_GROUP: { options: [{ label: 'Option 1', value: 'option1' }, { label: 'Option 2', value: 'option2' }] },
     SELECT: { options: [{ label: 'Option 1', value: 'option1' }, { label: 'Option 2', value: 'option2' }] },
     ELEMENT_GROUP: {},
+    STATIC_TEXT: { content: '<p>Enter your text here</p>' },
   }
 
   const typeLabels: Record<ElementType, string> = {
@@ -210,6 +211,7 @@ export function createNewElement(type: ElementType, sortOrder: number): Omit<For
     RADIO_GROUP: 'Radio Group',
     SELECT: 'Select',
     ELEMENT_GROUP: 'Group',
+    STATIC_TEXT: 'Static Text',
   }
 
   const label = typeLabels[type]

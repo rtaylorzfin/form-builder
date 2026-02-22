@@ -10,6 +10,7 @@ export type ElementType =
   | 'RADIO_GROUP'
   | 'SELECT'
   | 'ELEMENT_GROUP'
+  | 'STATIC_TEXT'
 
 export interface ElementOption {
   label: string
@@ -27,6 +28,7 @@ export interface ElementConfiguration {
   patternMessage?: string
   options?: ElementOption[]
   defaultValue?: string
+  content?: string
   repeatable?: boolean
   minInstances?: number
   maxInstances?: number

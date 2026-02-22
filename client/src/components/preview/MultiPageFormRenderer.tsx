@@ -52,6 +52,7 @@ function buildFullSchema(pages: FormPage[]) {
   const shape: Record<string, z.ZodTypeAny> = {}
   for (const page of pages) {
     for (const element of page.elements) {
+      if (element.type === 'STATIC_TEXT') continue
       if (element.type === 'ELEMENT_GROUP') {
         const children = element.children || []
         if (element.configuration?.repeatable) {
@@ -86,6 +87,7 @@ function buildFullSchema(pages: FormPage[]) {
 function buildPageSchema(page: FormPage) {
   const shape: Record<string, z.ZodTypeAny> = {}
   for (const element of page.elements) {
+    if (element.type === 'STATIC_TEXT') continue
     if (element.type === 'ELEMENT_GROUP') {
       const children = element.children || []
       if (element.configuration?.repeatable) {
@@ -196,6 +198,13 @@ function RenderElement({
         </Select>
       )
       break
+    case 'STATIC_TEXT':
+      return (
+        <div
+          className="prose prose-sm max-w-none"
+          dangerouslySetInnerHTML={{ __html: config.content || '' }}
+        />
+      )
     default:
       return null
   }

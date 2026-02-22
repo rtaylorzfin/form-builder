@@ -8,6 +8,7 @@ import {
   Circle,
   ChevronDown,
   Layers,
+  FileText,
 } from 'lucide-react'
 import type { ElementType } from '@/api/types'
 
@@ -27,6 +28,7 @@ const elementTypes: ElementTypeConfig[] = [
   { type: 'RADIO_GROUP', label: 'Radio Group', icon: <Circle className="h-4 w-4" /> },
   { type: 'SELECT', label: 'Select', icon: <ChevronDown className="h-4 w-4" /> },
   { type: 'ELEMENT_GROUP', label: 'Group', icon: <Layers className="h-4 w-4" /> },
+  { type: 'STATIC_TEXT', label: 'Static Text', icon: <FileText className="h-4 w-4" /> },
 ]
 
 interface ElementPaletteProps {

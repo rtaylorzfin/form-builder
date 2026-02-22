@@ -4,6 +4,7 @@ import type { ElementConfiguration, ElementOption } from '@/api/types'
 import { useFormBuilderStore } from '@/stores/formBuilderStore'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 
@@ -29,6 +30,7 @@ export default function ElementConfigPanel() {
   const [placeholder, setPlaceholder] = useState('')
   const [required, setRequired] = useState(false)
   const [options, setOptions] = useState<ElementOption[]>([])
+  const [content, setContent] = useState('')
   const [repeatable, setRepeatable] = useState(false)
   const [minInstances, setMinInstances] = useState(1)
   const [maxInstances, setMaxInstances] = useState(5)
@@ -40,6 +42,7 @@ export default function ElementConfigPanel() {
       setPlaceholder(selectedElement.configuration?.placeholder || '')
       setRequired(selectedElement.configuration?.required || false)
       setOptions(selectedElement.configuration?.options || [])
+      setContent(selectedElement.configuration?.content || '')
       setRepeatable(selectedElement.configuration?.repeatable || false)
       setMinInstances(selectedElement.configuration?.minInstances || 1)
       setMaxInstances(selectedElement.configuration?.maxInstances || 5)
@@ -55,6 +58,7 @@ export default function ElementConfigPanel() {
   }
 
   const isGroup = selectedElement.type === 'ELEMENT_GROUP'
+  const isStaticText = selectedElement.type === 'STATIC_TEXT'
   const hasOptions = ['RADIO_GROUP', 'SELECT'].includes(selectedElement.type)
 
   const handleUpdate = (updates: Partial<{ label: string; fieldName: string; configuration: ElementConfiguration }>) => {
@@ -75,6 +79,13 @@ export default function ElementConfigPanel() {
     setPlaceholder(value)
     handleUpdate({
       configuration: { ...selectedElement.configuration, placeholder: value },
+    })
+  }
+
+  const handleContentChange = (value: string) => {
+    setContent(value)
+    handleUpdate({
+      configuration: { ...selectedElement.configuration, content: value },
     })
   }
 
@@ -151,17 +162,34 @@ export default function ElementConfigPanel() {
           />
         </div>
 
-        <div>
-          <Label htmlFor="fieldName">Field Name</Label>
-          <Input
-            id="fieldName"
-            value={fieldName}
-            onChange={(e) => handleFieldNameChange(e.target.value)}
-            className="mt-1"
-          />
-        </div>
+        {!isStaticText && (
+          <div>
+            <Label htmlFor="fieldName">Field Name</Label>
+            <Input
+              id="fieldName"
+              value={fieldName}
+              onChange={(e) => handleFieldNameChange(e.target.value)}
+              className="mt-1"
+            />
+          </div>
+        )}
 
-        {!isGroup && !hasOptions && selectedElement.type !== 'CHECKBOX' && (
+        {isStaticText && (
+          <div>
+            <Label htmlFor="content">HTML Content</Label>
+            <Textarea
+              id="content"
+              value={content}
+              onChange={(e) => handleContentChange(e.target.value)}
+              className="mt-1 font-mono text-xs"
+              rows={8}
+              placeholder="<h2>Title</h2><p>Instructions...</p>"
+            />
+            <p className="text-xs text-gray-400 mt-1">Supports raw HTML</p>
+          </div>
+        )}
+
+        {!isGroup && !isStaticText && !hasOptions && selectedElement.type !== 'CHECKBOX' && (
           <div>
             <Label htmlFor="placeholder">Placeholder</Label>
             <Input
@@ -173,7 +201,7 @@ export default function ElementConfigPanel() {
           </div>
         )}
 
-        {!isGroup && (
+        {!isGroup && !isStaticText && (
           <div className="flex items-center gap-2">
             <Checkbox
               id="required"
@@ -186,7 +214,7 @@ export default function ElementConfigPanel() {
           </div>
         )}
 
-        {(isGroup || selectedElement.type !== 'CHECKBOX') && (
+        {!isStaticText && (isGroup || selectedElement.type !== 'CHECKBOX') && (
           <div className="space-y-4 border-t pt-4">
             {isGroup && <h3 className="font-medium text-sm text-gray-600">Group Settings</h3>}
             <div className="flex items-center gap-2">
