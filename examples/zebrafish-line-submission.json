@@ -120,9 +120,9 @@
       "children": null
     },
     {
-      "type": "CHECKBOX",
+      "type": "CHECKBOX_GROUP",
       "label": "Reasons why ZIRC should accept line",
-      "fieldName": "checkbox_1771882965969",
+      "fieldName": "reasons_to_accept",
       "sortOrder": 4,
       "configuration": {
         "placeholder": null,
@@ -133,7 +133,13 @@
         "max": null,
         "pattern": null,
         "patternMessage": null,
-        "options": null,
+        "options": [
+          { "label": "This line is groundbreaking", "value": "groundbreaking" },
+          { "label": "Researchers demand it", "value": "researcher_demand" },
+          { "label": "Unique genetic background", "value": "unique_background" },
+          { "label": "Supports ongoing clinical studies", "value": "clinical_studies" },
+          { "label": "High community interest", "value": "community_interest" }
+        ],
         "defaultValue": null,
         "content": null,
         "repeatable": null,
