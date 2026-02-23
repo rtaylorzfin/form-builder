@@ -301,6 +301,17 @@ spring-boot-form-builder/
 
 Note: `GET /api/forms` returns all own forms for ADMIN, only published forms for USER. `GET /api/forms/{formId}/submissions` returns all submissions for ADMIN, only own submissions for USER.
 
+## Admin Management
+
+Promote a user to ADMIN from the command line:
+
+```bash
+cd server
+mvn spring-boot:run -Dspring-boot.run.arguments="--promote-admin=user@example.com"
+```
+
+The app starts, promotes the user, and exits immediately.
+
 ## Configuration
 
 ### Environment Variables / Properties

@@ -93,6 +93,14 @@ npm test             # Run tests (53 tests)
 npm run test:watch   # Watch mode
 ```
 
+## Admin Management
+
+Promote a user to ADMIN:
+```bash
+cd server
+mvn spring-boot:run -Dspring-boot.run.arguments="--promote-admin=user@example.com"
+```
+
 ## Testing
 
 ### Backend (7 tests)
