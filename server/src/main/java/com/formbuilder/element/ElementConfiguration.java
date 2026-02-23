@@ -24,6 +24,7 @@ public class ElementConfiguration {
     private Boolean repeatable;
     private Integer minInstances;
     private Integer maxInstances;
+    private Boolean fullPage;
 
     @Data
     @NoArgsConstructor

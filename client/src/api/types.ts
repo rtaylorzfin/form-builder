@@ -32,6 +32,7 @@ export interface ElementConfiguration {
   repeatable?: boolean
   minInstances?: number
   maxInstances?: number
+  fullPage?: boolean
 }
 
 export interface FormElement {

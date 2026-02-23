@@ -32,6 +32,7 @@ export default function ElementConfigPanel() {
   const [options, setOptions] = useState<ElementOption[]>([])
   const [content, setContent] = useState('')
   const [repeatable, setRepeatable] = useState(false)
+  const [fullPage, setFullPage] = useState(false)
   const [minInstances, setMinInstances] = useState(1)
   const [maxInstances, setMaxInstances] = useState(5)
 
@@ -44,6 +45,7 @@ export default function ElementConfigPanel() {
       setOptions(selectedElement.configuration?.options || [])
       setContent(selectedElement.configuration?.content || '')
       setRepeatable(selectedElement.configuration?.repeatable || false)
+      setFullPage(selectedElement.configuration?.fullPage || false)
       setMinInstances(selectedElement.configuration?.minInstances || 1)
       setMaxInstances(selectedElement.configuration?.maxInstances || 5)
     }
@@ -105,6 +107,13 @@ export default function ElementConfigPanel() {
         minInstances: checked ? minInstances : undefined,
         maxInstances: checked ? maxInstances : undefined,
       },
+    })
+  }
+
+  const handleFullPageChange = (checked: boolean) => {
+    setFullPage(checked)
+    handleUpdate({
+      configuration: { ...selectedElement.configuration, fullPage: checked },
     })
   }
 
@@ -227,6 +236,18 @@ export default function ElementConfigPanel() {
                 {isGroup ? 'Allow multiple instances' : 'Allow multiple values'}
               </Label>
             </div>
+            {isGroup && (
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="fullPage"
+                  checked={fullPage}
+                  onCheckedChange={(checked) => handleFullPageChange(checked as boolean)}
+                />
+                <Label htmlFor="fullPage" className="cursor-pointer">
+                  Display as full page when filling
+                </Label>
+              </div>
+            )}
             {repeatable && (
               <>
                 <div>

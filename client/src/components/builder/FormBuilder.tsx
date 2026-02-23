@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { Eye, Save, Send, Plus, X, Download } from 'lucide-react'
 import { formsApi, elementsApi, pagesApi } from '@/api/client'
-import type { ElementType, FormPage } from '@/api/types'
+import type { ElementType, FormElement, FormPage } from '@/api/types'
 import { useFormBuilderStore, createNewElement } from '@/stores/formBuilderStore'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -12,6 +12,15 @@ import { useToast } from '@/components/ui/use-toast'
 import ElementPalette from './ElementPalette'
 import Canvas from './Canvas'
 import ElementConfigPanel from './ElementConfigPanel'
+
+function collectAllIds(elements: FormElement[]): Set<string> {
+  const ids = new Set<string>()
+  for (const el of elements) {
+    ids.add(el.id)
+    if (el.children) for (const id of collectAllIds(el.children)) ids.add(id)
+  }
+  return ids
+}
 
 interface FormBuilderProps {
   formId: string
@@ -68,6 +77,15 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
 
   const saveElementsMutation = useMutation({
     mutationFn: async () => {
+      // Delete elements that were removed from the UI
+      const originalIds = collectAllIds(formData?.elements || [])
+      const currentIds = collectAllIds(elements)
+      const deletedIds = [...originalIds].filter(id => !currentIds.has(id))
+
+      for (const id of deletedIds) {
+        await elementsApi.delete(formId, id).catch(() => {}) // ignore 404 from cascade
+      }
+
       const reorderRequest = { elementIds: elements.map((e) => e.id) }
       await elementsApi.reorder(formId, reorderRequest)
 

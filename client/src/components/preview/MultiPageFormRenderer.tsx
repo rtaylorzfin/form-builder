@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useForm, useFieldArray, Control } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { ChevronLeft, ChevronRight, Plus, Trash2 } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus, Trash2, ArrowLeft, Check } from 'lucide-react'
 import type { FormElement, FormPage } from '@/api/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -374,6 +374,175 @@ function RepeatableFieldArray({
   )
 }
 
+function FullPageGroupView({
+  element,
+  register,
+  errors,
+  setValue,
+  watch,
+  control,
+  readOnly,
+  prefix,
+  instanceIndex,
+  onDone,
+}: {
+  element: FormElement
+  register: ReturnType<typeof useForm>['register']
+  errors: Record<string, unknown>
+  setValue: ReturnType<typeof useForm>['setValue']
+  watch: ReturnType<typeof useForm>['watch']
+  control: Control
+  readOnly?: boolean
+  prefix?: string
+  instanceIndex?: number
+  onDone: () => void
+}) {
+  const children = element.children || []
+  const isInstance = instanceIndex !== undefined
+  const fieldName = prefix ? `${prefix}.${element.fieldName}` : element.fieldName
+  const instancePrefix = isInstance ? `${fieldName}.${instanceIndex}` : undefined
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between border-b pb-4">
+        <h2 className="text-lg font-semibold">
+          {element.label}
+          {isInstance && <span className="text-gray-500 ml-2">- Instance {instanceIndex + 1}</span>}
+        </h2>
+        <Button type="button" variant="outline" onClick={onDone}>
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Done
+        </Button>
+      </div>
+      <div className="space-y-6">
+        {children.map((child) => {
+          if (child.type === 'ELEMENT_GROUP') {
+            if (child.configuration?.repeatable) {
+              return (
+                <RepeatableGroupField
+                  key={child.id}
+                  element={child}
+                  control={control}
+                  register={register}
+                  errors={errors}
+                  setValue={setValue}
+                  watch={watch}
+                  readOnly={readOnly}
+                  prefix={instancePrefix}
+                />
+              )
+            }
+            return (
+              <fieldset key={child.id} className="border rounded-lg p-4 space-y-4">
+                <legend className="font-medium px-2">{child.label}</legend>
+                {child.children?.map((nestedChild) => (
+                  <RenderElement
+                    key={nestedChild.id}
+                    element={nestedChild}
+                    register={register}
+                    errors={isInstance
+                      ? ((errors as Record<string, Record<string, Record<string, { message?: string }>>>)?.[fieldName]?.[instanceIndex] as Record<string, { message?: string }> || {})
+                      : (errors as Record<string, { message?: string }>)}
+                    setValue={setValue}
+                    watch={watch}
+                    readOnly={readOnly}
+                    prefix={instancePrefix}
+                  />
+                ))}
+              </fieldset>
+            )
+          }
+          return (
+            <RenderElement
+              key={child.id}
+              element={child}
+              register={register}
+              errors={isInstance
+                ? ((errors as Record<string, Record<string, Record<string, { message?: string }>>>)?.[fieldName]?.[instanceIndex] as Record<string, { message?: string }> || {})
+                : (errors as Record<string, { message?: string }>)}
+              setValue={setValue}
+              watch={watch}
+              readOnly={readOnly}
+              prefix={instancePrefix}
+            />
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+function FullPageRepeatableGroup({
+  element,
+  control,
+  readOnly,
+  prefix,
+  onOpenInstance,
+}: {
+  element: FormElement
+  control: Control
+  readOnly?: boolean
+  prefix?: string
+  onOpenInstance: (index: number) => void
+}) {
+  const fieldName = prefix ? `${prefix}.${element.fieldName}` : element.fieldName
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: fieldName,
+  })
+
+  const children = element.children || []
+  const config = element.configuration || {}
+  const minInstances = config.minInstances || 1
+  const maxInstances = config.maxInstances || 10
+
+  return (
+    <fieldset className="border rounded-lg p-4 space-y-4">
+      <legend className="font-medium px-2">{element.label}</legend>
+
+      {fields.map((field, index) => (
+        <div key={field.id} className="flex items-center justify-between border rounded-lg p-3 bg-gray-50">
+          <span className="text-sm font-medium">Instance {index + 1}</span>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => onOpenInstance(index)}
+            >
+              Fill {element.label}
+            </Button>
+            {!readOnly && fields.length > minInstances && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="text-red-500 hover:text-red-600"
+                onClick={() => remove(index)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+        </div>
+      ))}
+
+      {!readOnly && fields.length < maxInstances && (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => append(getDefaultValuesForGroup(children))}
+          className="w-full"
+        >
+          <Plus className="h-4 w-4 mr-1" />
+          Add {element.label}
+        </Button>
+      )}
+    </fieldset>
+  )
+}
+
 function renderPageElements(
   elements: FormElement[],
   register: ReturnType<typeof useForm>['register'],
@@ -382,9 +551,40 @@ function renderPageElements(
   watch: ReturnType<typeof useForm>['watch'],
   control: Control,
   readOnly?: boolean,
+  onOpenFullPageGroup?: (fieldName: string, instanceIndex?: number) => void,
 ) {
   return elements.map((element) => {
     if (element.type === 'ELEMENT_GROUP') {
+      // Full-page non-repeatable group: show button
+      if (element.configuration?.fullPage && !element.configuration?.repeatable && onOpenFullPageGroup) {
+        return (
+          <div key={element.id} className="border rounded-lg p-4">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full justify-between"
+              onClick={() => onOpenFullPageGroup(element.fieldName)}
+            >
+              <span>Fill {element.label}</span>
+              <Check className="h-4 w-4 text-gray-400" />
+            </Button>
+          </div>
+        )
+      }
+
+      // Full-page repeatable group: show instance list with buttons
+      if (element.configuration?.fullPage && element.configuration?.repeatable && onOpenFullPageGroup) {
+        return (
+          <FullPageRepeatableGroup
+            key={element.id}
+            element={element}
+            control={control}
+            readOnly={readOnly}
+            onOpenInstance={(index) => onOpenFullPageGroup(element.fieldName, index)}
+          />
+        )
+      }
+
       if (element.configuration?.repeatable) {
         return (
           <RepeatableGroupField
@@ -456,6 +656,10 @@ export default function MultiPageFormRenderer({
   defaultValues,
 }: MultiPageFormRendererProps) {
   const [currentPage, setCurrentPage] = useState(0)
+  const [activeFullPageGroup, setActiveFullPageGroup] = useState<{
+    fieldName: string
+    instanceIndex?: number
+  } | null>(null)
   const schema = buildFullSchema(pages)
 
   const {
@@ -481,6 +685,31 @@ export default function MultiPageFormRenderer({
 
   const handlePrevious = () => {
     setCurrentPage((prev) => Math.max(prev - 1, 0))
+  }
+
+  // Find active full-page group element across all pages
+  const activeElement = activeFullPageGroup
+    ? pages.flatMap((p) => p.elements).find((el) => el.fieldName === activeFullPageGroup.fieldName)
+    : null
+
+  if (activeElement && activeFullPageGroup) {
+    return (
+      <div className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <FullPageGroupView
+            element={activeElement}
+            register={register}
+            errors={errors}
+            setValue={setValue}
+            watch={watch}
+            control={control}
+            readOnly={readOnly}
+            instanceIndex={activeFullPageGroup.instanceIndex}
+            onDone={() => setActiveFullPageGroup(null)}
+          />
+        </form>
+      </div>
+    )
   }
 
   return (
@@ -509,7 +738,10 @@ export default function MultiPageFormRenderer({
 
       {/* Page elements */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {renderPageElements(page.elements, register, errors, setValue, watch, control, readOnly)}
+        {renderPageElements(
+          page.elements, register, errors, setValue, watch, control, readOnly,
+          (fieldName, instanceIndex) => setActiveFullPageGroup({ fieldName, instanceIndex }),
+        )}
 
         {/* Navigation */}
         {!readOnly && (
