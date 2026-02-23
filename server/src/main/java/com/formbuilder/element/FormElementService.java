@@ -160,8 +160,8 @@ public class FormElementService {
     private void validateRepeatableConfig(ElementType type, ElementConfiguration config) {
         if (config == null) return;
         if (Boolean.TRUE.equals(config.getRepeatable())) {
-            if (config.getMinInstances() != null && config.getMinInstances() < 1) {
-                throw new ValidationException("minInstances must be at least 1");
+            if (config.getMinInstances() != null && config.getMinInstances() < 0) {
+                throw new ValidationException("minInstances must be at least 0");
             }
             if (config.getMaxInstances() != null && config.getMinInstances() != null
                     && config.getMaxInstances() < config.getMinInstances()) {

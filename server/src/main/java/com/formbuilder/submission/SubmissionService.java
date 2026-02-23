@@ -210,7 +210,7 @@ public class SubmissionService {
     private void validateRepeatableField(FormElement element, Map<String, Object> data, List<String> errors) {
         Object value = data.get(element.getFieldName());
         ElementConfiguration config = element.getConfiguration();
-        int minInstances = config.getMinInstances() != null ? config.getMinInstances() : 1;
+        int minInstances = config.getMinInstances() != null ? config.getMinInstances() : 0;
         int maxInstances = config.getMaxInstances() != null ? config.getMaxInstances() : Integer.MAX_VALUE;
 
         if (!(value instanceof List)) {
@@ -240,7 +240,7 @@ public class SubmissionService {
     private void validateRepeatableGroup(FormElement group, Map<String, Object> data, List<String> errors, String pathPrefix) {
         Object value = data.get(group.getFieldName());
         ElementConfiguration config = group.getConfiguration();
-        int minInstances = config.getMinInstances() != null ? config.getMinInstances() : 1;
+        int minInstances = config.getMinInstances() != null ? config.getMinInstances() : 0;
         int maxInstances = config.getMaxInstances() != null ? config.getMaxInstances() : Integer.MAX_VALUE;
         String groupLabel = pathPrefix + group.getLabel();
 

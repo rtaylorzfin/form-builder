@@ -368,7 +368,7 @@ function RepeatableGroupField({
 
   const children = element.children || []
   const config = element.configuration || {}
-  const minInstances = config.minInstances || 1
+  const minInstances = config.minInstances ?? 0
   const maxInstances = config.maxInstances || 10
 
   return (
@@ -481,7 +481,7 @@ function RepeatableFieldArray({
   readOnly?: boolean
 }) {
   const config = element.configuration || {}
-  const minInstances = config.minInstances || 1
+  const minInstances = config.minInstances ?? 0
   const maxInstances = config.maxInstances || 10
   const values: unknown[] = watch(element.fieldName) || []
 
@@ -573,6 +573,32 @@ function FullPageGroupView({
   const fieldName = prefix ? `${prefix}.${element.fieldName}` : element.fieldName
   const instancePrefix = isInstance ? `${fieldName}.${instanceIndex}` : undefined
 
+  const [activeNestedGroup, setActiveNestedGroup] = useState<{
+    fieldName: string
+    instanceIndex?: number
+  } | null>(null)
+
+  // If a nested full-page group is active, render it recursively
+  if (activeNestedGroup) {
+    const nestedElement = children.find((c) => c.fieldName === activeNestedGroup.fieldName)
+    if (nestedElement) {
+      return (
+        <FullPageGroupView
+          element={nestedElement}
+          register={register}
+          errors={errors}
+          setValue={setValue}
+          watch={watch}
+          control={control}
+          readOnly={readOnly}
+          prefix={instancePrefix}
+          instanceIndex={activeNestedGroup.instanceIndex}
+          onDone={() => setActiveNestedGroup(null)}
+        />
+      )
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between border-b pb-4">
@@ -588,6 +614,38 @@ function FullPageGroupView({
       <div className="space-y-6">
         {children.map((child) => {
           if (child.type === 'ELEMENT_GROUP') {
+            // Nested full-page non-repeatable group
+            if (child.configuration?.fullPage && !child.configuration?.repeatable) {
+              return (
+                <div key={child.id} className="border rounded-lg p-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full justify-between"
+                    onClick={() => setActiveNestedGroup({ fieldName: child.fieldName })}
+                  >
+                    <span>Fill {child.label}</span>
+                    <Check className="h-4 w-4 text-gray-400" />
+                  </Button>
+                </div>
+              )
+            }
+            // Nested full-page repeatable group
+            if (child.configuration?.fullPage && child.configuration?.repeatable) {
+              return (
+                <FullPageRepeatableGroup
+                  key={child.id}
+                  element={child}
+                  control={control}
+                  watch={watch}
+                  readOnly={readOnly}
+                  prefix={instancePrefix}
+                  onOpenInstance={(index) =>
+                    setActiveNestedGroup({ fieldName: child.fieldName, instanceIndex: index })
+                  }
+                />
+              )
+            }
             if (child.configuration?.repeatable) {
               return (
                 <RepeatableGroupField
@@ -643,15 +701,36 @@ function FullPageGroupView({
   )
 }
 
+function getInstanceSummary(
+  children: FormElement[],
+  instanceData: Record<string, unknown> | undefined,
+  index: number,
+): string {
+  if (!instanceData) return `Instance ${index + 1}`
+  const parts: string[] = []
+  for (const child of children) {
+    if (child.type === 'ELEMENT_GROUP' || child.type === 'STATIC_TEXT') continue
+    const val = instanceData[child.fieldName]
+    if (val !== undefined && val !== null && val !== '' && val !== false) {
+      const strVal = String(val)
+      const truncated = strVal.length > 20 ? strVal.slice(0, 20) + '...' : strVal
+      parts.push(`${child.label}: ${truncated}`)
+    }
+  }
+  return parts.length > 0 ? parts.join(', ') : `Instance ${index + 1}`
+}
+
 function FullPageRepeatableGroup({
   element,
   control,
+  watch,
   readOnly,
   prefix,
   onOpenInstance,
 }: {
   element: FormElement
   control: Control
+  watch: ReturnType<typeof useForm>['watch']
   readOnly?: boolean
   prefix?: string
   onOpenInstance: (index: number) => void
@@ -664,39 +743,43 @@ function FullPageRepeatableGroup({
 
   const children = element.children || []
   const config = element.configuration || {}
-  const minInstances = config.minInstances || 1
+  const minInstances = config.minInstances ?? 0
   const maxInstances = config.maxInstances || 10
 
   return (
     <fieldset className="border rounded-lg p-4 space-y-4">
       <legend className="font-medium px-2">{element.label}</legend>
 
-      {fields.map((field, index) => (
-        <div key={field.id} className="flex items-center justify-between border rounded-lg p-3 bg-gray-50">
-          <span className="text-sm font-medium">Instance {index + 1}</span>
-          <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => onOpenInstance(index)}
-            >
-              Fill {element.label}
-            </Button>
-            {!readOnly && fields.length > minInstances && (
+      {fields.map((field, index) => {
+        const instanceData = watch(`${fieldName}.${index}`) as Record<string, unknown> | undefined
+        const summary = getInstanceSummary(children, instanceData, index)
+        return (
+          <div key={field.id} className="flex items-center justify-between border rounded-lg p-3 bg-gray-50">
+            <span className="text-sm font-medium truncate mr-2" title={summary}>{summary}</span>
+            <div className="flex items-center gap-2 shrink-0">
               <Button
                 type="button"
-                variant="ghost"
+                variant="outline"
                 size="sm"
-                className="text-red-500 hover:text-red-600"
-                onClick={() => remove(index)}
+                onClick={() => onOpenInstance(index)}
               >
-                <Trash2 className="h-4 w-4" />
+                Fill {element.label}
               </Button>
-            )}
+              {!readOnly && fields.length > minInstances && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="text-red-500 hover:text-red-600"
+                  onClick={() => remove(index)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
           </div>
-        </div>
-      ))}
+        )
+      })}
 
       {!readOnly && fields.length < maxInstances && (
         <Button
@@ -728,11 +811,11 @@ export default function FormRenderer({
   const builtDefaults: Record<string, unknown> = { ...defaultValues }
   for (const element of form.elements) {
     if (element.type === 'ELEMENT_GROUP' && element.configuration?.repeatable && !builtDefaults[element.fieldName]) {
-      const minInstances = element.configuration.minInstances || 1
+      const minInstances = element.configuration.minInstances ?? 0
       const childDefaults = getDefaultValuesForGroup(element.children || [])
       builtDefaults[element.fieldName] = Array.from({ length: minInstances }, () => ({ ...childDefaults }))
     } else if (element.type !== 'ELEMENT_GROUP' && element.configuration?.repeatable && !builtDefaults[element.fieldName]) {
-      const minInstances = element.configuration.minInstances || 1
+      const minInstances = element.configuration.minInstances ?? 0
       builtDefaults[element.fieldName] = Array.from({ length: minInstances }, () => '')
     }
   }
@@ -805,6 +888,7 @@ export default function FormRenderer({
                 key={element.id}
                 element={element}
                 control={control}
+                watch={watch}
                 readOnly={readOnly}
                 onOpenInstance={(index) =>
                   setActiveFullPageGroup({ fieldName: element.fieldName, instanceIndex: index })

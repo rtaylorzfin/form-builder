@@ -33,7 +33,7 @@ export default function ElementConfigPanel() {
   const [content, setContent] = useState('')
   const [repeatable, setRepeatable] = useState(false)
   const [fullPage, setFullPage] = useState(false)
-  const [minInstances, setMinInstances] = useState(1)
+  const [minInstances, setMinInstances] = useState(0)
   const [maxInstances, setMaxInstances] = useState(5)
 
   useEffect(() => {
@@ -46,7 +46,7 @@ export default function ElementConfigPanel() {
       setContent(selectedElement.configuration?.content || '')
       setRepeatable(selectedElement.configuration?.repeatable || false)
       setFullPage(selectedElement.configuration?.fullPage || false)
-      setMinInstances(selectedElement.configuration?.minInstances || 1)
+      setMinInstances(selectedElement.configuration?.minInstances ?? 0)
       setMaxInstances(selectedElement.configuration?.maxInstances || 5)
     }
   }, [selectedElement])
@@ -255,9 +255,9 @@ export default function ElementConfigPanel() {
                   <Input
                     id="minInstances"
                     type="number"
-                    min={1}
+                    min={0}
                     value={minInstances}
-                    onChange={(e) => handleMinInstancesChange(parseInt(e.target.value) || 1)}
+                    onChange={(e) => handleMinInstancesChange(parseInt(e.target.value) ?? 0)}
                     className="mt-1"
                   />
                 </div>
