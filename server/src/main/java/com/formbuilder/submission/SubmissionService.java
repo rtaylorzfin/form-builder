@@ -179,6 +179,10 @@ public class SubmissionService {
         List<String> errors = new ArrayList<>();
 
         for (FormElement element : form.getElements()) {
+            // Skip child elements — they are validated via their parent group
+            if (element.getParentElement() != null) {
+                continue;
+            }
             if (element.getType() == ElementType.STATIC_TEXT) {
                 continue;
             }
