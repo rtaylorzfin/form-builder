@@ -177,6 +177,43 @@ The frontend starts on **http://localhost:5173** and proxies API requests to the
 11. **Share** the public form link: `http://localhost:5173/f/{formId}`
 12. **View submissions** from the form dashboard (admin only)
 
+## Restarting & Network Access
+
+To expose the application to other PCs on the local network (not just localhost):
+
+### Restart the backend (public interface)
+
+```bash
+# Kill the existing backend process
+kill $(lsof -t -i:8080) 2>/dev/null
+
+# Start on all interfaces (0.0.0.0 instead of localhost)
+cd server
+mvn spring-boot:run -Dspring-boot.run.arguments="--server.address=0.0.0.0"
+```
+
+### Restart the frontend (public interface)
+
+```bash
+# Kill the existing frontend process
+kill $(lsof -t -i:5173) 2>/dev/null
+
+# Start on all interfaces
+cd client
+npx vite --host 0.0.0.0
+```
+
+### Access from other PCs
+
+Find this machine's IP address:
+```bash
+hostname -I | awk '{print $1}'
+```
+
+Other PCs on the network can then open `http://<your-ip>:5173` in their browser.
+
+> **Note:** The Vite dev server proxies `/api` requests to `localhost:8080`, so the backend must also be running. The backend's CORS config allows origins `localhost:5173` and `localhost:3000` by default — for LAN access you may need to add your IP to `CorsConfig.java`, or access everything through the Vite proxy (port 5173) which avoids CORS entirely.
+
 ## Running with Production Profile
 
 ```bash
