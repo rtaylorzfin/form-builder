@@ -59,6 +59,14 @@ function buildFieldSchema(element: FormElement): z.ZodTypeAny {
       }
       break
 
+    case 'CHECKBOX_GROUP':
+      if (element.configuration?.required) {
+        fieldSchema = z.array(z.string()).min(1, `${element.label} is required`)
+      } else {
+        fieldSchema = z.array(z.string()).optional().default([])
+      }
+      break
+
     default:
       if (element.configuration?.required) {
         fieldSchema = z
@@ -166,6 +174,8 @@ function getDefaultValuesForGroup(children: FormElement[]): Record<string, unkno
     }
     if (child.type === 'CHECKBOX') {
       defaults[child.fieldName] = false
+    } else if (child.type === 'CHECKBOX_GROUP') {
+      defaults[child.fieldName] = []
     } else {
       defaults[child.fieldName] = ''
     }
@@ -312,6 +322,36 @@ function RenderElement({
         </Select>
       )
       break
+
+    case 'CHECKBOX_GROUP': {
+      const currentValues: string[] = watch(fieldPath) || []
+      input = (
+        <div className="space-y-2">
+          {config.options?.map((option) => {
+            const isChecked = currentValues.includes(option.value)
+            return (
+              <div key={option.value} className="flex items-center gap-2">
+                <Checkbox
+                  id={`${fieldPath}-${option.value}`}
+                  checked={isChecked}
+                  onCheckedChange={(checked) => {
+                    const newValues = checked
+                      ? [...currentValues, option.value]
+                      : currentValues.filter((v) => v !== option.value)
+                    setValue(fieldPath, newValues, { shouldValidate: true })
+                  }}
+                  disabled={readOnly}
+                />
+                <Label htmlFor={`${fieldPath}-${option.value}`} className="cursor-pointer">
+                  {option.label}
+                </Label>
+              </div>
+            )
+          })}
+        </div>
+      )
+      break
+    }
 
     case 'STATIC_TEXT':
       return (
@@ -817,6 +857,8 @@ export default function FormRenderer({
     } else if (element.type !== 'ELEMENT_GROUP' && element.configuration?.repeatable && !builtDefaults[element.fieldName]) {
       const minInstances = element.configuration.minInstances ?? 0
       builtDefaults[element.fieldName] = Array.from({ length: minInstances }, () => '')
+    } else if (element.type === 'CHECKBOX_GROUP' && !builtDefaults[element.fieldName]) {
+      builtDefaults[element.fieldName] = []
     }
   }
 

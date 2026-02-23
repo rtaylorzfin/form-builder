@@ -9,6 +9,7 @@ public enum ElementType {
     CHECKBOX,
     RADIO_GROUP,
     SELECT,
+    CHECKBOX_GROUP,
     ELEMENT_GROUP,
     STATIC_TEXT
 }

@@ -233,6 +233,7 @@ export function createNewElement(type: ElementType, sortOrder: number): Omit<For
     CHECKBOX: {},
     RADIO_GROUP: { options: [{ label: 'Option 1', value: 'option1' }, { label: 'Option 2', value: 'option2' }] },
     SELECT: { options: [{ label: 'Option 1', value: 'option1' }, { label: 'Option 2', value: 'option2' }] },
+    CHECKBOX_GROUP: { options: [{ label: 'Option 1', value: 'option1' }, { label: 'Option 2', value: 'option2' }] },
     ELEMENT_GROUP: {},
     STATIC_TEXT: { content: '<p>Enter your text here</p>' },
   }
@@ -246,6 +247,7 @@ export function createNewElement(type: ElementType, sortOrder: number): Omit<For
     CHECKBOX: 'Checkbox',
     RADIO_GROUP: 'Radio Group',
     SELECT: 'Select',
+    CHECKBOX_GROUP: 'Checkbox Group',
     ELEMENT_GROUP: 'Group',
     STATIC_TEXT: 'Static Text',
   }

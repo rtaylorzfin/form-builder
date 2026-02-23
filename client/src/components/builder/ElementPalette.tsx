@@ -7,6 +7,7 @@ import {
   CheckSquare,
   Circle,
   ChevronDown,
+  ListChecks,
   Layers,
   FileText,
 } from 'lucide-react'
@@ -27,6 +28,7 @@ const elementTypes: ElementTypeConfig[] = [
   { type: 'CHECKBOX', label: 'Checkbox', icon: <CheckSquare className="h-4 w-4" /> },
   { type: 'RADIO_GROUP', label: 'Radio Group', icon: <Circle className="h-4 w-4" /> },
   { type: 'SELECT', label: 'Select', icon: <ChevronDown className="h-4 w-4" /> },
+  { type: 'CHECKBOX_GROUP', label: 'Checkbox Group', icon: <ListChecks className="h-4 w-4" /> },
   { type: 'ELEMENT_GROUP', label: 'Group', icon: <Layers className="h-4 w-4" /> },
   { type: 'STATIC_TEXT', label: 'Static Text', icon: <FileText className="h-4 w-4" /> },
 ]

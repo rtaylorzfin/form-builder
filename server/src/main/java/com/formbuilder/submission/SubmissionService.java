@@ -191,6 +191,11 @@ public class SubmissionService {
                 continue;
             }
 
+            if (element.getType() == ElementType.CHECKBOX_GROUP) {
+                validateCheckboxGroup(element, data.get(element.getFieldName()), errors);
+                continue;
+            }
+
             // Non-group repeatable elements: expect array of primitive values
             ElementConfiguration elConfig = element.getConfiguration();
             if (elConfig != null && Boolean.TRUE.equals(elConfig.getRepeatable())) {
@@ -269,6 +274,8 @@ public class SubmissionService {
             for (FormElement child : children) {
                 if (child.getType() == ElementType.ELEMENT_GROUP) {
                     validateGroupElement(child, instanceData, errors, instancePrefix);
+                } else if (child.getType() == ElementType.CHECKBOX_GROUP) {
+                    validateCheckboxGroup(child, instanceData.get(child.getFieldName()), errors);
                 } else {
                     validateField(child, instanceData.get(child.getFieldName()), errors, instancePrefix);
                 }
@@ -287,8 +294,44 @@ public class SubmissionService {
             for (FormElement child : children) {
                 if (child.getType() == ElementType.ELEMENT_GROUP) {
                     validateGroupElement(child, data, errors, pathPrefix);
+                } else if (child.getType() == ElementType.CHECKBOX_GROUP) {
+                    validateCheckboxGroup(child, data.get(child.getFieldName()), errors);
                 } else {
                     validateField(child, data.get(child.getFieldName()), errors, pathPrefix);
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void validateCheckboxGroup(FormElement element, Object value, List<String> errors) {
+        ElementConfiguration config = element.getConfiguration();
+        String label = element.getLabel();
+
+        if (value == null) {
+            if (config != null && Boolean.TRUE.equals(config.getRequired())) {
+                errors.add(label + " is required");
+            }
+            return;
+        }
+
+        if (!(value instanceof List)) {
+            errors.add(label + " must be an array");
+            return;
+        }
+
+        List<Object> values = (List<Object>) value;
+        if (config != null && Boolean.TRUE.equals(config.getRequired()) && values.isEmpty()) {
+            errors.add(label + " is required");
+        }
+
+        if (config != null && config.getOptions() != null) {
+            Set<String> validValues = config.getOptions().stream()
+                    .map(ElementConfiguration.Option::getValue)
+                    .collect(Collectors.toSet());
+            for (Object v : values) {
+                if (v instanceof String strVal && !validValues.contains(strVal)) {
+                    errors.add(label + " contains invalid option: " + strVal);
                 }
             }
         }

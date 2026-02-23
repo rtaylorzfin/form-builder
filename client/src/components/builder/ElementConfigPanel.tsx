@@ -61,7 +61,7 @@ export default function ElementConfigPanel() {
 
   const isGroup = selectedElement.type === 'ELEMENT_GROUP'
   const isStaticText = selectedElement.type === 'STATIC_TEXT'
-  const hasOptions = ['RADIO_GROUP', 'SELECT'].includes(selectedElement.type)
+  const hasOptions = ['RADIO_GROUP', 'SELECT', 'CHECKBOX_GROUP'].includes(selectedElement.type)
 
   const handleUpdate = (updates: Partial<{ label: string; fieldName: string; configuration: ElementConfiguration }>) => {
     updateElement(selectedElement.id, updates)

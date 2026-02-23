@@ -41,6 +41,10 @@ function buildFieldSchema(element: FormElement): z.ZodTypeAny {
       return element.configuration?.required
         ? z.string({ required_error: `${element.label} is required` }).min(1, `${element.label} is required`).email('Please enter a valid email address')
         : z.string().email('Please enter a valid email address').optional().or(z.literal(''))
+    case 'CHECKBOX_GROUP':
+      return element.configuration?.required
+        ? z.array(z.string()).min(1, `${element.label} is required`)
+        : z.array(z.string()).optional().default([])
     default:
       return element.configuration?.required
         ? z.string({ required_error: `${element.label} is required` }).min(1, `${element.label} is required`)
@@ -197,6 +201,33 @@ function RenderElement({
         </Select>
       )
       break
+    case 'CHECKBOX_GROUP': {
+      const currentValues: string[] = watch(fieldPath) || []
+      input = (
+        <div className="space-y-2">
+          {config.options?.map((option) => {
+            const isChecked = currentValues.includes(option.value)
+            return (
+              <div key={option.value} className="flex items-center gap-2">
+                <Checkbox
+                  id={`${fieldPath}-${option.value}`}
+                  checked={isChecked}
+                  onCheckedChange={(checked) => {
+                    const newValues = checked
+                      ? [...currentValues, option.value]
+                      : currentValues.filter((v) => v !== option.value)
+                    setValue(fieldPath, newValues, { shouldValidate: true })
+                  }}
+                  disabled={readOnly}
+                />
+                <Label htmlFor={`${fieldPath}-${option.value}`} className="cursor-pointer">{option.label}</Label>
+              </div>
+            )
+          })}
+        </div>
+      )
+      break
+    }
     case 'STATIC_TEXT':
       return (
         <div
@@ -231,7 +262,13 @@ function getDefaultValuesForGroup(children: FormElement[]): Record<string, unkno
       }
       continue
     }
-    defaults[child.fieldName] = child.type === 'CHECKBOX' ? false : ''
+    if (child.type === 'CHECKBOX') {
+      defaults[child.fieldName] = false
+    } else if (child.type === 'CHECKBOX_GROUP') {
+      defaults[child.fieldName] = []
+    } else {
+      defaults[child.fieldName] = ''
+    }
   }
   return defaults
 }
@@ -779,7 +816,7 @@ export default function MultiPageFormRenderer({
   if (activeElement && activeFullPageGroup) {
     return (
       <div className="space-y-6">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
           <FullPageGroupView
             element={activeElement}
             register={register}
@@ -821,7 +858,7 @@ export default function MultiPageFormRenderer({
       )}
 
       {/* Page elements */}
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
         {renderPageElements(
           page.elements, register, errors, setValue, watch, control, readOnly,
           (fieldName, instanceIndex) => setActiveFullPageGroup({ fieldName, instanceIndex }),
@@ -841,7 +878,7 @@ export default function MultiPageFormRenderer({
             </Button>
 
             {isLastPage ? (
-              <Button type="submit" disabled={isSubmitting}>
+              <Button type="button" disabled={isSubmitting} onClick={handleSubmit(onSubmit)}>
                 {isSubmitting ? 'Submitting...' : 'Submit'}
               </Button>
             ) : (
