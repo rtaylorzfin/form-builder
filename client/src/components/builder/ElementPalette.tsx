@@ -47,7 +47,7 @@ export default function ElementPalette({ onAddElement, targetGroupLabel }: Eleme
       )}
       <div className="space-y-2">
         {elementTypes.map((element) => {
-          const disabled = targetGroupLabel && element.type === 'ELEMENT_GROUP'
+          const disabled = false
           return (
             <button
               key={element.type}

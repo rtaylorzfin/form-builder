@@ -6,10 +6,11 @@ import com.formbuilder.form.FormDTO;
 import com.formbuilder.element.FormElementDTO;
 import com.formbuilder.element.ElementConfiguration;
 import com.formbuilder.auth.AuthDTO;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -19,6 +20,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Import(TestFlywayConfig.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class FormBuilderApplicationTests {
 
     @Autowired
@@ -27,8 +31,12 @@ class FormBuilderApplicationTests {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Test
-    void contextLoads() {
+    private String adminToken;
+
+    @BeforeAll
+    void setup() throws Exception {
+        // First registered user becomes ADMIN
+        adminToken = registerAndGetToken("admin@example.com");
     }
 
     private String registerAndGetToken(String email) throws Exception {
@@ -50,16 +58,20 @@ class FormBuilderApplicationTests {
     }
 
     @Test
-    void createFormAndElements() throws Exception {
-        String token = registerAndGetToken("test-create@example.com");
+    @Order(1)
+    void contextLoads() {
+    }
 
-        // Create a form
+    @Test
+    @Order(2)
+    void createFormAndElements() throws Exception {
+        // Create a form (as ADMIN)
         FormDTO.CreateRequest createRequest = new FormDTO.CreateRequest();
         createRequest.setName("Test Contact Form");
         createRequest.setDescription("A test form for collecting contact information");
 
         MvcResult createResult = mockMvc.perform(post("/api/forms")
-                .header("Authorization", "Bearer " + token)
+                .header("Authorization", "Bearer " + adminToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createRequest)))
                 .andExpect(status().isCreated())
@@ -86,7 +98,7 @@ class FormBuilderApplicationTests {
         textElement.setConfiguration(config);
 
         mockMvc.perform(post("/api/forms/{formId}/elements", formId)
-                .header("Authorization", "Bearer " + token)
+                .header("Authorization", "Bearer " + adminToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(textElement)))
                 .andExpect(status().isCreated())
@@ -103,7 +115,7 @@ class FormBuilderApplicationTests {
         emailElement.setConfiguration(emailConfig);
 
         mockMvc.perform(post("/api/forms/{formId}/elements", formId)
-                .header("Authorization", "Bearer " + token)
+                .header("Authorization", "Bearer " + adminToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(emailElement)))
                 .andExpect(status().isCreated())
@@ -111,13 +123,13 @@ class FormBuilderApplicationTests {
 
         // Get the form with elements
         mockMvc.perform(get("/api/forms/{id}", formId)
-                .header("Authorization", "Bearer " + token))
+                .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.elements.length()").value(2));
 
         // Publish the form
         mockMvc.perform(post("/api/forms/{id}/publish", formId)
-                .header("Authorization", "Bearer " + token))
+                .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("PUBLISHED"));
 
@@ -128,43 +140,59 @@ class FormBuilderApplicationTests {
 
         // Clean up
         mockMvc.perform(delete("/api/forms/{id}", formId)
-                .header("Authorization", "Bearer " + token))
+                .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isNoContent());
     }
 
     @Test
+    @Order(3)
     void formValidation() throws Exception {
-        String token = registerAndGetToken("test-validate@example.com");
-
-        // Try to create form without name
+        // Try to create form without name (as ADMIN - tests validation, not auth)
         FormDTO.CreateRequest invalidRequest = new FormDTO.CreateRequest();
         invalidRequest.setName("");
 
         mockMvc.perform(post("/api/forms")
-                .header("Authorization", "Bearer " + token)
+                .header("Authorization", "Bearer " + adminToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
+    @Order(4)
     void formNotFound() throws Exception {
-        String token = registerAndGetToken("test-notfound@example.com");
-
         mockMvc.perform(get("/api/forms/00000000-0000-0000-0000-000000000000")
-                .header("Authorization", "Bearer " + token))
+                .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isNotFound());
     }
 
     @Test
+    @Order(5)
     void unauthenticatedAccessDenied() throws Exception {
         mockMvc.perform(get("/api/forms"))
                 .andExpect(status().isForbidden());
     }
 
     @Test
+    @Order(6)
     void publicEndpointsAccessible() throws Exception {
         mockMvc.perform(get("/api/public/forms/00000000-0000-0000-0000-000000000000"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Order(7)
+    void userCannotCreateForm() throws Exception {
+        // Register a second user (becomes USER, not ADMIN)
+        String userToken = registerAndGetToken("user@example.com");
+
+        FormDTO.CreateRequest request = new FormDTO.CreateRequest();
+        request.setName("Should Fail");
+
+        mockMvc.perform(post("/api/forms")
+                .header("Authorization", "Bearer " + userToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden());
     }
 }

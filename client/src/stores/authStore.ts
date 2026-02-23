@@ -15,6 +15,7 @@ interface AuthState {
   setAuth: (token: string, user: UserResponse) => void
   logout: () => void
   isAuthenticated: () => boolean
+  isAdmin: () => boolean
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -28,6 +29,8 @@ export const useAuthStore = create<AuthState>()(
       logout: () => set({ token: null, user: null }),
 
       isAuthenticated: () => !!get().token,
+
+      isAdmin: () => get().user?.role === 'ADMIN',
     }),
     {
       name: 'auth-storage',

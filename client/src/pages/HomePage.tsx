@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Plus } from 'lucide-react'
 import { formsApi } from '@/api/client'
+import { useAuthStore } from '@/stores/authStore'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -23,6 +24,7 @@ export default function HomePage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { toast } = useToast()
+  const { isAdmin } = useAuthStore()
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
@@ -53,10 +55,12 @@ export default function HomePage() {
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold">My Forms</h1>
-          <p className="text-gray-500 mt-1">Create and manage your forms</p>
+          <h1 className="text-3xl font-bold">{isAdmin() ? 'My Forms' : 'Available Forms'}</h1>
+          <p className="text-gray-500 mt-1">
+            {isAdmin() ? 'Create and manage your forms' : 'Fill out published forms'}
+          </p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        {isAdmin() && <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="h-4 w-4 mr-2" />
@@ -101,7 +105,7 @@ export default function HomePage() {
               </Button>
             </DialogFooter>
           </DialogContent>
-        </Dialog>
+        </Dialog>}
       </div>
 
       <FormList />

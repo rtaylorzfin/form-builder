@@ -71,22 +71,21 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
       const reorderRequest = { elementIds: elements.map((e) => e.id) }
       await elementsApi.reorder(formId, reorderRequest)
 
-      for (const element of elements) {
-        await elementsApi.update(formId, element.id, {
-          label: element.label,
-          fieldName: element.fieldName,
-          configuration: element.configuration,
+      const saveElementRecursive = async (el: typeof elements[0]) => {
+        await elementsApi.update(formId, el.id, {
+          label: el.label,
+          fieldName: el.fieldName,
+          configuration: el.configuration,
         })
-        // Also save child elements (e.g. inside groups)
-        if (element.children) {
-          for (const child of element.children) {
-            await elementsApi.update(formId, child.id, {
-              label: child.label,
-              fieldName: child.fieldName,
-              configuration: child.configuration,
-            })
+        if (el.children) {
+          for (const child of el.children) {
+            await saveElementRecursive(child)
           }
         }
+      }
+
+      for (const element of elements) {
+        await saveElementRecursive(element)
       }
     },
     onSuccess: () => {
@@ -140,7 +139,7 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
 
   const handleAddElement = (type: ElementType) => {
     const selectedElement = getSelectedElement()
-    const isAddingToGroup = selectedElement?.type === 'ELEMENT_GROUP' && type !== 'ELEMENT_GROUP'
+    const isAddingToGroup = selectedElement?.type === 'ELEMENT_GROUP'
 
     const sortOrder = isAddingToGroup
       ? (selectedElement.children?.length ?? 0)

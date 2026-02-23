@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -47,6 +48,7 @@ public class SubmissionController {
 
     @GetMapping("/export")
     @Operation(summary = "Export submissions as CSV")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> exportSubmissions(@PathVariable UUID formId) {
         String csv = submissionService.exportSubmissionsCsv(formId);
         return ResponseEntity.ok()

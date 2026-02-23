@@ -3,6 +3,9 @@ package com.formbuilder.submission;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.formbuilder.auth.AuthService;
+import com.formbuilder.auth.User;
+import com.formbuilder.auth.UserRole;
 import com.formbuilder.element.ElementConfiguration;
 import com.formbuilder.element.ElementType;
 import com.formbuilder.element.FormElement;
@@ -27,13 +30,24 @@ public class SubmissionService {
     private final SubmissionRepository submissionRepository;
     private final FormRepository formRepository;
     private final ObjectMapper objectMapper;
+    private final AuthService authService;
 
     @Transactional(readOnly = true)
     public SubmissionDTO.PageResponse getSubmissions(UUID formId, int page, int size) {
         validateFormExists(formId);
 
-        Page<Submission> submissionPage = submissionRepository.findByFormIdOrderBySubmittedAtDesc(
-                formId, PageRequest.of(page, size));
+        User user = authService.getAuthenticatedUser();
+        Page<Submission> submissionPage;
+        if (user != null && user.getRole() == UserRole.ADMIN) {
+            submissionPage = submissionRepository.findByFormIdOrderBySubmittedAtDesc(
+                    formId, PageRequest.of(page, size));
+        } else if (user != null) {
+            submissionPage = submissionRepository.findByFormIdAndUserIdOrderBySubmittedAtDesc(
+                    formId, user.getId(), PageRequest.of(page, size));
+        } else {
+            submissionPage = submissionRepository.findByFormIdOrderBySubmittedAtDesc(
+                    formId, PageRequest.of(page, size));
+        }
 
         List<SubmissionDTO.Response> submissions = submissionPage.getContent().stream()
                 .map(this::toResponse)
@@ -86,6 +100,7 @@ public class SubmissionService {
                 .status(status)
                 .ipAddress(ipAddress)
                 .userAgent(userAgent)
+                .user(authService.getAuthenticatedUser())
                 .build();
 
         Submission saved = submissionRepository.save(submission);
@@ -168,17 +183,7 @@ public class SubmissionService {
                 continue;
             }
             if (element.getType() == ElementType.ELEMENT_GROUP) {
-                ElementConfiguration groupConfig = element.getConfiguration();
-                if (groupConfig != null && Boolean.TRUE.equals(groupConfig.getRepeatable())) {
-                    validateRepeatableGroup(element, data, errors);
-                } else {
-                    // Non-repeatable group: validate children as flat fields
-                    if (element.getChildren() != null) {
-                        for (FormElement child : element.getChildren()) {
-                            validateField(child, data.get(child.getFieldName()), errors);
-                        }
-                    }
-                }
+                validateGroupElement(element, data, errors, "");
                 continue;
             }
 
@@ -224,34 +229,63 @@ public class SubmissionService {
 
     @SuppressWarnings("unchecked")
     private void validateRepeatableGroup(FormElement group, Map<String, Object> data, List<String> errors) {
+        validateRepeatableGroup(group, data, errors, "");
+    }
+
+    @SuppressWarnings("unchecked")
+    private void validateRepeatableGroup(FormElement group, Map<String, Object> data, List<String> errors, String pathPrefix) {
         Object value = data.get(group.getFieldName());
         ElementConfiguration config = group.getConfiguration();
         int minInstances = config.getMinInstances() != null ? config.getMinInstances() : 1;
         int maxInstances = config.getMaxInstances() != null ? config.getMaxInstances() : Integer.MAX_VALUE;
+        String groupLabel = pathPrefix + group.getLabel();
 
         if (!(value instanceof List)) {
-            errors.add(group.getLabel() + " must be an array");
+            errors.add(groupLabel + " must be an array");
             return;
         }
 
         List<Object> instances = (List<Object>) value;
         if (instances.size() < minInstances) {
-            errors.add(group.getLabel() + " requires at least " + minInstances + " instance(s)");
+            errors.add(groupLabel + " requires at least " + minInstances + " instance(s)");
         }
         if (instances.size() > maxInstances) {
-            errors.add(group.getLabel() + " allows at most " + maxInstances + " instance(s)");
+            errors.add(groupLabel + " allows at most " + maxInstances + " instance(s)");
         }
 
         List<FormElement> children = group.getChildren() != null ? group.getChildren() : List.of();
         for (int i = 0; i < instances.size(); i++) {
             Object instance = instances.get(i);
             if (!(instance instanceof Map)) {
-                errors.add(group.getLabel() + " instance " + (i + 1) + " is invalid");
+                errors.add(groupLabel + " instance " + (i + 1) + " is invalid");
                 continue;
             }
             Map<String, Object> instanceData = (Map<String, Object>) instance;
+            String instancePrefix = groupLabel + "[" + (i + 1) + "].";
             for (FormElement child : children) {
-                validateField(child, instanceData.get(child.getFieldName()), errors, group.getLabel() + "[" + (i + 1) + "].");
+                if (child.getType() == ElementType.ELEMENT_GROUP) {
+                    validateGroupElement(child, instanceData, errors, instancePrefix);
+                } else {
+                    validateField(child, instanceData.get(child.getFieldName()), errors, instancePrefix);
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void validateGroupElement(FormElement group, Map<String, Object> data, List<String> errors, String pathPrefix) {
+        ElementConfiguration groupConfig = group.getConfiguration();
+        if (groupConfig != null && Boolean.TRUE.equals(groupConfig.getRepeatable())) {
+            validateRepeatableGroup(group, data, errors, pathPrefix);
+        } else {
+            // Non-repeatable nested group: validate children directly
+            List<FormElement> children = group.getChildren() != null ? group.getChildren() : List.of();
+            for (FormElement child : children) {
+                if (child.getType() == ElementType.ELEMENT_GROUP) {
+                    validateGroupElement(child, data, errors, pathPrefix);
+                } else {
+                    validateField(child, data.get(child.getFieldName()), errors, pathPrefix);
+                }
             }
         }
     }

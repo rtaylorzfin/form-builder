@@ -1,5 +1,6 @@
 package com.formbuilder.submission;
 
+import com.formbuilder.auth.User;
 import com.formbuilder.form.Form;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,6 +24,10 @@ public class Submission {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "form_id", nullable = false)
     private Form form;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String data;

@@ -48,60 +48,46 @@ function buildFieldSchema(element: FormElement): z.ZodTypeAny {
   }
 }
 
-function buildFullSchema(pages: FormPage[]) {
+function buildGroupObjectSchema(children: FormElement[]): z.ZodObject<Record<string, z.ZodTypeAny>> {
   const shape: Record<string, z.ZodTypeAny> = {}
-  for (const page of pages) {
-    for (const element of page.elements) {
-      if (element.type === 'STATIC_TEXT') continue
-      if (element.type === 'ELEMENT_GROUP') {
-        const children = element.children || []
-        if (element.configuration?.repeatable) {
-          const childShape: Record<string, z.ZodTypeAny> = {}
-          for (const child of children) {
-            if (child.type !== 'ELEMENT_GROUP') childShape[child.fieldName] = buildFieldSchema(child)
-          }
-          let arraySchema = z.array(z.object(childShape))
-          if (element.configuration.minInstances) arraySchema = arraySchema.min(element.configuration.minInstances)
-          if (element.configuration.maxInstances) arraySchema = arraySchema.max(element.configuration.maxInstances)
-          shape[element.fieldName] = arraySchema
-        } else {
-          for (const child of children) {
-            if (child.type !== 'ELEMENT_GROUP') shape[child.fieldName] = buildFieldSchema(child)
-          }
+  for (const child of children) {
+    if (child.type === 'STATIC_TEXT') continue
+    if (child.type === 'ELEMENT_GROUP') {
+      const nestedChildren = child.children || []
+      const nestedObj = buildGroupObjectSchema(nestedChildren)
+      if (child.configuration?.repeatable) {
+        let arraySchema = z.array(nestedObj)
+        if (child.configuration.minInstances) arraySchema = arraySchema.min(child.configuration.minInstances)
+        if (child.configuration.maxInstances) arraySchema = arraySchema.max(child.configuration.maxInstances)
+        shape[child.fieldName] = arraySchema
+      } else {
+        for (const nestedChild of nestedChildren) {
+          if (nestedChild.type !== 'STATIC_TEXT') shape[nestedChild.fieldName] = buildFieldSchema(nestedChild)
         }
-        continue
       }
-      if (element.configuration?.repeatable) {
-        let arraySchema = z.array(buildFieldSchema(element))
-        if (element.configuration.minInstances) arraySchema = arraySchema.min(element.configuration.minInstances)
-        if (element.configuration.maxInstances) arraySchema = arraySchema.max(element.configuration.maxInstances)
-        shape[element.fieldName] = arraySchema
-        continue
-      }
-      shape[element.fieldName] = buildFieldSchema(element)
+      continue
     }
+    shape[child.fieldName] = buildFieldSchema(child)
   }
   return z.object(shape)
 }
 
-function buildPageSchema(page: FormPage) {
-  const shape: Record<string, z.ZodTypeAny> = {}
-  for (const element of page.elements) {
+function buildElementsSchema(elements: FormElement[], shape: Record<string, z.ZodTypeAny>) {
+  for (const element of elements) {
     if (element.type === 'STATIC_TEXT') continue
     if (element.type === 'ELEMENT_GROUP') {
       const children = element.children || []
+      const groupObj = buildGroupObjectSchema(children)
       if (element.configuration?.repeatable) {
-        const childShape: Record<string, z.ZodTypeAny> = {}
-        for (const child of children) {
-          if (child.type !== 'ELEMENT_GROUP') childShape[child.fieldName] = buildFieldSchema(child)
-        }
-        let arraySchema = z.array(z.object(childShape))
+        let arraySchema = z.array(groupObj)
         if (element.configuration.minInstances) arraySchema = arraySchema.min(element.configuration.minInstances)
         if (element.configuration.maxInstances) arraySchema = arraySchema.max(element.configuration.maxInstances)
         shape[element.fieldName] = arraySchema
       } else {
         for (const child of children) {
-          if (child.type !== 'ELEMENT_GROUP') shape[child.fieldName] = buildFieldSchema(child)
+          if (child.type !== 'STATIC_TEXT' && child.type !== 'ELEMENT_GROUP') {
+            shape[child.fieldName] = buildFieldSchema(child)
+          }
         }
       }
       continue
@@ -115,6 +101,19 @@ function buildPageSchema(page: FormPage) {
     }
     shape[element.fieldName] = buildFieldSchema(element)
   }
+}
+
+function buildFullSchema(pages: FormPage[]) {
+  const shape: Record<string, z.ZodTypeAny> = {}
+  for (const page of pages) {
+    buildElementsSchema(page.elements, shape)
+  }
+  return z.object(shape)
+}
+
+function buildPageSchema(page: FormPage) {
+  const shape: Record<string, z.ZodTypeAny> = {}
+  buildElementsSchema(page.elements, shape)
   return z.object(shape)
 }
 
@@ -220,8 +219,25 @@ function RenderElement({
   )
 }
 
+function getDefaultValuesForGroup(children: FormElement[]): Record<string, unknown> {
+  const defaults: Record<string, unknown> = {}
+  for (const child of children) {
+    if (child.type === 'STATIC_TEXT') continue
+    if (child.type === 'ELEMENT_GROUP') {
+      if (child.configuration?.repeatable) {
+        const minInstances = child.configuration.minInstances || 1
+        const nestedDefaults = getDefaultValuesForGroup(child.children || [])
+        defaults[child.fieldName] = Array.from({ length: minInstances }, () => ({ ...nestedDefaults }))
+      }
+      continue
+    }
+    defaults[child.fieldName] = child.type === 'CHECKBOX' ? false : ''
+  }
+  return defaults
+}
+
 function RepeatableGroupField({
-  element, control, register, errors, setValue, watch, readOnly,
+  element, control, register, errors, setValue, watch, readOnly, prefix,
 }: {
   element: FormElement
   control: Control
@@ -230,18 +246,14 @@ function RepeatableGroupField({
   setValue: ReturnType<typeof useForm>['setValue']
   watch: ReturnType<typeof useForm>['watch']
   readOnly?: boolean
+  prefix?: string
 }) {
-  const { fields, append, remove } = useFieldArray({ control, name: element.fieldName })
+  const fieldName = prefix ? `${prefix}.${element.fieldName}` : element.fieldName
+  const { fields, append, remove } = useFieldArray({ control, name: fieldName })
   const children = element.children || []
   const config = element.configuration || {}
   const minInstances = config.minInstances || 1
   const maxInstances = config.maxInstances || 10
-
-  const getDefaults = () => {
-    const d: Record<string, unknown> = {}
-    for (const child of children) { d[child.fieldName] = child.type === 'CHECKBOX' ? false : '' }
-    return d
-  }
 
   return (
     <fieldset className="border rounded-lg p-4 space-y-4">
@@ -256,17 +268,42 @@ function RepeatableGroupField({
               </Button>
             )}
           </div>
-          {children.map((child) => (
-            <RenderElement
-              key={child.id} element={child} register={register}
-              errors={(errors as Record<string, Record<string, Record<string, { message?: string }>>>)?.[element.fieldName]?.[index] as Record<string, { message?: string }> || {}}
-              setValue={setValue} watch={watch} readOnly={readOnly} prefix={`${element.fieldName}.${index}`}
-            />
-          ))}
+          {children.map((child) => {
+            if (child.type === 'ELEMENT_GROUP') {
+              if (child.configuration?.repeatable) {
+                return (
+                  <RepeatableGroupField
+                    key={child.id} element={child} control={control} register={register}
+                    errors={errors} setValue={setValue} watch={watch} readOnly={readOnly}
+                    prefix={`${fieldName}.${index}`}
+                  />
+                )
+              }
+              return (
+                <fieldset key={child.id} className="border rounded-lg p-4 space-y-4">
+                  <legend className="font-medium px-2">{child.label}</legend>
+                  {child.children?.map((nestedChild) => (
+                    <RenderElement
+                      key={nestedChild.id} element={nestedChild} register={register}
+                      errors={(errors as Record<string, Record<string, Record<string, { message?: string }>>>)?.[fieldName]?.[index] as Record<string, { message?: string }> || {}}
+                      setValue={setValue} watch={watch} readOnly={readOnly} prefix={`${fieldName}.${index}`}
+                    />
+                  ))}
+                </fieldset>
+              )
+            }
+            return (
+              <RenderElement
+                key={child.id} element={child} register={register}
+                errors={(errors as Record<string, Record<string, Record<string, { message?: string }>>>)?.[fieldName]?.[index] as Record<string, { message?: string }> || {}}
+                setValue={setValue} watch={watch} readOnly={readOnly} prefix={`${fieldName}.${index}`}
+              />
+            )
+          })}
         </div>
       ))}
       {!readOnly && fields.length < maxInstances && (
-        <Button type="button" variant="outline" size="sm" onClick={() => append(getDefaults())} className="w-full">
+        <Button type="button" variant="outline" size="sm" onClick={() => append(getDefaultValuesForGroup(children))} className="w-full">
           <Plus className="h-4 w-4 mr-1" /> Add {element.label}
         </Button>
       )}
@@ -359,13 +396,37 @@ function renderPageElements(
       return (
         <fieldset key={element.id} className="border rounded-lg p-4 space-y-4">
           <legend className="font-medium px-2">{element.label}</legend>
-          {element.children?.map((child) => (
-            <RenderElement
-              key={child.id} element={child} register={register}
-              errors={errors as Record<string, { message?: string }>}
-              setValue={setValue} watch={watch} readOnly={readOnly}
-            />
-          ))}
+          {element.children?.map((child) => {
+            if (child.type === 'ELEMENT_GROUP') {
+              if (child.configuration?.repeatable) {
+                return (
+                  <RepeatableGroupField
+                    key={child.id} element={child} control={control} register={register}
+                    errors={errors} setValue={setValue} watch={watch} readOnly={readOnly}
+                  />
+                )
+              }
+              return (
+                <fieldset key={child.id} className="border rounded-lg p-4 space-y-4">
+                  <legend className="font-medium px-2">{child.label}</legend>
+                  {child.children?.map((nestedChild) => (
+                    <RenderElement
+                      key={nestedChild.id} element={nestedChild} register={register}
+                      errors={errors as Record<string, { message?: string }>}
+                      setValue={setValue} watch={watch} readOnly={readOnly}
+                    />
+                  ))}
+                </fieldset>
+              )
+            }
+            return (
+              <RenderElement
+                key={child.id} element={child} register={register}
+                errors={errors as Record<string, { message?: string }>}
+                setValue={setValue} watch={watch} readOnly={readOnly}
+              />
+            )
+          })}
         </fieldset>
       )
     }

@@ -2,10 +2,11 @@ import { Outlet, Link, useNavigate } from 'react-router-dom'
 import { FileText, LogOut } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 
 export default function Layout() {
   const navigate = useNavigate()
-  const { user, logout } = useAuthStore()
+  const { user, logout, isAdmin } = useAuthStore()
 
   const handleLogout = () => {
     logout()
@@ -22,7 +23,12 @@ export default function Layout() {
           </Link>
           <div className="flex items-center gap-4">
             {user && (
-              <span className="text-sm text-gray-600">{user.name}</span>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">{user.name}</span>
+                <Badge variant={isAdmin() ? 'default' : 'secondary'}>
+                  {user.role}
+                </Badge>
+              </div>
             )}
             <Button variant="ghost" size="sm" onClick={handleLogout}>
               <LogOut className="h-4 w-4 mr-1" />

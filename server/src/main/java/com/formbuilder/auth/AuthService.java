@@ -29,7 +29,7 @@ public class AuthService {
                 .name(request.getName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(UserRole.USER)
+                .role(userRepository.count() == 0 ? UserRole.ADMIN : UserRole.USER)
                 .build();
 
         User saved = userRepository.save(user);

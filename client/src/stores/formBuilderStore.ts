@@ -56,6 +56,44 @@ function removeElementFromTree(elements: FormElement[], id: string): FormElement
     }))
 }
 
+function moveChildUp(elements: FormElement[], id: string): FormElement[] {
+  return elements.map((el) => {
+    if (!el.children) return el
+    const childIndex = el.children.findIndex((c) => c.id === id)
+    if (childIndex > 0) {
+      const newChildren = [...el.children]
+      ;[newChildren[childIndex - 1], newChildren[childIndex]] = [newChildren[childIndex], newChildren[childIndex - 1]]
+      return { ...el, children: newChildren.map((c, i) => ({ ...c, sortOrder: i })) }
+    }
+    return { ...el, children: moveChildUp(el.children, id) }
+  })
+}
+
+function moveChildDown(elements: FormElement[], id: string): FormElement[] {
+  return elements.map((el) => {
+    if (!el.children) return el
+    const childIndex = el.children.findIndex((c) => c.id === id)
+    if (childIndex !== -1 && childIndex < el.children.length - 1) {
+      const newChildren = [...el.children]
+      ;[newChildren[childIndex], newChildren[childIndex + 1]] = [newChildren[childIndex + 1], newChildren[childIndex]]
+      return { ...el, children: newChildren.map((c, i) => ({ ...c, sortOrder: i })) }
+    }
+    return { ...el, children: moveChildDown(el.children, id) }
+  })
+}
+
+function addChildToGroup(elements: FormElement[], parentId: string, child: FormElement): FormElement[] {
+  return elements.map((el) => {
+    if (el.id === parentId) {
+      return { ...el, children: [...(el.children || []), child] }
+    }
+    if (el.children) {
+      return { ...el, children: addChildToGroup(el.children, parentId, child) }
+    }
+    return el
+  })
+}
+
 function updateElementInTree(elements: FormElement[], id: string, updates: Partial<FormElement>): FormElement[] {
   return elements.map((el) => {
     if (el.id === id) return { ...el, ...updates }
@@ -85,11 +123,7 @@ export const useFormBuilderStore = create<FormBuilderState>((set, get) => ({
 
   addElementToGroup: (element, parentId) =>
     set((state) => ({
-      elements: state.elements.map((el) =>
-        el.id === parentId
-          ? { ...el, children: [...(el.children || []), element] }
-          : el
-      ),
+      elements: addChildToGroup(state.elements, parentId, element),
       isDirty: true,
     })),
 
@@ -139,17 +173,8 @@ export const useFormBuilderStore = create<FormBuilderState>((set, get) => ({
           isDirty: true,
         }
       }
-      // Check if it's a child element
-      const newElements = state.elements.map((parent) => {
-        if (!parent.children) return parent
-        const childIndex = parent.children.findIndex((c) => c.id === id)
-        if (childIndex > 0) {
-          const newChildren = [...parent.children]
-          ;[newChildren[childIndex - 1], newChildren[childIndex]] = [newChildren[childIndex], newChildren[childIndex - 1]]
-          return { ...parent, children: newChildren.map((c, i) => ({ ...c, sortOrder: i })) }
-        }
-        return parent
-      })
+      // Check if it's a child element (recursive)
+      const newElements = moveChildUp(state.elements, id)
       return { elements: newElements, isDirty: true }
     }),
 
@@ -175,17 +200,8 @@ export const useFormBuilderStore = create<FormBuilderState>((set, get) => ({
           isDirty: true,
         }
       }
-      // Check if it's a child element
-      const newElements = state.elements.map((parent) => {
-        if (!parent.children) return parent
-        const childIndex = parent.children.findIndex((c) => c.id === id)
-        if (childIndex !== -1 && childIndex < parent.children.length - 1) {
-          const newChildren = [...parent.children]
-          ;[newChildren[childIndex], newChildren[childIndex + 1]] = [newChildren[childIndex + 1], newChildren[childIndex]]
-          return { ...parent, children: newChildren.map((c, i) => ({ ...c, sortOrder: i })) }
-        }
-        return parent
-      })
+      // Check if it's a child element (recursive)
+      const newElements = moveChildDown(state.elements, id)
       return { elements: newElements, isDirty: true }
     }),
 

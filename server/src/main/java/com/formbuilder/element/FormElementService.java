@@ -43,11 +43,13 @@ public class FormElementService {
             if (parentElement.getType() != ElementType.ELEMENT_GROUP) {
                 throw new ValidationException("Only ELEMENT_GROUP elements can have children");
             }
-            if (parentElement.getParentElement() != null) {
-                throw new ValidationException("Nested groups are not allowed (1 level max)");
-            }
             if (request.getType() == ElementType.ELEMENT_GROUP) {
-                throw new ValidationException("Cannot nest groups inside groups");
+                int depth = 0;
+                FormElement ancestor = parentElement;
+                while (ancestor != null) { depth++; ancestor = ancestor.getParentElement(); }
+                if (depth >= 5) {
+                    throw new ValidationException("Maximum nesting depth exceeded");
+                }
             }
         }
 

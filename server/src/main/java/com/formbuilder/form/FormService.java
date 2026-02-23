@@ -2,6 +2,7 @@ package com.formbuilder.form;
 
 import com.formbuilder.auth.AuthService;
 import com.formbuilder.auth.User;
+import com.formbuilder.auth.UserRole;
 import com.formbuilder.element.FormElement;
 import com.formbuilder.element.FormElementDTO;
 import com.formbuilder.element.FormElementRepository;
@@ -32,8 +33,10 @@ public class FormService {
     public List<FormDTO.ListResponse> getAllForms() {
         User user = authService.getAuthenticatedUser();
         List<Form> forms;
-        if (user != null) {
+        if (user != null && user.getRole() == UserRole.ADMIN) {
             forms = formRepository.findByUserIdOrderByUpdatedAtDesc(user.getId());
+        } else if (user != null) {
+            forms = formRepository.findByStatusOrderByUpdatedAtDesc(FormStatus.PUBLISHED);
         } else {
             forms = formRepository.findAllByOrderByUpdatedAtDesc();
         }
@@ -258,6 +261,9 @@ public class FormService {
 
     private void verifyOwnership(Form form) {
         User user = authService.getAuthenticatedUser();
+        if (user != null && user.getRole() == UserRole.ADMIN) {
+            return;
+        }
         if (user != null && form.getUser() != null && !form.getUser().getId().equals(user.getId())) {
             throw new ResourceNotFoundException("Form not found: " + form.getId());
         }

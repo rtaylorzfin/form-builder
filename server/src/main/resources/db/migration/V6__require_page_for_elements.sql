@@ -5,7 +5,7 @@
 
 -- Insert a default page for every form that has no pages
 INSERT INTO form_pages (id, form_id, page_number, title, created_at, updated_at)
-SELECT RANDOM_UUID(), f.id, 0, 'Page 1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+SELECT gen_random_uuid(), f.id, 0, 'Page 1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
 FROM forms f
 WHERE NOT EXISTS (SELECT 1 FROM form_pages fp WHERE fp.form_id = f.id);
 

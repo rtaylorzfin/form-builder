@@ -38,11 +38,11 @@ api.interceptors.request.use((config) => {
   return config
 })
 
-// Response interceptor to handle 401
+// Response interceptor to handle 401 (not 403 - that's a role issue, not auth)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401 || error.response?.status === 403) {
+    if (error.response?.status === 401) {
       const authStorage = localStorage.getItem('auth-storage')
       if (authStorage) {
         try {

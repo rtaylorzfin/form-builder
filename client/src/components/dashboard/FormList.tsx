@@ -1,9 +1,10 @@
 import { useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Pencil, Eye, Trash2, BarChart2, ExternalLink, Upload } from 'lucide-react'
+import { Pencil, Eye, Trash2, BarChart2, ExternalLink, Upload, FileEdit } from 'lucide-react'
 import { formsApi } from '@/api/client'
 import type { FormExportData } from '@/api/types'
+import { useAuthStore } from '@/stores/authStore'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -19,6 +20,7 @@ export default function FormList() {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const { toast } = useToast()
+  const { isAdmin } = useAuthStore()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const { data: forms, isLoading } = useQuery({
@@ -96,15 +98,17 @@ export default function FormList() {
   if (!forms || forms.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500 mb-4">No forms yet. Create your first form to get started.</p>
-        <div className="flex justify-center">{importButton}</div>
+        <p className="text-gray-500 mb-4">
+          {isAdmin() ? 'No forms yet. Create your first form to get started.' : 'No published forms available.'}
+        </p>
+        {isAdmin() && <div className="flex justify-center">{importButton}</div>}
       </div>
     )
   }
 
   return (
     <div>
-      <div className="flex justify-end mb-4">{importButton}</div>
+      {isAdmin() && <div className="flex justify-end mb-4">{importButton}</div>}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {forms.map((form) => (
         <Card key={form.id} className="hover:shadow-md transition-shadow">
@@ -122,26 +126,40 @@ export default function FormList() {
               {form.elementCount} element{form.elementCount !== 1 ? 's' : ''}
             </div>
             <div className="flex flex-wrap gap-2">
-              <Button variant="outline" size="sm" asChild>
-                <Link to={`/forms/${form.id}/edit`}>
-                  <Pencil className="h-4 w-4 mr-1" />
-                  Edit
-                </Link>
-              </Button>
-              <Button variant="outline" size="sm" asChild>
-                <Link to={`/forms/${form.id}/preview`}>
-                  <Eye className="h-4 w-4 mr-1" />
-                  Preview
-                </Link>
-              </Button>
+              {isAdmin() && (
+                <Button variant="outline" size="sm" asChild>
+                  <Link to={`/forms/${form.id}/edit`}>
+                    <Pencil className="h-4 w-4 mr-1" />
+                    Edit
+                  </Link>
+                </Button>
+              )}
+              {isAdmin() && (
+                <Button variant="outline" size="sm" asChild>
+                  <Link to={`/forms/${form.id}/preview`}>
+                    <Eye className="h-4 w-4 mr-1" />
+                    Preview
+                  </Link>
+                </Button>
+              )}
               {form.status === 'PUBLISHED' && (
                 <>
-                  <Button variant="outline" size="sm" asChild>
-                    <Link to={`/forms/${form.id}/submissions`}>
-                      <BarChart2 className="h-4 w-4 mr-1" />
-                      Submissions
-                    </Link>
-                  </Button>
+                  {!isAdmin() && (
+                    <Button variant="outline" size="sm" asChild>
+                      <a href={`/f/${form.id}`}>
+                        <FileEdit className="h-4 w-4 mr-1" />
+                        Fill Form
+                      </a>
+                    </Button>
+                  )}
+                  {isAdmin() && (
+                    <Button variant="outline" size="sm" asChild>
+                      <Link to={`/forms/${form.id}/submissions`}>
+                        <BarChart2 className="h-4 w-4 mr-1" />
+                        Submissions
+                      </Link>
+                    </Button>
+                  )}
                   <Button variant="outline" size="sm" asChild>
                     <a href={`/f/${form.id}`} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="h-4 w-4 mr-1" />
@@ -150,14 +168,16 @@ export default function FormList() {
                   </Button>
                 </>
               )}
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-red-500 hover:text-red-600 hover:bg-red-50"
-                onClick={() => handleDelete(form.id, form.name)}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
+              {isAdmin() && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                  onClick={() => handleDelete(form.id, form.name)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
             </div>
           </CardContent>
         </Card>
