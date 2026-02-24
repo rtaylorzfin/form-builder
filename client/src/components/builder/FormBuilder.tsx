@@ -93,6 +93,7 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
         await elementsApi.update(formId, el.id, {
           label: el.label,
           fieldName: el.fieldName,
+          sortOrder: el.sortOrder,
           configuration: el.configuration,
         })
         if (el.children) {
