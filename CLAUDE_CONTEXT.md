@@ -82,7 +82,7 @@ docker compose up -d
 # Backend
 cd server
 mvn spring-boot:run -Dspring-boot.run.profiles=dev    # Run server
-mvn test                                                # Run tests (7 tests)
+mvn test                                                # Run tests (18 tests)
 
 # Frontend
 cd client
@@ -103,11 +103,11 @@ mvn spring-boot:run -Dspring-boot.run.arguments="--promote-admin=user@example.co
 
 ## Testing
 
-### Backend (7 tests)
+### Backend (18 tests)
 - JUnit 5 with `@TestMethodOrder` for ordered test execution
 - Tests against `formbuilder_test` database (Docker Compose PostgreSQL)
 - `TestFlywayConfig` provides clean+migrate between runs
-- Covers: registration, login, form CRUD, publishing, submissions, role-based access (403 for USER)
+- Covers: registration, login, form CRUD, publishing, submissions, role-based access (403 for USER), full-page group submissions
 
 ### Frontend (53 tests, 3 suites)
 - **Vitest** + **jsdom** environment

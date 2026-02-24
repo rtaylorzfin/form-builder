@@ -212,7 +212,7 @@ hostname -I | awk '{print $1}'
 
 Other PCs on the network can then open `http://<your-ip>:5173` in their browser.
 
-> **Note:** The Vite dev server proxies `/api` requests to `localhost:8080`, so the backend must also be running. The backend's CORS config allows origins `localhost:5173` and `localhost:3000` by default — for LAN access you may need to add your IP to `CorsConfig.java`, or access everything through the Vite proxy (port 5173) which avoids CORS entirely.
+> **Note:** The Vite dev server proxies `/api` requests to `localhost:8080`, so the backend must also be running. The backend's CORS config allows all origins by default, so LAN access works without additional configuration.
 
 ## Running with Production Profile
 
@@ -242,7 +242,7 @@ cd server
 mvn test
 ```
 
-Tests run against a `formbuilder_test` database on the same Docker Compose PostgreSQL instance. The test suite uses Flyway clean+migrate for isolation between runs. 7 tests covering authentication, form CRUD, publishing, submissions, and role-based access control.
+Tests run against a `formbuilder_test` database on the same Docker Compose PostgreSQL instance. The test suite uses Flyway clean+migrate for isolation between runs. 18 tests covering authentication, form CRUD, publishing, submissions, role-based access control, and full-page group submissions.
 
 ### Frontend Tests
 

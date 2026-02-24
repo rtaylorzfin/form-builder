@@ -56,7 +56,7 @@ com.formbuilder/
   element/
     FormElement.java                 # JPA entity with self-referential parent_element_id FK
     ElementType.java                 # Enum: TEXT_INPUT, TEXT_AREA, NUMBER, EMAIL, DATE, CHECKBOX, RADIO_GROUP, SELECT, ELEMENT_GROUP, STATIC_TEXT
-    ElementConfiguration.java        # POJO: placeholder, required, minLength, maxLength, min, max, pattern, options, repeatable, minInstances, maxInstances, content, fullPage
+    ElementConfiguration.java        # POJO: placeholder, required, minLength, maxLength, min, max, pattern, options, repeatable, minInstances, maxInstances, instanceLabel, content, fullPage, allowOther
     JsonConverter.java               # JPA AttributeConverter<ElementConfiguration, String>
     FormElementRepository.java
     FormElementService.java          # CRUD, reorder, nesting depth validation (max 5 levels)
@@ -107,8 +107,9 @@ Each element has a `configuration TEXT` column that stores an `ElementConfigurat
 - Validation rules: `required`, `minLength`, `maxLength`, `min`, `max`, `pattern`, `patternMessage`
 - Presentation: `placeholder`, `defaultValue`, `content` (HTML for STATIC_TEXT)
 - Options: `options` (list of label/value pairs for RADIO_GROUP, SELECT)
-- Repeatable groups/fields: `repeatable`, `minInstances`, `maxInstances`
+- Repeatable groups/fields: `repeatable`, `minInstances`, `maxInstances`, `instanceLabel`
 - Layout: `fullPage`
+- Choice fields: `allowOther` (renders an "Other (please specify)" option with text input for RADIO_GROUP, SELECT, CHECKBOX_GROUP; stored as `other:user text`)
 
 New configuration properties can be added to `ElementConfiguration` without database migrations.
 
