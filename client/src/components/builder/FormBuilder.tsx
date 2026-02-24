@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
-import { Eye, Save, Send, Plus, X, Download } from 'lucide-react'
+import { Eye, Save, Send, Plus, X, Download, Pencil } from 'lucide-react'
 import { formsApi, elementsApi, pagesApi } from '@/api/client'
 import type { ElementType, FormElement, FormPage } from '@/api/types'
 import { useFormBuilderStore, createNewElement } from '@/stores/formBuilderStore'
@@ -275,7 +275,7 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
         {pages.map((page, index) => (
           <div
             key={page.id}
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-md text-sm cursor-pointer transition-colors ${
+            className={`group flex items-center gap-1 px-3 py-1.5 rounded-md text-sm cursor-pointer transition-colors ${
               index === currentPageIndex
                 ? 'bg-white border shadow-sm font-medium'
                 : 'hover:bg-gray-100 text-gray-600'
@@ -293,9 +293,20 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
                 onClick={(e) => e.stopPropagation()}
               />
             ) : (
-              <span onDoubleClick={() => handleStartEditPageTitle(page)}>
-                {page.title || `Page ${index + 1}`}
-              </span>
+              <>
+                <span onDoubleClick={() => handleStartEditPageTitle(page)}>
+                  {page.title || `Page ${index + 1}`}
+                </span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleStartEditPageTitle(page)
+                  }}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-gray-600"
+                >
+                  <Pencil className="h-3 w-3" />
+                </button>
+              </>
             )}
             {pages.length > 1 && index === currentPageIndex && (
               <button
