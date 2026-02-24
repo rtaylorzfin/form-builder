@@ -2,4 +2,18 @@
 Next steps
 ===
 
-1. Consult the mockup for lesion-more-fields.png and use your best sense of how to include those indicated fields into the example form definition in the examples directory. These fields should be in addition to the existing fields for Mutation > Lesion.
+1. For the example form, mutations need a subgroup (supports multiple) called "Genotyping Assay". It should have the fields: 
+
+Type of Assay (radio):
+PCR followed by gel electrophoresis             	
+PCR followed by sequencing
+Restriction Fragment Length Polymorphism (RFLP)             		
+Derived Cleaved Amplified Polymorphic Sequences (dCAPS)             	
+Allele Specific Amplification (ASA)             	
+Kompetitive Allele Specific PCR (KASP)             	
+Allele Specific Amplification (ASA)             	
+High-Resolution Melt Analysis (HRMA)      
+Other (please specify
+
+More fields as represented in assay.png
+
