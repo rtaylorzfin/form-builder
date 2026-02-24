@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useForm, useFieldArray, Control } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { ChevronLeft, ChevronRight, Plus, Trash2, ArrowLeft, Check } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus, Trash2, ArrowLeft, Check, Pencil } from 'lucide-react'
 import type { FormElement, FormPage } from '@/api/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -438,7 +438,7 @@ function RepeatableGroupField({
       ))}
       {!readOnly && fields.length < maxInstances && (
         <Button type="button" variant="outline" size="sm" onClick={() => append(getDefaultValuesForGroup(children))} className="w-full">
-          <Plus className="h-4 w-4 mr-1" /> Add {element.label}
+          <Plus className="h-4 w-4 mr-1" /> Add {config.instanceLabel || element.label}
         </Button>
       )}
     </fieldset>
@@ -728,7 +728,8 @@ function FullPageRepeatableGroup({
                 size="sm"
                 onClick={() => onOpenInstance(index)}
               >
-                Fill {element.label}
+                <Pencil className="h-3 w-3 mr-1" />
+                Edit
               </Button>
               {!readOnly && fields.length > minInstances && (
                 <Button
@@ -755,7 +756,7 @@ function FullPageRepeatableGroup({
           className="w-full"
         >
           <Plus className="h-4 w-4 mr-1" />
-          Add {element.label}
+          Add {instanceLabel}
         </Button>
       )}
     </fieldset>
