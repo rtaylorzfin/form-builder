@@ -21,4 +21,6 @@ public interface SubmissionRepository extends JpaRepository<Submission, UUID> {
     Page<Submission> findByFormIdAndUserIdOrderBySubmittedAtDesc(UUID formId, UUID userId, Pageable pageable);
 
     int countByFormId(UUID formId);
+
+    Optional<Submission> findFirstByFormIdAndUserIdAndStatus(UUID formId, UUID userId, SubmissionStatus status);
 }

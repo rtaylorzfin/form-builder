@@ -137,6 +137,95 @@ public class SubmissionService {
     }
 
     @Transactional(readOnly = true)
+    public Optional<SubmissionDTO.Response> getDraft(UUID formId) {
+        User user = authService.getAuthenticatedUser();
+        if (user == null) {
+            return Optional.empty();
+        }
+        return submissionRepository.findFirstByFormIdAndUserIdAndStatus(formId, user.getId(), SubmissionStatus.DRAFT)
+                .map(this::toResponse);
+    }
+
+    @Transactional
+    public SubmissionDTO.Response upsertDraft(UUID formId, Map<String, Object> data) {
+        User user = authService.getAuthenticatedUser();
+        if (user == null) {
+            throw new org.springframework.security.access.AccessDeniedException("Authentication required");
+        }
+
+        Form form = formRepository.findByIdWithElements(formId)
+                .orElseThrow(() -> new ResourceNotFoundException("Form not found: " + formId));
+
+        String dataJson;
+        try {
+            dataJson = objectMapper.writeValueAsString(data);
+        } catch (JsonProcessingException e) {
+            throw new ValidationException("Invalid submission data format");
+        }
+
+        Optional<Submission> existingDraft = submissionRepository.findFirstByFormIdAndUserIdAndStatus(
+                formId, user.getId(), SubmissionStatus.DRAFT);
+
+        if (existingDraft.isPresent()) {
+            Submission draft = existingDraft.get();
+            draft.setData(dataJson);
+            return toResponse(submissionRepository.save(draft));
+        }
+
+        Submission draft = Submission.builder()
+                .form(form)
+                .data(dataJson)
+                .status(SubmissionStatus.DRAFT)
+                .user(user)
+                .build();
+        return toResponse(submissionRepository.save(draft));
+    }
+
+    @Transactional
+    public SubmissionDTO.Response submitDraft(UUID formId, Map<String, Object> data,
+                                               String ipAddress, String userAgent) {
+        User user = authService.getAuthenticatedUser();
+
+        // Look for existing draft if user is authenticated
+        Optional<Submission> existingDraft = Optional.empty();
+        if (user != null) {
+            existingDraft = submissionRepository.findFirstByFormIdAndUserIdAndStatus(
+                    formId, user.getId(), SubmissionStatus.DRAFT);
+        }
+
+        if (existingDraft.isPresent()) {
+            Submission draft = existingDraft.get();
+            Form form = formRepository.findByIdWithElements(formId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Form not found: " + formId));
+
+            if (form.getStatus() != FormStatus.PUBLISHED) {
+                throw new ValidationException("Form is not published");
+            }
+
+            validateSubmission(form, data);
+
+            String dataJson;
+            try {
+                dataJson = objectMapper.writeValueAsString(data);
+            } catch (JsonProcessingException e) {
+                throw new ValidationException("Invalid submission data format");
+            }
+
+            draft.setData(dataJson);
+            draft.setStatus(SubmissionStatus.SUBMITTED);
+            draft.setIpAddress(ipAddress);
+            draft.setUserAgent(userAgent);
+            return toResponse(submissionRepository.save(draft));
+        }
+
+        // No draft exists — use existing createSubmission flow
+        SubmissionDTO.CreateRequest request = new SubmissionDTO.CreateRequest();
+        request.setData(data);
+        request.setStatus(SubmissionStatus.SUBMITTED);
+        return createSubmission(formId, request, ipAddress, userAgent);
+    }
+
+    @Transactional(readOnly = true)
     public String exportSubmissionsCsv(UUID formId) {
         Form form = formRepository.findByIdWithElements(formId)
                 .orElseThrow(() -> new ResourceNotFoundException("Form not found: " + formId));

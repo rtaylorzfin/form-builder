@@ -202,6 +202,16 @@ export const publicApi = {
     const { data } = await api.post<Submission>(`/public/forms/${id}/submit`, request)
     return data
   },
+
+  getDraft: async (id: string): Promise<Submission | null> => {
+    const response = await api.get(`/public/forms/${id}/draft`)
+    return response.status === 204 ? null : response.data
+  },
+
+  saveDraft: async (id: string, data: Record<string, unknown>): Promise<Submission> => {
+    const { data: result } = await api.put<Submission>(`/public/forms/${id}/draft`, { data })
+    return result
+  },
 }
 
 // Submissions API

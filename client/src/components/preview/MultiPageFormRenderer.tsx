@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm, useFieldArray, Control } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -25,6 +25,7 @@ interface MultiPageFormRendererProps {
   isSubmitting?: boolean
   readOnly?: boolean
   defaultValues?: Record<string, unknown>
+  onValuesChange?: (data: Record<string, unknown>) => void
 }
 
 function buildFieldSchema(element: FormElement): z.ZodTypeAny {
@@ -877,6 +878,7 @@ export default function MultiPageFormRenderer({
   isSubmitting,
   readOnly,
   defaultValues,
+  onValuesChange,
 }: MultiPageFormRendererProps) {
   const [currentPage, setCurrentPage] = useState(0)
   const [activeFullPageGroup, setActiveFullPageGroup] = useState<{
@@ -892,6 +894,15 @@ export default function MultiPageFormRenderer({
     resolver: zodResolver(schema),
     defaultValues: defaultValues || {},
   })
+
+  // Notify parent of value changes for auto-save
+  useEffect(() => {
+    if (!onValuesChange) return
+    const subscription = watch((values) => {
+      onValuesChange(values as Record<string, unknown>)
+    })
+    return () => subscription.unsubscribe()
+  }, [watch, onValuesChange])
 
   const page = pages[currentPage]
   const isFirstPage = currentPage === 0

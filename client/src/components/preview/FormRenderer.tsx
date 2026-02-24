@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm, useFieldArray, Control } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -26,6 +26,7 @@ interface FormRendererProps {
   readOnly?: boolean
   defaultValues?: Record<string, unknown>
   submitLabel?: string
+  onValuesChange?: (data: Record<string, unknown>) => void
 }
 
 function buildFieldSchema(element: FormElement): z.ZodTypeAny {
@@ -942,6 +943,7 @@ export default function FormRenderer({
   readOnly,
   defaultValues,
   submitLabel,
+  onValuesChange,
 }: FormRendererProps) {
   const schema = buildValidationSchema(form.elements)
 
@@ -976,6 +978,15 @@ export default function FormRenderer({
     resolver: zodResolver(schema),
     defaultValues: builtDefaults,
   })
+
+  // Notify parent of value changes for auto-save
+  useEffect(() => {
+    if (!onValuesChange) return
+    const subscription = watch((values) => {
+      onValuesChange(values as Record<string, unknown>)
+    })
+    return () => subscription.unsubscribe()
+  }, [watch, onValuesChange])
 
   // Find the active full-page group element
   const activeElement = activeFullPageGroup

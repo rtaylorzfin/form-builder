@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -28,6 +29,23 @@ public class PublicFormController {
         return ResponseEntity.ok(formService.getPublishedForm(id));
     }
 
+    @GetMapping("/{id}/draft")
+    @Operation(summary = "Get authenticated user's draft for a form")
+    public ResponseEntity<SubmissionDTO.Response> getDraft(@PathVariable UUID id) {
+        Optional<SubmissionDTO.Response> draft = submissionService.getDraft(id);
+        return draft.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.noContent().build());
+    }
+
+    @PutMapping("/{id}/draft")
+    @Operation(summary = "Create or update a draft for a form")
+    public ResponseEntity<SubmissionDTO.Response> upsertDraft(
+            @PathVariable UUID id,
+            @Valid @RequestBody SubmissionDTO.CreateRequest request) {
+        SubmissionDTO.Response response = submissionService.upsertDraft(id, request.getData());
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/{id}/submit")
     @Operation(summary = "Submit a form response")
     public ResponseEntity<SubmissionDTO.Response> submitForm(
@@ -38,7 +56,7 @@ public class PublicFormController {
         String ipAddress = getClientIpAddress(httpRequest);
         String userAgent = httpRequest.getHeader("User-Agent");
 
-        SubmissionDTO.Response response = submissionService.createSubmission(id, request, ipAddress, userAgent);
+        SubmissionDTO.Response response = submissionService.submitDraft(id, request.getData(), ipAddress, userAgent);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
