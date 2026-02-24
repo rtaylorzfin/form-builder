@@ -84,7 +84,7 @@ function buildFieldSchema(element: FormElement): z.ZodTypeAny {
 function buildGroupObjectSchema(children: FormElement[]): z.ZodObject<Record<string, z.ZodTypeAny>> {
   const shape: Record<string, z.ZodTypeAny> = {}
   for (const child of children) {
-    if (child.type === 'STATIC_TEXT') continue
+    if (child.type === 'STATIC_TEXT' || child.type === 'PAGE_BREAK') continue
     if (child.type === 'ELEMENT_GROUP') {
       const nestedChildren = child.children || []
       const nestedObj = buildGroupObjectSchema(nestedChildren)
@@ -112,7 +112,7 @@ function buildValidationSchema(elements: FormElement[]) {
   const shape: Record<string, z.ZodTypeAny> = {}
 
   for (const element of elements) {
-    if (element.type === 'STATIC_TEXT') continue
+    if (element.type === 'STATIC_TEXT' || element.type === 'PAGE_BREAK') continue
 
     if (element.type === 'ELEMENT_GROUP') {
       const children = element.children || []
@@ -159,7 +159,7 @@ function buildValidationSchema(elements: FormElement[]) {
 function getDefaultValuesForGroup(children: FormElement[]): Record<string, unknown> {
   const defaults: Record<string, unknown> = {}
   for (const child of children) {
-    if (child.type === 'STATIC_TEXT') continue
+    if (child.type === 'STATIC_TEXT' || child.type === 'PAGE_BREAK') continue
     if (child.type === 'ELEMENT_GROUP') {
       const nestedChildren = child.children || []
       if (child.configuration?.repeatable) {
@@ -453,6 +453,15 @@ function RenderElement({
           className="prose prose-sm max-w-none"
           dangerouslySetInnerHTML={{ __html: config.content || '' }}
         />
+      )
+
+    case 'PAGE_BREAK':
+      return (
+        <div className="flex items-center gap-2 py-2 text-xs text-gray-400">
+          <div className="flex-1 border-t border-dashed" />
+          <span>{element.label || 'Page Break'}</span>
+          <div className="flex-1 border-t border-dashed" />
+        </div>
       )
 
     default:
@@ -845,7 +854,7 @@ function getInstanceSummary(
   const parts: string[] = []
   for (const child of children) {
     if (parts.length >= 3) break
-    if (child.type === 'ELEMENT_GROUP' || child.type === 'STATIC_TEXT') continue
+    if (child.type === 'ELEMENT_GROUP' || child.type === 'STATIC_TEXT' || child.type === 'PAGE_BREAK') continue
     const val = instanceData[child.fieldName]
     if (val !== undefined && val !== null && val !== '' && val !== false) {
       const strVal = String(val)

@@ -280,6 +280,13 @@ describe('formBuilderStore', () => {
       expect(el.type).toBe('STATIC_TEXT')
       expect(el.configuration.content).toContain('<p>')
     })
+
+    it('creates a page break element', () => {
+      const el = createNewElement('PAGE_BREAK', 4)
+      expect(el.type).toBe('PAGE_BREAK')
+      expect(el.label).toBe('Page Break')
+      expect(el.children).toBeUndefined()
+    })
   })
 
   describe('reset', () => {

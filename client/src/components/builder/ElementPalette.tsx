@@ -10,6 +10,7 @@ import {
   ListChecks,
   Layers,
   FileText,
+  SeparatorHorizontal,
 } from 'lucide-react'
 import type { ElementType } from '@/api/types'
 
@@ -31,6 +32,7 @@ const elementTypes: ElementTypeConfig[] = [
   { type: 'CHECKBOX_GROUP', label: 'Checkbox Group', icon: <ListChecks className="h-4 w-4" /> },
   { type: 'ELEMENT_GROUP', label: 'Group', icon: <Layers className="h-4 w-4" /> },
   { type: 'STATIC_TEXT', label: 'Static Text', icon: <FileText className="h-4 w-4" /> },
+  { type: 'PAGE_BREAK', label: 'Page Break', icon: <SeparatorHorizontal className="h-4 w-4" /> },
 ]
 
 interface ElementPaletteProps {

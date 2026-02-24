@@ -165,6 +165,20 @@ describe('FormRenderer', () => {
       render(<FormRenderer form={form} onSubmit={vi.fn()} />)
       expect(screen.getByText('Welcome to the form')).toBeInTheDocument()
     })
+
+    it('renders a page break as a visual divider', () => {
+      const form = makeForm([
+        makeElement({
+          id: 'pb-1',
+          type: 'PAGE_BREAK',
+          label: 'Section Break',
+          fieldName: 'section_break',
+        }),
+      ])
+      const { container } = render(<FormRenderer form={form} onSubmit={vi.fn()} />)
+      expect(screen.getByText('Section Break')).toBeInTheDocument()
+      expect(container.querySelector('.border-dashed')).toBeInTheDocument()
+    })
   })
 
   describe('required indicator', () => {
@@ -239,6 +253,28 @@ describe('FormRenderer', () => {
         expect.objectContaining({ name: 'John Doe' }),
         expect.anything()
       )
+    })
+
+    it('page break elements do not interfere with validation', async () => {
+      const user = userEvent.setup()
+      const onSubmit = vi.fn()
+      const form = makeForm([
+        makeElement({ configuration: { required: true, placeholder: 'Enter text...' } }),
+        makeElement({
+          id: 'pb-1',
+          type: 'PAGE_BREAK',
+          label: 'Break',
+          fieldName: 'break_1',
+        }),
+      ])
+      render(<FormRenderer form={form} onSubmit={onSubmit} />)
+
+      await user.type(screen.getByPlaceholderText('Enter text...'), 'Test')
+      await user.click(screen.getByRole('button', { name: 'Submit' }))
+
+      await vi.waitFor(() => {
+        expect(onSubmit).toHaveBeenCalledTimes(1)
+      })
     })
   })
 

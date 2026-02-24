@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useForm, useFieldArray, Control } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { ChevronLeft, ChevronRight, Plus, Trash2, ArrowLeft, Check, Pencil } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus, Trash2, ArrowLeft, Check, Pencil, ChevronRightIcon } from 'lucide-react'
 import type { FormElement, FormPage } from '@/api/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -56,7 +56,7 @@ function buildFieldSchema(element: FormElement): z.ZodTypeAny {
 function buildGroupObjectSchema(children: FormElement[]): z.ZodObject<Record<string, z.ZodTypeAny>> {
   const shape: Record<string, z.ZodTypeAny> = {}
   for (const child of children) {
-    if (child.type === 'STATIC_TEXT') continue
+    if (child.type === 'STATIC_TEXT' || child.type === 'PAGE_BREAK') continue
     if (child.type === 'ELEMENT_GROUP') {
       const nestedChildren = child.children || []
       const nestedObj = buildGroupObjectSchema(nestedChildren)
@@ -67,7 +67,7 @@ function buildGroupObjectSchema(children: FormElement[]): z.ZodObject<Record<str
         shape[child.fieldName] = arraySchema
       } else {
         for (const nestedChild of nestedChildren) {
-          if (nestedChild.type !== 'STATIC_TEXT') shape[nestedChild.fieldName] = buildFieldSchema(nestedChild)
+          if (nestedChild.type !== 'STATIC_TEXT' && nestedChild.type !== 'PAGE_BREAK') shape[nestedChild.fieldName] = buildFieldSchema(nestedChild)
         }
       }
       continue
@@ -79,7 +79,7 @@ function buildGroupObjectSchema(children: FormElement[]): z.ZodObject<Record<str
 
 function buildElementsSchema(elements: FormElement[], shape: Record<string, z.ZodTypeAny>) {
   for (const element of elements) {
-    if (element.type === 'STATIC_TEXT') continue
+    if (element.type === 'STATIC_TEXT' || element.type === 'PAGE_BREAK') continue
     if (element.type === 'ELEMENT_GROUP') {
       const children = element.children || []
       const groupObj = buildGroupObjectSchema(children)
@@ -90,7 +90,7 @@ function buildElementsSchema(elements: FormElement[], shape: Record<string, z.Zo
         shape[element.fieldName] = arraySchema
       } else {
         for (const child of children) {
-          if (child.type !== 'STATIC_TEXT' && child.type !== 'ELEMENT_GROUP') {
+          if (child.type !== 'STATIC_TEXT' && child.type !== 'PAGE_BREAK' && child.type !== 'ELEMENT_GROUP') {
             shape[child.fieldName] = buildFieldSchema(child)
           }
         }
@@ -333,6 +333,14 @@ function RenderElement({
           dangerouslySetInnerHTML={{ __html: config.content || '' }}
         />
       )
+    case 'PAGE_BREAK':
+      return (
+        <div className="flex items-center gap-2 py-2 text-xs text-gray-400">
+          <div className="flex-1 border-t border-dashed" />
+          <span>{element.label || 'Page Break'}</span>
+          <div className="flex-1 border-t border-dashed" />
+        </div>
+      )
     default:
       return null
   }
@@ -351,7 +359,7 @@ function RenderElement({
 function getDefaultValuesForGroup(children: FormElement[]): Record<string, unknown> {
   const defaults: Record<string, unknown> = {}
   for (const child of children) {
-    if (child.type === 'STATIC_TEXT') continue
+    if (child.type === 'STATIC_TEXT' || child.type === 'PAGE_BREAK') continue
     if (child.type === 'ELEMENT_GROUP') {
       if (child.configuration?.repeatable) {
         const minInstances = child.configuration.minInstances ?? 0
@@ -509,6 +517,28 @@ function RepeatableFieldArray({
   )
 }
 
+function splitAtPageBreaks(children: FormElement[]) {
+  const sections: { title?: string; elements: FormElement[] }[] = []
+  let currentElements: FormElement[] = []
+  let nextTitle: string | undefined = undefined
+
+  for (const child of children) {
+    if (child.type === 'PAGE_BREAK') {
+      if (currentElements.length > 0 || sections.length === 0) {
+        sections.push({ title: nextTitle, elements: currentElements })
+      }
+      nextTitle = child.label || undefined
+      currentElements = []
+    } else {
+      currentElements.push(child)
+    }
+  }
+  if (currentElements.length > 0 || sections.length > 0) {
+    sections.push({ title: nextTitle, elements: currentElements })
+  }
+  return sections
+}
+
 function FullPageGroupView({
   element,
   register,
@@ -519,7 +549,7 @@ function FullPageGroupView({
   readOnly,
   prefix,
   instanceIndex,
-  onDone,
+  onNavigateToGroup,
 }: {
   element: FormElement
   register: ReturnType<typeof useForm>['register']
@@ -530,137 +560,141 @@ function FullPageGroupView({
   readOnly?: boolean
   prefix?: string
   instanceIndex?: number
-  onDone: () => void
+  onNavigateToGroup: (element: FormElement, instanceIndex?: number) => void
 }) {
   const children = element.children || []
   const isInstance = instanceIndex !== undefined
   const fieldName = prefix ? `${prefix}.${element.fieldName}` : element.fieldName
   const instancePrefix = isInstance ? `${fieldName}.${instanceIndex}` : undefined
 
-  const [activeNestedGroup, setActiveNestedGroup] = useState<{
-    fieldName: string
-    instanceIndex?: number
-  } | null>(null)
+  const sections = splitAtPageBreaks(children)
+  const hasPageBreaks = sections.length > 1
+  const [currentSection, setCurrentSection] = useState(0)
 
-  // If a nested full-page group is active, render it recursively
-  if (activeNestedGroup) {
-    const nestedElement = children.find((c) => c.fieldName === activeNestedGroup.fieldName)
-    if (nestedElement) {
-      return (
-        <FullPageGroupView
-          element={nestedElement}
-          register={register}
-          errors={errors}
-          setValue={setValue}
-          watch={watch}
-          control={control}
-          readOnly={readOnly}
-          prefix={instancePrefix}
-          instanceIndex={activeNestedGroup.instanceIndex}
-          onDone={() => setActiveNestedGroup(null)}
-        />
-      )
-    }
-  }
-
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between border-b pb-4">
-        <h2 className="text-lg font-semibold">
-          {element.label}
-          {isInstance && <span className="text-gray-500 ml-2">- {element.configuration?.instanceLabel || 'Instance'} {instanceIndex + 1}</span>}
-        </h2>
-        <Button type="button" variant="outline" onClick={onDone}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Done
-        </Button>
-      </div>
-      <div className="space-y-6">
-        {children.map((child) => {
-          if (child.type === 'ELEMENT_GROUP') {
-            // Nested full-page non-repeatable group
-            if (child.configuration?.fullPage && !child.configuration?.repeatable) {
-              return (
-                <div key={child.id} className="border rounded-lg p-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full justify-between"
-                    onClick={() => setActiveNestedGroup({ fieldName: child.fieldName })}
-                  >
-                    <span>Fill {child.label}</span>
-                    <Check className="h-4 w-4 text-gray-400" />
-                  </Button>
-                </div>
-              )
-            }
-            // Nested full-page repeatable group
-            if (child.configuration?.fullPage && child.configuration?.repeatable) {
-              return (
-                <FullPageRepeatableGroup
-                  key={child.id}
-                  element={child}
-                  control={control}
-                  watch={watch}
-                  readOnly={readOnly}
-                  prefix={instancePrefix}
-                  onOpenInstance={(index) =>
-                    setActiveNestedGroup({ fieldName: child.fieldName, instanceIndex: index })
-                  }
-                />
-              )
-            }
-            if (child.configuration?.repeatable) {
-              return (
-                <RepeatableGroupField
-                  key={child.id}
-                  element={child}
-                  control={control}
-                  register={register}
-                  errors={errors}
-                  setValue={setValue}
-                  watch={watch}
-                  readOnly={readOnly}
-                  prefix={instancePrefix}
-                />
-              )
-            }
-            return (
-              <fieldset key={child.id} className="border rounded-lg p-4 space-y-4">
-                <legend className="font-medium px-2">{child.label}</legend>
-                {child.children?.map((nestedChild) => (
-                  <RenderElement
-                    key={nestedChild.id}
-                    element={nestedChild}
-                    register={register}
-                    errors={isInstance
-                      ? ((errors as Record<string, Record<string, Record<string, { message?: string }>>>)?.[fieldName]?.[instanceIndex] as Record<string, { message?: string }> || {})
-                      : (errors as Record<string, { message?: string }>)}
-                    setValue={setValue}
-                    watch={watch}
-                    readOnly={readOnly}
-                    prefix={instancePrefix}
-                  />
-                ))}
-              </fieldset>
-            )
-          }
+  const renderChildren = (childElements: FormElement[]) =>
+    childElements.map((child) => {
+      if (child.type === 'ELEMENT_GROUP') {
+        if (child.configuration?.fullPage && !child.configuration?.repeatable) {
           return (
-            <RenderElement
+            <div key={child.id} className="border rounded-lg p-4">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full justify-between"
+                onClick={() => onNavigateToGroup(child)}
+              >
+                <span>Fill {child.label}</span>
+                <Check className="h-4 w-4 text-gray-400" />
+              </Button>
+            </div>
+          )
+        }
+        if (child.configuration?.fullPage && child.configuration?.repeatable) {
+          return (
+            <FullPageRepeatableGroup
               key={child.id}
               element={child}
+              control={control}
+              watch={watch}
+              readOnly={readOnly}
+              prefix={instancePrefix}
+              onOpenInstance={(index) => onNavigateToGroup(child, index)}
+            />
+          )
+        }
+        if (child.configuration?.repeatable) {
+          return (
+            <RepeatableGroupField
+              key={child.id}
+              element={child}
+              control={control}
               register={register}
-              errors={isInstance
-                ? ((errors as Record<string, Record<string, Record<string, { message?: string }>>>)?.[fieldName]?.[instanceIndex] as Record<string, { message?: string }> || {})
-                : (errors as Record<string, { message?: string }>)}
+              errors={errors}
               setValue={setValue}
               watch={watch}
               readOnly={readOnly}
               prefix={instancePrefix}
             />
           )
-        })}
+        }
+        return (
+          <fieldset key={child.id} className="border rounded-lg p-4 space-y-4">
+            <legend className="font-medium px-2">{child.label}</legend>
+            {child.children?.map((nestedChild) => (
+              <RenderElement
+                key={nestedChild.id}
+                element={nestedChild}
+                register={register}
+                errors={isInstance
+                  ? ((errors as Record<string, Record<string, Record<string, { message?: string }>>>)?.[fieldName]?.[instanceIndex] as Record<string, { message?: string }> || {})
+                  : (errors as Record<string, { message?: string }>)}
+                setValue={setValue}
+                watch={watch}
+                readOnly={readOnly}
+                prefix={instancePrefix}
+              />
+            ))}
+          </fieldset>
+        )
+      }
+      return (
+        <RenderElement
+          key={child.id}
+          element={child}
+          register={register}
+          errors={isInstance
+            ? ((errors as Record<string, Record<string, Record<string, { message?: string }>>>)?.[fieldName]?.[instanceIndex] as Record<string, { message?: string }> || {})
+            : (errors as Record<string, { message?: string }>)}
+          setValue={setValue}
+          watch={watch}
+          readOnly={readOnly}
+          prefix={instancePrefix}
+        />
+      )
+    })
+
+  if (hasPageBreaks) {
+    const section = sections[currentSection]
+    return (
+      <div className="space-y-6">
+        {section.title && (
+          <h3 className="text-md font-medium text-gray-700">{section.title}</h3>
+        )}
+        <div className="space-y-6">
+          {renderChildren(section.elements)}
+        </div>
+        <div className="flex items-center justify-between pt-4 border-t">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={currentSection === 0}
+            onClick={() => setCurrentSection((s) => s - 1)}
+          >
+            <ChevronLeft className="h-4 w-4 mr-1" />
+            Previous
+          </Button>
+          <span className="text-sm text-gray-500">
+            Section {currentSection + 1} of {sections.length}
+          </span>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={currentSection === sections.length - 1}
+            onClick={() => setCurrentSection((s) => s + 1)}
+          >
+            Next
+            <ChevronRight className="h-4 w-4 ml-1" />
+          </Button>
+        </div>
       </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      {renderChildren(children)}
     </div>
   )
 }
@@ -675,7 +709,7 @@ function getInstanceSummary(
   const parts: string[] = []
   for (const child of children) {
     if (parts.length >= 3) break
-    if (child.type === 'ELEMENT_GROUP' || child.type === 'STATIC_TEXT') continue
+    if (child.type === 'ELEMENT_GROUP' || child.type === 'STATIC_TEXT' || child.type === 'PAGE_BREAK') continue
     const val = instanceData[child.fieldName]
     if (val !== undefined && val !== null && val !== '' && val !== false) {
       const strVal = String(val)
@@ -766,6 +800,25 @@ function FullPageRepeatableGroup({
   )
 }
 
+type NavigationEntry = {
+  element: FormElement
+  instanceIndex?: number
+}
+
+function computePrefixForLevel(stack: NavigationEntry[], level: number): string | undefined {
+  let prefix: string | undefined = undefined
+  for (let i = 0; i < level; i++) {
+    const entry = stack[i]
+    const fieldName: string = prefix ? `${prefix}.${entry.element.fieldName}` : entry.element.fieldName
+    if (entry.instanceIndex !== undefined) {
+      prefix = `${fieldName}.${entry.instanceIndex}`
+    } else {
+      prefix = undefined
+    }
+  }
+  return prefix
+}
+
 function renderPageElements(
   elements: FormElement[],
   register: ReturnType<typeof useForm>['register'],
@@ -774,11 +827,10 @@ function renderPageElements(
   watch: ReturnType<typeof useForm>['watch'],
   control: Control,
   readOnly?: boolean,
-  onOpenFullPageGroup?: (fieldName: string, instanceIndex?: number) => void,
+  onOpenFullPageGroup?: (element: FormElement, instanceIndex?: number) => void,
 ) {
   return elements.map((element) => {
     if (element.type === 'ELEMENT_GROUP') {
-      // Full-page non-repeatable group: show button
       if (element.configuration?.fullPage && !element.configuration?.repeatable && onOpenFullPageGroup) {
         return (
           <div key={element.id} className="border rounded-lg p-4">
@@ -786,7 +838,7 @@ function renderPageElements(
               type="button"
               variant="outline"
               className="w-full justify-between"
-              onClick={() => onOpenFullPageGroup(element.fieldName)}
+              onClick={() => onOpenFullPageGroup(element)}
             >
               <span>Fill {element.label}</span>
               <Check className="h-4 w-4 text-gray-400" />
@@ -795,7 +847,6 @@ function renderPageElements(
         )
       }
 
-      // Full-page repeatable group: show instance list with buttons
       if (element.configuration?.fullPage && element.configuration?.repeatable && onOpenFullPageGroup) {
         return (
           <FullPageRepeatableGroup
@@ -804,7 +855,7 @@ function renderPageElements(
             control={control}
             watch={watch}
             readOnly={readOnly}
-            onOpenInstance={(index) => onOpenFullPageGroup(element.fieldName, index)}
+            onOpenInstance={(index) => onOpenFullPageGroup(element, index)}
           />
         )
       }
@@ -872,6 +923,53 @@ function renderPageElements(
   })
 }
 
+function Breadcrumb({
+  pageTitle,
+  navigationStack,
+  onNavigateToPage,
+  onNavigateToLevel,
+}: {
+  pageTitle: string
+  navigationStack: NavigationEntry[]
+  onNavigateToPage: () => void
+  onNavigateToLevel: (level: number) => void
+}) {
+  return (
+    <nav className="flex items-center gap-1 text-sm flex-wrap mb-4">
+      <button
+        type="button"
+        onClick={onNavigateToPage}
+        className="text-blue-600 hover:text-blue-800 hover:underline"
+      >
+        {pageTitle}
+      </button>
+      {navigationStack.map((entry, index) => {
+        const isLast = index === navigationStack.length - 1
+        const instanceLabel = entry.element.configuration?.instanceLabel || 'Instance'
+        const label = entry.instanceIndex !== undefined
+          ? `${entry.element.label} - ${instanceLabel} ${entry.instanceIndex + 1}`
+          : entry.element.label
+        return (
+          <span key={index} className="flex items-center gap-1">
+            <ChevronRightIcon className="h-3 w-3 text-gray-400" />
+            {isLast ? (
+              <span className="font-medium text-gray-900">{label}</span>
+            ) : (
+              <button
+                type="button"
+                onClick={() => onNavigateToLevel(index + 1)}
+                className="text-blue-600 hover:text-blue-800 hover:underline"
+              >
+                {label}
+              </button>
+            )}
+          </span>
+        )
+      })}
+    </nav>
+  )
+}
+
 export default function MultiPageFormRenderer({
   pages,
   onSubmit,
@@ -881,10 +979,7 @@ export default function MultiPageFormRenderer({
   onValuesChange,
 }: MultiPageFormRendererProps) {
   const [currentPage, setCurrentPage] = useState(0)
-  const [activeFullPageGroup, setActiveFullPageGroup] = useState<{
-    fieldName: string
-    instanceIndex?: number
-  } | null>(null)
+  const [navigationStack, setNavigationStack] = useState<NavigationEntry[]>([])
   const schema = buildFullSchema(pages)
 
   const {
@@ -921,37 +1016,76 @@ export default function MultiPageFormRenderer({
     setCurrentPage((prev) => Math.max(prev - 1, 0))
   }
 
-  // Find active full-page group element across all pages
-  const activeElement = activeFullPageGroup
-    ? pages.flatMap((p) => p.elements).find((el) => el.fieldName === activeFullPageGroup.fieldName)
-    : null
+  const pushNavigation = (element: FormElement, instanceIndex?: number) => {
+    setNavigationStack((prev) => [...prev, { element, instanceIndex }])
+  }
 
-  if (activeElement && activeFullPageGroup) {
+  const popToLevel = (level: number) => {
+    setNavigationStack((prev) => prev.slice(0, level))
+  }
+
+  // Render full-page group view when navigated into a group
+  if (navigationStack.length > 0) {
+    const deepest = navigationStack[navigationStack.length - 1]
+    const prefix = computePrefixForLevel(navigationStack, navigationStack.length - 1)
+    const pageTitle = page.title || `Page ${currentPage + 1}`
+
     return (
       <div className="space-y-6">
         <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
+          <Breadcrumb
+            pageTitle={pageTitle}
+            navigationStack={navigationStack}
+            onNavigateToPage={() => popToLevel(0)}
+            onNavigateToLevel={popToLevel}
+          />
+          <div className="flex items-center justify-between border-b pb-4">
+            <h2 className="text-lg font-semibold">
+              {deepest.element.label}
+              {deepest.instanceIndex !== undefined && (
+                <span className="text-gray-500 ml-2">
+                  - {deepest.element.configuration?.instanceLabel || 'Instance'} {deepest.instanceIndex + 1}
+                </span>
+              )}
+            </h2>
+            <Button type="button" variant="outline" onClick={() => popToLevel(navigationStack.length - 1)}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Done
+            </Button>
+          </div>
           <FullPageGroupView
-            element={activeElement}
+            element={deepest.element}
             register={register}
             errors={errors}
             setValue={setValue}
             watch={watch}
             control={control}
             readOnly={readOnly}
-            instanceIndex={activeFullPageGroup.instanceIndex}
-            onDone={() => setActiveFullPageGroup(null)}
+            prefix={prefix}
+            instanceIndex={deepest.instanceIndex}
+            onNavigateToGroup={(element, instanceIndex) => pushNavigation(element, instanceIndex)}
           />
+          <div className="pt-4 border-t">
+            <Button type="button" variant="outline" onClick={() => popToLevel(navigationStack.length - 1)}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Done
+            </Button>
+          </div>
         </form>
       </div>
     )
   }
+
+  const progressLabel = page.title
+    ? `${page.title} (Page ${currentPage + 1} of ${pages.length})`
+    : `Page ${currentPage + 1} of ${pages.length}`
 
   return (
     <div className="space-y-6">
       {/* Progress bar */}
       <div className="space-y-2">
         <div className="flex justify-between text-sm text-gray-500">
-          <span>Page {currentPage + 1} of {pages.length}</span>
+          <span>{progressLabel}</span>
           <span>{Math.round(((currentPage + 1) / pages.length) * 100)}%</span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2">
@@ -974,7 +1108,7 @@ export default function MultiPageFormRenderer({
       <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
         {renderPageElements(
           page.elements, register, errors, setValue, watch, control, readOnly,
-          (fieldName, instanceIndex) => setActiveFullPageGroup({ fieldName, instanceIndex }),
+          (element, instanceIndex) => pushNavigation(element, instanceIndex),
         )}
 
         {/* Navigation */}

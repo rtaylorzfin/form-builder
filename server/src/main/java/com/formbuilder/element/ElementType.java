@@ -11,5 +11,6 @@ public enum ElementType {
     SELECT,
     CHECKBOX_GROUP,
     ELEMENT_GROUP,
-    STATIC_TEXT
+    STATIC_TEXT,
+    PAGE_BREAK
 }

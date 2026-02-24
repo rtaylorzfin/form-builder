@@ -27,6 +27,33 @@ interface CanvasElementProps {
 function CanvasElement({ element, isSelected, onSelect, onDelete, onMoveUp, onMoveDown, isFirst, isLast, depth = 0 }: CanvasElementProps) {
   const { selectedElementId, selectElement, removeElement, moveElementUp, moveElementDown } = useFormBuilderStore()
 
+  if (element.type === 'PAGE_BREAK') {
+    return (
+      <div
+        className={cn(
+          'flex items-center gap-2 py-1 text-xs text-gray-400 cursor-pointer',
+          isSelected && 'ring-2 ring-primary rounded'
+        )}
+        onClick={(e) => { e.stopPropagation(); onSelect() }}
+      >
+        <div className="flex-1 border-t border-dashed" />
+        <span>{element.label || 'Page Break'}</span>
+        <div className="flex-1 border-t border-dashed" />
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-6 w-6 text-gray-400 hover:text-red-500"
+          onClick={(e) => {
+            e.stopPropagation()
+            onDelete()
+          }}
+        >
+          <Trash2 className="h-3 w-3" />
+        </Button>
+      </div>
+    )
+  }
+
   if (element.type === 'ELEMENT_GROUP') {
     const children = element.children || []
     const colors = depthColors[depth % depthColors.length]

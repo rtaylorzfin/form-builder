@@ -65,6 +65,7 @@ export default function ElementConfigPanel() {
 
   const isGroup = selectedElement.type === 'ELEMENT_GROUP'
   const isStaticText = selectedElement.type === 'STATIC_TEXT'
+  const isPageBreak = selectedElement.type === 'PAGE_BREAK'
   const hasOptions = ['RADIO_GROUP', 'SELECT', 'CHECKBOX_GROUP'].includes(selectedElement.type)
 
   const handleUpdate = (updates: Partial<{ label: string; fieldName: string; configuration: ElementConfiguration }>) => {
@@ -189,7 +190,7 @@ export default function ElementConfigPanel() {
           />
         </div>
 
-        {!isStaticText && (
+        {!isStaticText && !isPageBreak && (
           <div>
             <Label htmlFor="fieldName">Field Name</Label>
             <Input
@@ -201,7 +202,7 @@ export default function ElementConfigPanel() {
           </div>
         )}
 
-        {isStaticText && (
+        {isStaticText && !isPageBreak && (
           <div>
             <Label htmlFor="content">HTML Content</Label>
             <Textarea
@@ -216,7 +217,7 @@ export default function ElementConfigPanel() {
           </div>
         )}
 
-        {!isGroup && !isStaticText && !hasOptions && selectedElement.type !== 'CHECKBOX' && (
+        {!isGroup && !isStaticText && !isPageBreak && !hasOptions && selectedElement.type !== 'CHECKBOX' && (
           <div>
             <Label htmlFor="placeholder">Placeholder</Label>
             <Input
@@ -228,7 +229,7 @@ export default function ElementConfigPanel() {
           </div>
         )}
 
-        {!isGroup && !isStaticText && (
+        {!isGroup && !isStaticText && !isPageBreak && (
           <div className="flex items-center gap-2">
             <Checkbox
               id="required"
@@ -241,7 +242,7 @@ export default function ElementConfigPanel() {
           </div>
         )}
 
-        {!isStaticText && (isGroup || selectedElement.type !== 'CHECKBOX') && (
+        {!isStaticText && !isPageBreak && (isGroup || selectedElement.type !== 'CHECKBOX') && (
           <div className="space-y-4 border-t pt-4">
             {isGroup && <h3 className="font-medium text-sm text-gray-600">Group Settings</h3>}
             <div className="flex items-center gap-2">

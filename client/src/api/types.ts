@@ -12,6 +12,7 @@ export type ElementType =
   | 'CHECKBOX_GROUP'
   | 'ELEMENT_GROUP'
   | 'STATIC_TEXT'
+  | 'PAGE_BREAK'
 
 export interface ElementOption {
   label: string
