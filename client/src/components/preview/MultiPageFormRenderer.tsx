@@ -175,34 +175,98 @@ function RenderElement({
         </div>
       )
       break
-    case 'RADIO_GROUP':
+    case 'RADIO_GROUP': {
+      const rawValue: string = watch(fieldPath) || ''
+      const isOtherSelected = rawValue.startsWith('other:')
+      const radioValue = isOtherSelected ? '__other__' : rawValue
+      const otherText = isOtherSelected ? rawValue.slice(6) : ''
       input = (
-        <RadioGroup value={watch(fieldPath) || ''} onValueChange={(value) => setValue(fieldPath, value)} disabled={readOnly}>
+        <RadioGroup
+          value={radioValue}
+          onValueChange={(value) => {
+            if (value === '__other__') {
+              setValue(fieldPath, 'other:', { shouldValidate: true })
+            } else {
+              setValue(fieldPath, value, { shouldValidate: true })
+            }
+          }}
+          disabled={readOnly}
+        >
           {config.options?.map((option) => (
             <div key={option.value} className="flex items-center gap-2">
               <RadioGroupItem value={option.value} id={`${fieldPath}-${option.value}`} />
               <Label htmlFor={`${fieldPath}-${option.value}`} className="cursor-pointer">{option.label}</Label>
             </div>
           ))}
+          {config.allowOther && (
+            <>
+              <div className="flex items-center gap-2">
+                <RadioGroupItem value="__other__" id={`${fieldPath}-__other__`} />
+                <Label htmlFor={`${fieldPath}-__other__`} className="cursor-pointer">Other (please specify)</Label>
+              </div>
+              {isOtherSelected && (
+                <Input
+                  className="ml-6 w-auto"
+                  placeholder="Please specify..."
+                  value={otherText}
+                  onChange={(e) => setValue(fieldPath, `other:${e.target.value}`, { shouldValidate: true })}
+                  disabled={readOnly}
+                />
+              )}
+            </>
+          )}
         </RadioGroup>
       )
       break
-    case 'SELECT':
+    }
+    case 'SELECT': {
+      const selectRawValue: string = watch(fieldPath) || ''
+      const isSelectOther = selectRawValue.startsWith('other:')
+      const selectDisplayValue = isSelectOther ? '__other__' : selectRawValue
+      const selectOtherText = isSelectOther ? selectRawValue.slice(6) : ''
       input = (
-        <Select value={watch(fieldPath) || ''} onValueChange={(value) => setValue(fieldPath, value)} disabled={readOnly}>
-          <SelectTrigger className={cn(error && 'border-red-500')}>
-            <SelectValue placeholder="Select an option" />
-          </SelectTrigger>
-          <SelectContent>
-            {config.options?.map((option) => (
-              <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <>
+          <Select
+            value={selectDisplayValue}
+            onValueChange={(value) => {
+              if (value === '__other__') {
+                setValue(fieldPath, 'other:', { shouldValidate: true })
+              } else {
+                setValue(fieldPath, value, { shouldValidate: true })
+              }
+            }}
+            disabled={readOnly}
+          >
+            <SelectTrigger className={cn(error && 'border-red-500')}>
+              <SelectValue placeholder="Select an option" />
+            </SelectTrigger>
+            <SelectContent>
+              {config.options?.map((option) => (
+                <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+              ))}
+              {config.allowOther && (
+                <SelectItem value="__other__">Other (please specify)</SelectItem>
+              )}
+            </SelectContent>
+          </Select>
+          {config.allowOther && isSelectOther && (
+            <Input
+              className="mt-2"
+              placeholder="Please specify..."
+              value={selectOtherText}
+              onChange={(e) => setValue(fieldPath, `other:${e.target.value}`, { shouldValidate: true })}
+              disabled={readOnly}
+            />
+          )}
+        </>
       )
       break
+    }
     case 'CHECKBOX_GROUP': {
       const currentValues: string[] = watch(fieldPath) || []
+      const otherEntry = currentValues.find((v) => v.startsWith('other:'))
+      const isOtherChecked = otherEntry !== undefined
+      const otherInputText = isOtherChecked ? otherEntry.slice(6) : ''
       input = (
         <div className="space-y-2">
           {config.options?.map((option) => {
@@ -224,6 +288,39 @@ function RenderElement({
               </div>
             )
           })}
+          {config.allowOther && (
+            <>
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id={`${fieldPath}-__other__`}
+                  checked={isOtherChecked}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      setValue(fieldPath, [...currentValues, 'other:'], { shouldValidate: true })
+                    } else {
+                      setValue(fieldPath, currentValues.filter((v) => !v.startsWith('other:')), { shouldValidate: true })
+                    }
+                  }}
+                  disabled={readOnly}
+                />
+                <Label htmlFor={`${fieldPath}-__other__`} className="cursor-pointer">Other (please specify)</Label>
+              </div>
+              {isOtherChecked && (
+                <Input
+                  className="ml-6 w-auto"
+                  placeholder="Please specify..."
+                  value={otherInputText}
+                  onChange={(e) => {
+                    const newValues = currentValues.map((v) =>
+                      v.startsWith('other:') ? `other:${e.target.value}` : v
+                    )
+                    setValue(fieldPath, newValues, { shouldValidate: true })
+                  }}
+                  disabled={readOnly}
+                />
+              )}
+            </>
+          )}
         </div>
       )
       break

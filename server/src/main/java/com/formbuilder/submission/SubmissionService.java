@@ -330,8 +330,11 @@ public class SubmissionService {
                     .map(ElementConfiguration.Option::getValue)
                     .collect(Collectors.toSet());
             for (Object v : values) {
-                if (v instanceof String strVal && !validValues.contains(strVal)) {
-                    errors.add(label + " contains invalid option: " + strVal);
+                if (v instanceof String strVal) {
+                    if (Boolean.TRUE.equals(config.getAllowOther()) && strVal.startsWith("other:")) continue;
+                    if (!validValues.contains(strVal)) {
+                        errors.add(label + " contains invalid option: " + strVal);
+                    }
                 }
             }
         }

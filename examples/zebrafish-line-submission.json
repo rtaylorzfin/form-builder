@@ -456,10 +456,73 @@
           ]
         },
         {
+          "type": "ELEMENT_GROUP",
+          "label": "Lesion",
+          "fieldName": "lesions",
+          "sortOrder": 5,
+          "configuration": {
+            "placeholder": null,
+            "required": false,
+            "minLength": null,
+            "maxLength": null,
+            "min": null,
+            "max": null,
+            "pattern": null,
+            "patternMessage": null,
+            "options": null,
+            "defaultValue": null,
+            "content": null,
+            "repeatable": true,
+            "minInstances": 0,
+            "maxInstances": 10,
+            "fullPage": null,
+            "instanceLabel": "Lesion"
+          },
+          "pageIndex": 2,
+          "children": [
+            {
+              "type": "CHECKBOX_GROUP",
+              "label": "Lesion Type",
+              "fieldName": "lesion_type",
+              "sortOrder": 0,
+              "configuration": {
+                "placeholder": null,
+                "required": false,
+                "minLength": null,
+                "maxLength": null,
+                "min": null,
+                "max": null,
+                "pattern": null,
+                "patternMessage": null,
+                "options": [
+                  { "label": "Point mutation", "value": "point_mutation" },
+                  { "label": "Deletion (deficiency)", "value": "deletion" },
+                  { "label": "Insertion", "value": "insertion" },
+                  { "label": "Indel (delins)", "value": "indel" },
+                  { "label": "Duplication", "value": "duplication" },
+                  { "label": "Inversion", "value": "inversion" },
+                  { "label": "Translocation", "value": "translocation" },
+                  { "label": "Transgene", "value": "transgene" },
+                  { "label": "Unknown", "value": "unknown" }
+                ],
+                "defaultValue": null,
+                "content": null,
+                "repeatable": null,
+                "minInstances": null,
+                "maxInstances": null,
+                "fullPage": null,
+                "allowOther": true
+              },
+              "pageIndex": 2,
+              "children": null
+            }
+          ]
+        },
+        {
           "type": "RADIO_GROUP",
           "label": "Is ZFIN record established for this mutation?",
           "fieldName": "zfin_record_established",
-          "sortOrder": 5,
+          "sortOrder": 6,
           "configuration": {
             "placeholder": null,
             "required": false,
@@ -487,7 +550,7 @@
           "type": "TEXT_INPUT",
           "label": "ZDB genomic feature # (ZFIN ID)",
           "fieldName": "zdb_genomic_feature",
-          "sortOrder": 6,
+          "sortOrder": 7,
           "configuration": {
             "placeholder": "Enter text...",
             "required": false,
@@ -512,7 +575,7 @@
           "type": "TEXT_INPUT",
           "label": "Mutation discoverer/creator",
           "fieldName": "mutation_discoverer",
-          "sortOrder": 7,
+          "sortOrder": 8,
           "configuration": {
             "placeholder": "Enter text...",
             "required": false,
@@ -537,7 +600,7 @@
           "type": "TEXT_INPUT",
           "label": "Institution where the mutation was discovered/generated",
           "fieldName": "mutation_institution",
-          "sortOrder": 8,
+          "sortOrder": 9,
           "configuration": {
             "placeholder": "Enter text...",
             "required": false,
@@ -562,7 +625,7 @@
           "type": "TEXT_INPUT",
           "label": "Publications (please list)",
           "fieldName": "publications",
-          "sortOrder": 9,
+          "sortOrder": 10,
           "configuration": {
             "placeholder": "Enter text...",
             "required": false,

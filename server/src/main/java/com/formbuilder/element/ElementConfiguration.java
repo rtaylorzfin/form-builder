@@ -26,6 +26,7 @@ public class ElementConfiguration {
     private Integer maxInstances;
     private Boolean fullPage;
     private String instanceLabel;
+    private Boolean allowOther;
 
     @Data
     @NoArgsConstructor

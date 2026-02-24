@@ -36,6 +36,7 @@ export default function ElementConfigPanel() {
   const [minInstances, setMinInstances] = useState(0)
   const [maxInstances, setMaxInstances] = useState(5)
   const [instanceLabel, setInstanceLabel] = useState('')
+  const [allowOther, setAllowOther] = useState(false)
 
   useEffect(() => {
     if (selectedElement) {
@@ -50,6 +51,7 @@ export default function ElementConfigPanel() {
       setMinInstances(selectedElement.configuration?.minInstances ?? 0)
       setMaxInstances(selectedElement.configuration?.maxInstances || 5)
       setInstanceLabel(selectedElement.configuration?.instanceLabel || '')
+      setAllowOther(selectedElement.configuration?.allowOther || false)
     }
   }, [selectedElement])
 
@@ -137,6 +139,13 @@ export default function ElementConfigPanel() {
     setInstanceLabel(value)
     handleUpdate({
       configuration: { ...selectedElement.configuration, instanceLabel: value || undefined },
+    })
+  }
+
+  const handleAllowOtherChange = (checked: boolean) => {
+    setAllowOther(checked)
+    handleUpdate({
+      configuration: { ...selectedElement.configuration, allowOther: checked },
     })
   }
 
@@ -331,6 +340,16 @@ export default function ElementConfigPanel() {
               <Button variant="outline" size="sm" onClick={handleAddOption} className="w-full">
                 <Plus className="h-4 w-4 mr-1" /> Add Option
               </Button>
+              <div className="flex items-center gap-2 mt-3">
+                <Checkbox
+                  id="allowOther"
+                  checked={allowOther}
+                  onCheckedChange={(checked) => handleAllowOtherChange(checked as boolean)}
+                />
+                <Label htmlFor="allowOther" className="cursor-pointer">
+                  Allow 'Other' option
+                </Label>
+              </div>
             </div>
           </div>
         )}
