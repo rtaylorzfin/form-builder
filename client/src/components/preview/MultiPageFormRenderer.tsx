@@ -673,15 +673,17 @@ function getInstanceSummary(
   if (!instanceData) return `${instanceLabel} ${index + 1}`
   const parts: string[] = []
   for (const child of children) {
+    if (parts.length >= 3) break
     if (child.type === 'ELEMENT_GROUP' || child.type === 'STATIC_TEXT') continue
     const val = instanceData[child.fieldName]
     if (val !== undefined && val !== null && val !== '' && val !== false) {
       const strVal = String(val)
-      const truncated = strVal.length > 20 ? strVal.slice(0, 20) + '...' : strVal
-      parts.push(`${child.label}: ${truncated}`)
+      parts.push(strVal.length > 12 ? strVal.slice(0, 12) + '...' : strVal)
     }
   }
-  return parts.length > 0 ? parts.join(', ') : `${instanceLabel} ${index + 1}`
+  return parts.length > 0
+    ? `${instanceLabel} ${index + 1} — ${parts.join(', ')}`
+    : `${instanceLabel} ${index + 1}`
 }
 
 function FullPageRepeatableGroup({
