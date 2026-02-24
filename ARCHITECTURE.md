@@ -168,6 +168,7 @@ client/src/
     preview/
       FormRenderer.tsx            # Single-page: builds Zod schema from elements, renders react-hook-form
       MultiPageFormRenderer.tsx   # Multi-page wizard: per-page validation, progress bar, prev/next navigation
+      SubmissionPrintView.tsx     # Read-only submission view: renders all pages as static label/value pairs for review/printing
     dashboard/
       FormList.tsx                # Lists forms with admin/user-specific actions
       SubmissionList.tsx          # Paginated submission table with CSV export
@@ -179,6 +180,7 @@ client/src/
     PublicFormPage.tsx             # /f/:formId -- public form submission page
     SubmissionsPage.tsx           # View submissions for a form
     SubmissionEditPage.tsx        # Edit an existing submission
+    SubmissionViewPage.tsx        # Read-only print view of a submission
     LoginPage.tsx
     RegisterPage.tsx
 ```
@@ -223,6 +225,7 @@ Server state is managed with `@tanstack/react-query` v5:
 /forms/:formId/preview                 -- ProtectedRoute > FormPreviewPage
 /forms/:formId/submissions             -- ProtectedRoute > SubmissionsPage
 /forms/:formId/submissions/:id/edit    -- ProtectedRoute > SubmissionEditPage
+/forms/:formId/submissions/:id/view    -- ProtectedRoute > SubmissionViewPage
 /f/:formId                             -- PublicFormPage (public, no auth)
 ```
 
