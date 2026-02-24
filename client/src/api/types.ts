@@ -34,6 +34,7 @@ export interface ElementConfiguration {
   minInstances?: number
   maxInstances?: number
   fullPage?: boolean
+  instanceLabel?: string
 }
 
 export interface FormElement {

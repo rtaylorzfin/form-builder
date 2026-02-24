@@ -256,7 +256,7 @@ function getDefaultValuesForGroup(children: FormElement[]): Record<string, unkno
     if (child.type === 'STATIC_TEXT') continue
     if (child.type === 'ELEMENT_GROUP') {
       if (child.configuration?.repeatable) {
-        const minInstances = child.configuration.minInstances || 1
+        const minInstances = child.configuration.minInstances ?? 0
         const nestedDefaults = getDefaultValuesForGroup(child.children || [])
         defaults[child.fieldName] = Array.from({ length: minInstances }, () => ({ ...nestedDefaults }))
       }
@@ -298,7 +298,7 @@ function RepeatableGroupField({
       {fields.map((field, index) => (
         <div key={field.id} className="border rounded-lg p-4 space-y-4 bg-gray-50">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium text-gray-500">Instance {index + 1}</span>
+            <span className="text-sm font-medium text-gray-500">{config.instanceLabel || 'Instance'} {index + 1}</span>
             {!readOnly && fields.length > minInstances && (
               <Button type="button" variant="ghost" size="sm" className="text-red-500" onClick={() => remove(index)}>
                 <Trash2 className="h-4 w-4 mr-1" /> Remove
@@ -470,7 +470,7 @@ function FullPageGroupView({
       <div className="flex items-center justify-between border-b pb-4">
         <h2 className="text-lg font-semibold">
           {element.label}
-          {isInstance && <span className="text-gray-500 ml-2">- Instance {instanceIndex + 1}</span>}
+          {isInstance && <span className="text-gray-500 ml-2">- {element.configuration?.instanceLabel || 'Instance'} {instanceIndex + 1}</span>}
         </h2>
         <Button type="button" variant="outline" onClick={onDone}>
           <ArrowLeft className="h-4 w-4 mr-2" />
@@ -571,8 +571,9 @@ function getInstanceSummary(
   children: FormElement[],
   instanceData: Record<string, unknown> | undefined,
   index: number,
+  instanceLabel: string = 'Instance',
 ): string {
-  if (!instanceData) return `Instance ${index + 1}`
+  if (!instanceData) return `${instanceLabel} ${index + 1}`
   const parts: string[] = []
   for (const child of children) {
     if (child.type === 'ELEMENT_GROUP' || child.type === 'STATIC_TEXT') continue
@@ -583,7 +584,7 @@ function getInstanceSummary(
       parts.push(`${child.label}: ${truncated}`)
     }
   }
-  return parts.length > 0 ? parts.join(', ') : `Instance ${index + 1}`
+  return parts.length > 0 ? parts.join(', ') : `${instanceLabel} ${index + 1}`
 }
 
 function FullPageRepeatableGroup({
@@ -611,6 +612,7 @@ function FullPageRepeatableGroup({
   const config = element.configuration || {}
   const minInstances = config.minInstances ?? 0
   const maxInstances = config.maxInstances || 10
+  const instanceLabel = config.instanceLabel || 'Instance'
 
   return (
     <fieldset className="border rounded-lg p-4 space-y-4">
@@ -618,7 +620,7 @@ function FullPageRepeatableGroup({
 
       {fields.map((field, index) => {
         const instanceData = watch(`${fieldName}.${index}`) as Record<string, unknown> | undefined
-        const summary = getInstanceSummary(children, instanceData, index)
+        const summary = getInstanceSummary(children, instanceData, index, instanceLabel)
         return (
           <div key={field.id} className="flex items-center justify-between border rounded-lg p-3 bg-gray-50">
             <span className="text-sm font-medium truncate mr-2" title={summary}>{summary}</span>

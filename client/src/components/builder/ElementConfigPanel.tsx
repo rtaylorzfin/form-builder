@@ -35,6 +35,7 @@ export default function ElementConfigPanel() {
   const [fullPage, setFullPage] = useState(false)
   const [minInstances, setMinInstances] = useState(0)
   const [maxInstances, setMaxInstances] = useState(5)
+  const [instanceLabel, setInstanceLabel] = useState('')
 
   useEffect(() => {
     if (selectedElement) {
@@ -48,6 +49,7 @@ export default function ElementConfigPanel() {
       setFullPage(selectedElement.configuration?.fullPage || false)
       setMinInstances(selectedElement.configuration?.minInstances ?? 0)
       setMaxInstances(selectedElement.configuration?.maxInstances || 5)
+      setInstanceLabel(selectedElement.configuration?.instanceLabel || '')
     }
   }, [selectedElement])
 
@@ -128,6 +130,13 @@ export default function ElementConfigPanel() {
     setMaxInstances(value)
     handleUpdate({
       configuration: { ...selectedElement.configuration, maxInstances: value },
+    })
+  }
+
+  const handleInstanceLabelChange = (value: string) => {
+    setInstanceLabel(value)
+    handleUpdate({
+      configuration: { ...selectedElement.configuration, instanceLabel: value || undefined },
     })
   }
 
@@ -272,6 +281,19 @@ export default function ElementConfigPanel() {
                     className="mt-1"
                   />
                 </div>
+                {isGroup && (
+                  <div>
+                    <Label htmlFor="instanceLabel">Instance Label</Label>
+                    <Input
+                      id="instanceLabel"
+                      value={instanceLabel}
+                      onChange={(e) => handleInstanceLabelChange(e.target.value)}
+                      className="mt-1"
+                      placeholder="e.g. Party, Gene, Entry"
+                    />
+                    <p className="text-xs text-gray-400 mt-1">Defaults to "Instance" if empty</p>
+                  </div>
+                )}
               </>
             )}
           </div>

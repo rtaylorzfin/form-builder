@@ -195,7 +195,8 @@
         "repeatable": true,
         "minInstances": 0,
         "maxInstances": 5,
-        "fullPage": null
+        "fullPage": null,
+        "instanceLabel": "Mutation"
       },
       "pageIndex": 2,
       "children": [
@@ -322,7 +323,8 @@
             "repeatable": true,
             "minInstances": 0,
             "maxInstances": 10,
-            "fullPage": null
+            "fullPage": null,
+            "instanceLabel": "Gene"
           },
           "pageIndex": 2,
           "children": [
