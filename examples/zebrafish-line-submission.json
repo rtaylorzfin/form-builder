@@ -195,7 +195,7 @@
         "repeatable": true,
         "minInstances": 0,
         "maxInstances": 5,
-        "fullPage": null,
+        "fullPage": true,
         "instanceLabel": "Mutation"
       },
       "pageIndex": 2,
@@ -323,7 +323,7 @@
             "repeatable": true,
             "minInstances": 0,
             "maxInstances": 10,
-            "fullPage": null,
+            "fullPage": true,
             "instanceLabel": "Gene"
           },
           "pageIndex": 2,
@@ -475,7 +475,7 @@
             "repeatable": true,
             "minInstances": 0,
             "maxInstances": 10,
-            "fullPage": null,
+            "fullPage": true,
             "instanceLabel": "Lesion"
           },
           "pageIndex": 2,
