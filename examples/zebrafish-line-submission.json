@@ -4,17 +4,17 @@
   "pages": [
     {
       "pageNumber": 0,
-      "title": "Page 1",
+      "title": "General Info",
       "description": null
     },
     {
       "pageNumber": 1,
-      "title": "Page 2",
+      "title": "Notice",
       "description": null
     },
     {
       "pageNumber": 2,
-      "title": "Page 3",
+      "title": "Mutations",
       "description": null
     },
     {
@@ -283,31 +283,6 @@
               { "label": "Yes", "value": "yes" },
               { "label": "No", "value": "no" }
             ],
-            "defaultValue": null,
-            "content": null,
-            "repeatable": null,
-            "minInstances": null,
-            "maxInstances": null,
-            "fullPage": null
-          },
-          "pageIndex": 2,
-          "children": null
-        },
-        {
-          "type": "NUMBER",
-          "label": "How many genes does the mutation directly affect?",
-          "fieldName": "genes_affected_count",
-          "sortOrder": 3,
-          "configuration": {
-            "placeholder": "Enter number...",
-            "required": false,
-            "minLength": null,
-            "maxLength": null,
-            "min": null,
-            "max": null,
-            "pattern": null,
-            "patternMessage": null,
-            "options": null,
             "defaultValue": null,
             "content": null,
             "repeatable": null,
