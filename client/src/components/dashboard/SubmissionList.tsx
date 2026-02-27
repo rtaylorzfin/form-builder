@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { Download, Pencil } from 'lucide-react'
+import { Download, Eye, Pencil } from 'lucide-react'
 import { submissionsApi, formsApi } from '@/api/client'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -102,12 +102,20 @@ export default function SubmissionList({ formId }: SubmissionListProps) {
                   </td>
                 ))}
                 <td className="px-4 py-3 text-sm border-b">
-                  <Button variant="ghost" size="sm" asChild>
-                    <Link to={`/forms/${formId}/submissions/${submission.id}/edit`}>
-                      <Pencil className="h-4 w-4 mr-1" />
-                      Edit
-                    </Link>
-                  </Button>
+                  <div className="flex gap-1">
+                    <Button variant="ghost" size="sm" asChild>
+                      <Link to={`/forms/${formId}/submissions/${submission.id}/view`}>
+                        <Eye className="h-4 w-4 mr-1" />
+                        View
+                      </Link>
+                    </Button>
+                    <Button variant="ghost" size="sm" asChild>
+                      <Link to={`/forms/${formId}/submissions/${submission.id}/edit`}>
+                        <Pencil className="h-4 w-4 mr-1" />
+                        Edit
+                      </Link>
+                    </Button>
+                  </div>
                 </td>
               </tr>
             ))}

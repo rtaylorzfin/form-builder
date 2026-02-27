@@ -17,6 +17,7 @@ import FormPreviewPage from '@/pages/FormPreviewPage'
 import PublicFormPage from '@/pages/PublicFormPage'
 import SubmissionsPage from '@/pages/SubmissionsPage'
 import SubmissionEditPage from '@/pages/SubmissionEditPage'
+import SubmissionViewPage from '@/pages/SubmissionViewPage'
 import LoginPage from '@/pages/LoginPage'
 import RegisterPage from '@/pages/RegisterPage'
 
@@ -32,6 +33,7 @@ function App() {
           <Route path="forms/:formId/preview" element={<FormPreviewPage />} />
           <Route path="forms/:formId/submissions" element={<SubmissionsPage />} />
           <Route path="forms/:formId/submissions/:submissionId/edit" element={<SubmissionEditPage />} />
+          <Route path="forms/:formId/submissions/:submissionId/view" element={<SubmissionViewPage />} />
         </Route>
         <Route path="/f/:formId" element={<PublicFormPage />} />
       </Routes>

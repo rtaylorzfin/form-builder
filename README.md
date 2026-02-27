@@ -16,6 +16,7 @@ A full-stack web application for building, managing, and rendering dynamic forms
 ### Form Management
 - **Publishing**: Publish forms to make them available via a public link
 - **Submissions Dashboard**: View, edit, and manage collected responses with draft/submitted status tracking
+- **Print View**: Read-only submission view showing all pages as static text, with print-friendly styling
 - **CSV Export**: Export submission data as CSV (admin only)
 
 ### Authentication & Authorization
@@ -176,6 +177,7 @@ The frontend starts on **http://localhost:5173** and proxies API requests to the
 10. **Publish** the form to make it available at its public URL
 11. **Share** the public form link: `http://localhost:5173/f/{formId}`
 12. **View submissions** from the form dashboard (admin only)
+13. **View** a submission in read-only print view, or **Edit** it
 
 ## Restarting & Network Access
 

@@ -36,6 +36,26 @@ function CanvasElement({ element, isSelected, onSelect, onDelete, onMoveUp, onMo
         )}
         onClick={(e) => { e.stopPropagation(); onSelect() }}
       >
+        <div className="flex flex-col">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-5 w-5"
+            disabled={isFirst}
+            onClick={(e) => { e.stopPropagation(); onMoveUp() }}
+          >
+            <ChevronUp className="h-3 w-3" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-5 w-5"
+            disabled={isLast}
+            onClick={(e) => { e.stopPropagation(); onMoveDown() }}
+          >
+            <ChevronDown className="h-3 w-3" />
+          </Button>
+        </div>
         <div className="flex-1 border-t border-dashed" />
         <span>{element.label || 'Page Break'}</span>
         <div className="flex-1 border-t border-dashed" />
