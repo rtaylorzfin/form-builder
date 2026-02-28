@@ -492,7 +492,7 @@
           "pageIndex": 2,
           "children": [
             {
-              "type": "CHECKBOX_GROUP",
+              "type": "RADIO_GROUP",
               "label": "Lesion Type",
               "fieldName": "lesion_type",
               "sortOrder": 0,
