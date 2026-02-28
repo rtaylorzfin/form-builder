@@ -4,12 +4,12 @@
   "pages": [
     {
       "pageNumber": 0,
-      "title": "General Info",
+      "title": "Notice",
       "description": null
     },
     {
       "pageNumber": 1,
-      "title": "Notice",
+      "title": "General Info",
       "description": null
     },
     {
@@ -56,7 +56,7 @@
         "maxInstances": null,
         "fullPage": null
       },
-      "pageIndex": 0,
+      "pageIndex": 1,
       "children": null
     },
     {
@@ -81,7 +81,7 @@
         "maxInstances": null,
         "fullPage": null
       },
-      "pageIndex": 0,
+      "pageIndex": 1,
       "children": null
     },
     {
@@ -106,7 +106,7 @@
         "maxInstances": null,
         "fullPage": null
       },
-      "pageIndex": 0,
+      "pageIndex": 1,
       "children": null
     },
     {
@@ -131,7 +131,7 @@
         "maxInstances": null,
         "fullPage": null
       },
-      "pageIndex": 0,
+      "pageIndex": 1,
       "children": null
     },
     {
@@ -149,11 +149,26 @@
         "pattern": null,
         "patternMessage": null,
         "options": [
-          { "label": "This line is groundbreaking", "value": "groundbreaking" },
-          { "label": "Researchers demand it", "value": "researcher_demand" },
-          { "label": "Unique genetic background", "value": "unique_background" },
-          { "label": "Supports ongoing clinical studies", "value": "clinical_studies" },
-          { "label": "High community interest", "value": "community_interest" }
+          {
+            "label": "This line is groundbreaking",
+            "value": "groundbreaking"
+          },
+          {
+            "label": "Researchers demand it",
+            "value": "researcher_demand"
+          },
+          {
+            "label": "Unique genetic background",
+            "value": "unique_background"
+          },
+          {
+            "label": "Supports ongoing clinical studies",
+            "value": "clinical_studies"
+          },
+          {
+            "label": "High community interest",
+            "value": "community_interest"
+          }
         ],
         "defaultValue": null,
         "content": null,
@@ -162,7 +177,7 @@
         "maxInstances": null,
         "fullPage": null
       },
-      "pageIndex": 0,
+      "pageIndex": 1,
       "children": null
     },
     {
@@ -187,7 +202,7 @@
         "maxInstances": null,
         "fullPage": null
       },
-      "pageIndex": 1,
+      "pageIndex": 0,
       "children": null
     },
     {
@@ -280,8 +295,14 @@
             "pattern": null,
             "patternMessage": null,
             "options": [
-              { "label": "Yes", "value": "yes" },
-              { "label": "No", "value": "no" }
+              {
+                "label": "Yes",
+                "value": "yes"
+              },
+              {
+                "label": "No",
+                "value": "no"
+              }
             ],
             "defaultValue": null,
             "content": null,
@@ -485,15 +506,42 @@
                 "pattern": null,
                 "patternMessage": null,
                 "options": [
-                  { "label": "Point mutation", "value": "point_mutation" },
-                  { "label": "Deletion (deficiency)", "value": "deletion" },
-                  { "label": "Insertion", "value": "insertion" },
-                  { "label": "Indel (delins)", "value": "indel" },
-                  { "label": "Duplication", "value": "duplication" },
-                  { "label": "Inversion", "value": "inversion" },
-                  { "label": "Translocation", "value": "translocation" },
-                  { "label": "Transgene", "value": "transgene" },
-                  { "label": "Unknown", "value": "unknown" }
+                  {
+                    "label": "Point mutation",
+                    "value": "point_mutation"
+                  },
+                  {
+                    "label": "Deletion (deficiency)",
+                    "value": "deletion"
+                  },
+                  {
+                    "label": "Insertion",
+                    "value": "insertion"
+                  },
+                  {
+                    "label": "Indel (delins)",
+                    "value": "indel"
+                  },
+                  {
+                    "label": "Duplication",
+                    "value": "duplication"
+                  },
+                  {
+                    "label": "Inversion",
+                    "value": "inversion"
+                  },
+                  {
+                    "label": "Translocation",
+                    "value": "translocation"
+                  },
+                  {
+                    "label": "Transgene",
+                    "value": "transgene"
+                  },
+                  {
+                    "label": "Unknown",
+                    "value": "unknown"
+                  }
                 ],
                 "defaultValue": null,
                 "content": null,
@@ -773,13 +821,34 @@
                 "pattern": null,
                 "patternMessage": null,
                 "options": [
-                  { "label": "PCR followed by gel electrophoresis", "value": "pcr_gel" },
-                  { "label": "PCR followed by sequencing", "value": "pcr_sequencing" },
-                  { "label": "Restriction Fragment Length Polymorphism (RFLP)", "value": "rflp" },
-                  { "label": "Derived Cleaved Amplified Polymorphic Sequences (dCAPS)", "value": "dcaps" },
-                  { "label": "Allele Specific Amplification (ASA)", "value": "asa" },
-                  { "label": "Kompetitive Allele Specific PCR (KASP)", "value": "kasp" },
-                  { "label": "High-Resolution Melt Analysis (HRMA)", "value": "hrma" }
+                  {
+                    "label": "PCR followed by gel electrophoresis",
+                    "value": "pcr_gel"
+                  },
+                  {
+                    "label": "PCR followed by sequencing",
+                    "value": "pcr_sequencing"
+                  },
+                  {
+                    "label": "Restriction Fragment Length Polymorphism (RFLP)",
+                    "value": "rflp"
+                  },
+                  {
+                    "label": "Derived Cleaved Amplified Polymorphic Sequences (dCAPS)",
+                    "value": "dcaps"
+                  },
+                  {
+                    "label": "Allele Specific Amplification (ASA)",
+                    "value": "asa"
+                  },
+                  {
+                    "label": "Kompetitive Allele Specific PCR (KASP)",
+                    "value": "kasp"
+                  },
+                  {
+                    "label": "High-Resolution Melt Analysis (HRMA)",
+                    "value": "hrma"
+                  }
                 ],
                 "defaultValue": null,
                 "content": null,
@@ -932,8 +1001,14 @@
                 "pattern": null,
                 "patternMessage": null,
                 "options": [
-                  { "label": "WT", "value": "wt" },
-                  { "label": "MUT", "value": "mut" }
+                  {
+                    "label": "WT",
+                    "value": "wt"
+                  },
+                  {
+                    "label": "MUT",
+                    "value": "mut"
+                  }
                 ],
                 "defaultValue": null,
                 "content": null,
@@ -1061,11 +1136,26 @@
                 "pattern": null,
                 "patternMessage": null,
                 "options": [
-                  { "label": "Null (complete loss of function)", "value": "null" },
-                  { "label": "Hypomorphic (partial loss of function)", "value": "hypomorphic" },
-                  { "label": "Hypermorphic (gain of function, increased activity)", "value": "hypermorphic" },
-                  { "label": "Neomorphic (gain of function, new function)", "value": "neomorphic" },
-                  { "label": "Unknown", "value": "unknown" }
+                  {
+                    "label": "Null (complete loss of function)",
+                    "value": "null"
+                  },
+                  {
+                    "label": "Hypomorphic (partial loss of function)",
+                    "value": "hypomorphic"
+                  },
+                  {
+                    "label": "Hypermorphic (gain of function, increased activity)",
+                    "value": "hypermorphic"
+                  },
+                  {
+                    "label": "Neomorphic (gain of function, new function)",
+                    "value": "neomorphic"
+                  },
+                  {
+                    "label": "Unknown",
+                    "value": "unknown"
+                  }
                 ],
                 "defaultValue": null,
                 "content": null,
@@ -1245,8 +1335,14 @@
                 "pattern": null,
                 "patternMessage": null,
                 "options": [
-                  { "label": "Yes", "value": "yes" },
-                  { "label": "No", "value": "no" }
+                  {
+                    "label": "Yes",
+                    "value": "yes"
+                  },
+                  {
+                    "label": "No",
+                    "value": "no"
+                  }
                 ],
                 "defaultValue": null,
                 "content": null,
@@ -1298,9 +1394,18 @@
                 "pattern": null,
                 "patternMessage": null,
                 "options": [
-                  { "label": "Mendelian recessive", "value": "mendelian_recessive" },
-                  { "label": "Mendelian dominant", "value": "mendelian_dominant" },
-                  { "label": "Non-Mendelian", "value": "non_mendelian" }
+                  {
+                    "label": "Mendelian recessive",
+                    "value": "mendelian_recessive"
+                  },
+                  {
+                    "label": "Mendelian dominant",
+                    "value": "mendelian_dominant"
+                  },
+                  {
+                    "label": "Non-Mendelian",
+                    "value": "non_mendelian"
+                  }
                 ],
                 "defaultValue": null,
                 "content": null,
@@ -1377,9 +1482,18 @@
                 "pattern": null,
                 "patternMessage": null,
                 "options": [
-                  { "label": "Zygotic (Z)", "value": "zygotic" },
-                  { "label": "Maternal (M)", "value": "maternal" },
-                  { "label": "Maternal – Zygotic (M-Z)", "value": "maternal_zygotic" }
+                  {
+                    "label": "Zygotic (Z)",
+                    "value": "zygotic"
+                  },
+                  {
+                    "label": "Maternal (M)",
+                    "value": "maternal"
+                  },
+                  {
+                    "label": "Maternal \u2013 Zygotic (M-Z)",
+                    "value": "maternal_zygotic"
+                  }
                 ],
                 "defaultValue": null,
                 "content": null,
@@ -1434,8 +1548,14 @@
             "pattern": null,
             "patternMessage": null,
             "options": [
-              { "label": "Yes", "value": "yes" },
-              { "label": "No", "value": "no" }
+              {
+                "label": "Yes",
+                "value": "yes"
+              },
+              {
+                "label": "No",
+                "value": "no"
+              }
             ],
             "defaultValue": null,
             "content": null,
@@ -1462,8 +1582,14 @@
             "pattern": null,
             "patternMessage": null,
             "options": [
-              { "label": "A specific developmental time point", "value": "specific" },
-              { "label": "A temporal window", "value": "temporal_window" }
+              {
+                "label": "A specific developmental time point",
+                "value": "specific"
+              },
+              {
+                "label": "A temporal window",
+                "value": "temporal_window"
+              }
             ],
             "defaultValue": null,
             "content": null,
@@ -1590,8 +1716,14 @@
             "pattern": null,
             "patternMessage": null,
             "options": [
-              { "label": "Yes", "value": "yes" },
-              { "label": "No", "value": "no" }
+              {
+                "label": "Yes",
+                "value": "yes"
+              },
+              {
+                "label": "No",
+                "value": "no"
+              }
             ],
             "defaultValue": null,
             "content": null,
@@ -1720,8 +1852,14 @@
         "pattern": null,
         "patternMessage": null,
         "options": [
-          { "label": "Yes", "value": "yes" },
-          { "label": "No", "value": "no" }
+          {
+            "label": "Yes",
+            "value": "yes"
+          },
+          {
+            "label": "No",
+            "value": "no"
+          }
         ],
         "defaultValue": null,
         "content": null,
@@ -1773,9 +1911,18 @@
         "pattern": null,
         "patternMessage": null,
         "options": [
-          { "label": "Mutation 1", "value": "mutation_1" },
-          { "label": "Mutation 2", "value": "mutation_2" },
-          { "label": "Transgene 1", "value": "transgene_1" }
+          {
+            "label": "Mutation 1",
+            "value": "mutation_1"
+          },
+          {
+            "label": "Mutation 2",
+            "value": "mutation_2"
+          },
+          {
+            "label": "Transgene 1",
+            "value": "transgene_1"
+          }
         ],
         "defaultValue": null,
         "content": null,
@@ -1827,8 +1974,14 @@
         "pattern": null,
         "patternMessage": null,
         "options": [
-          { "label": "Yes", "value": "yes" },
-          { "label": "No", "value": "no" }
+          {
+            "label": "Yes",
+            "value": "yes"
+          },
+          {
+            "label": "No",
+            "value": "no"
+          }
         ],
         "defaultValue": null,
         "content": null,
@@ -2005,8 +2158,14 @@
         "pattern": null,
         "patternMessage": null,
         "options": [
-          { "label": "Yes", "value": "yes" },
-          { "label": "No", "value": "no" }
+          {
+            "label": "Yes",
+            "value": "yes"
+          },
+          {
+            "label": "No",
+            "value": "no"
+          }
         ],
         "defaultValue": null,
         "content": null,
@@ -2083,8 +2242,14 @@
         "pattern": null,
         "patternMessage": null,
         "options": [
-          { "label": "Yes", "value": "yes" },
-          { "label": "No", "value": "no" }
+          {
+            "label": "Yes",
+            "value": "yes"
+          },
+          {
+            "label": "No",
+            "value": "no"
+          }
         ],
         "defaultValue": null,
         "content": null,

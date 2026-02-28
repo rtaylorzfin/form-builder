@@ -111,7 +111,7 @@ class ImportExportTest {
                 .andExpect(jsonPath("$.pages.length()").value(6))
                 .andExpect(jsonPath("$.elements.length()").value(24))
                 // Check page titles
-                .andExpect(jsonPath("$.pages[0].title").value("Page 1"))
+                .andExpect(jsonPath("$.pages[0].title").value("Notice"))
                 .andExpect(jsonPath("$.pages[3].title").value("Linked Features"))
                 .andExpect(jsonPath("$.pages[5].title").value("Additional Information"));
     }
