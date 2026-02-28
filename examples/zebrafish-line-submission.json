@@ -438,31 +438,6 @@
               },
               "pageIndex": 2,
               "children": null
-            },
-            {
-              "type": "TEXT_INPUT",
-              "label": "ZDB gene # (ZFIN ID)",
-              "fieldName": "zdb_gene",
-              "sortOrder": 4,
-              "configuration": {
-                "placeholder": "Enter text...",
-                "required": false,
-                "minLength": null,
-                "maxLength": null,
-                "min": null,
-                "max": null,
-                "pattern": null,
-                "patternMessage": null,
-                "options": null,
-                "defaultValue": null,
-                "content": null,
-                "repeatable": null,
-                "minInstances": null,
-                "maxInstances": null,
-                "fullPage": null
-              },
-              "pageIndex": 2,
-              "children": null
             }
           ]
         },
