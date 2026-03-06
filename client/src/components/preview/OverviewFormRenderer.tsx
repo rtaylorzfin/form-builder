@@ -694,6 +694,8 @@ function SimplePageSection({
   const status = getSectionDisplayStatus(sectionStatus, statusKey, formValues, fieldNames)
   const isComplete = sectionStatus[statusKey] || false
 
+  const hasFields = fieldNames.length > 0
+
   return (
     <div className="border rounded-lg p-4">
       <div className="flex items-center justify-between">
@@ -701,15 +703,15 @@ function SimplePageSection({
           <h3 className="font-semibold text-base">
             {pageIndex + 1}. {page.title || `Page ${pageIndex + 1}`}
           </h3>
-          <StatusBadge status={status} />
+          {hasFields && <StatusBadge status={status} />}
         </div>
-        {!readOnly && (
+        {!readOnly && hasFields && (
           <Button type="button" variant="outline" size="sm" onClick={onEdit}>
             <Pencil className="h-3 w-3 mr-1" /> Edit
           </Button>
         )}
       </div>
-      {!readOnly && fieldNames.length > 0 && (
+      {!readOnly && hasFields && (
         <div className="flex items-center gap-2 mt-3 pt-3 border-t">
           <Checkbox
             id={`complete-${statusKey}`}
@@ -789,6 +791,7 @@ function RepeatablePageSection({
                   {subSections.map((sub, subIdx) => {
                     const subKey = getSectionStatusKey(pageIndex, group.fieldName, instanceIndex, sub.fieldName)
                     const subFieldNames = getFieldNamesForElements(sub.children || [])
+                    const subHasFields = subFieldNames.length > 0 || (sub.configuration?.repeatable)
                     const instancePrefix = `${group.fieldName}.${instanceIndex}`
                     const subStatus = getSectionDisplayStatus(sectionStatus, subKey, formValues, subFieldNames, instancePrefix)
 
@@ -796,12 +799,14 @@ function RepeatablePageSection({
                       <div key={sub.id} className="flex items-center justify-between py-1.5">
                         <div className="flex items-center gap-2">
                           <span className="text-sm text-gray-700">{sub.label}</span>
-                          <StatusBadge status={subStatus} />
+                          {subHasFields && <StatusBadge status={subStatus} />}
                         </div>
-                        <Button type="button" variant="ghost" size="sm" className="h-7 text-xs"
-                          onClick={() => onEditSubSection(instanceIndex, subIdx)}>
-                          <Pencil className="h-3 w-3 mr-1" /> Edit
-                        </Button>
+                        {subHasFields && (
+                          <Button type="button" variant="ghost" size="sm" className="h-7 text-xs"
+                            onClick={() => onEditSubSection(instanceIndex, subIdx)}>
+                            <Pencil className="h-3 w-3 mr-1" /> Edit
+                          </Button>
+                        )}
                       </div>
                     )
                   })}
