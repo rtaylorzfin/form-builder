@@ -116,7 +116,8 @@ export default function FormList() {
         ref={fileInputRef}
         type="file"
         accept=".json,.yaml,.yml"
-        className="hidden"
+        className="absolute w-0 h-0 opacity-0 overflow-hidden"
+        tabIndex={-1}
         onChange={handleFileChange}
       />
       <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
