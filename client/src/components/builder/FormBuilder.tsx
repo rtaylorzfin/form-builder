@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { Eye, Save, Send, Plus, X, Download, Pencil } from 'lucide-react'
+import yaml from 'js-yaml'
 import { formsApi, elementsApi, pagesApi } from '@/api/client'
 import type { ElementType, FormElement, FormPage } from '@/api/types'
 import { useFormBuilderStore, createNewElement } from '@/stores/formBuilderStore'
@@ -177,19 +178,28 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
     })
   }
 
-  const handleExport = async () => {
+  const handleExport = async (format: 'json' | 'yaml' = 'json') => {
     try {
       const exportData = await formsApi.export(formId)
-      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
+      let blob: Blob
+      let filename: string
+      if (format === 'yaml') {
+        const yamlStr = yaml.dump(exportData, { lineWidth: -1, noRefs: true, quotingType: '"' })
+        blob = new Blob([yamlStr], { type: 'text/yaml' })
+        filename = `${form?.name || 'form'}.yaml`
+      } else {
+        blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
+        filename = `${form?.name || 'form'}.json`
+      }
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `${form?.name || 'form'}.json`
+      a.download = filename
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
-      toast({ title: 'Form exported successfully' })
+      toast({ title: `Form exported as ${format.toUpperCase()}` })
     } catch {
       toast({ title: 'Failed to export form', variant: 'destructive' })
     }
@@ -241,10 +251,17 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
-            onClick={handleExport}
+            onClick={() => handleExport('json')}
           >
             <Download className="h-4 w-4 mr-2" />
-            Export
+            JSON
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => handleExport('yaml')}
+          >
+            <Download className="h-4 w-4 mr-2" />
+            YAML
           </Button>
           <Button
             variant="outline"

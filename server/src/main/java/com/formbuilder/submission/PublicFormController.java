@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,6 +23,12 @@ public class PublicFormController {
 
     private final FormService formService;
     private final SubmissionService submissionService;
+
+    @GetMapping
+    @Operation(summary = "List all published forms")
+    public ResponseEntity<List<FormDTO.ListResponse>> listPublishedForms() {
+        return ResponseEntity.ok(formService.getPublishedForms());
+    }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get published form for public viewing")

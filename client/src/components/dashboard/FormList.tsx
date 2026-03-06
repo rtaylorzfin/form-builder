@@ -1,7 +1,8 @@
 import { useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Pencil, Eye, Trash2, BarChart2, ExternalLink, Upload, FileEdit } from 'lucide-react'
+import { Pencil, Eye, Trash2, BarChart2, ExternalLink, Upload, FileEdit, Download } from 'lucide-react'
+import yaml from 'js-yaml'
 import { formsApi } from '@/api/client'
 import type { FormExportData } from '@/api/types'
 import { useAuthStore } from '@/stores/authStore'
@@ -45,17 +46,47 @@ export default function FormList() {
 
     try {
       const text = await file.text()
-      const importData: FormExportData = JSON.parse(text)
+      const isYaml = file.name.endsWith('.yaml') || file.name.endsWith('.yml')
+      const importData: FormExportData = isYaml
+        ? yaml.load(text) as FormExportData
+        : JSON.parse(text)
       const newForm = await formsApi.import(importData)
       queryClient.invalidateQueries({ queryKey: ['forms'] })
       toast({ title: 'Form imported successfully' })
       navigate(`/forms/${newForm.id}/edit`)
     } catch {
-      toast({ title: 'Failed to import form. Check JSON format.', variant: 'destructive' })
+      toast({ title: 'Failed to import form. Check file format.', variant: 'destructive' })
     }
 
     // Reset input so same file can be re-imported
     if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
+  const handleExport = async (formId: string, formName: string, format: 'json' | 'yaml') => {
+    try {
+      const exportData = await formsApi.export(formId)
+      let blob: Blob
+      let filename: string
+      if (format === 'yaml') {
+        const yamlStr = yaml.dump(exportData, { lineWidth: -1, noRefs: true, quotingType: '"' })
+        blob = new Blob([yamlStr], { type: 'text/yaml' })
+        filename = `${formName || 'form'}.yaml`
+      } else {
+        blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
+        filename = `${formName || 'form'}.json`
+      }
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = filename
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+      toast({ title: `Form exported as ${format.toUpperCase()}` })
+    } catch {
+      toast({ title: 'Failed to export form', variant: 'destructive' })
+    }
   }
 
   const handleDelete = (id: string, name: string) => {
@@ -84,7 +115,7 @@ export default function FormList() {
       <input
         ref={fileInputRef}
         type="file"
-        accept=".json"
+        accept=".json,.yaml,.yml"
         className="hidden"
         onChange={handleFileChange}
       />
@@ -167,6 +198,18 @@ export default function FormList() {
                     </a>
                   </Button>
                 </>
+              )}
+              {isAdmin() && (
+                <Button variant="outline" size="sm" onClick={() => handleExport(form.id, form.name, 'json')}>
+                  <Download className="h-4 w-4 mr-1" />
+                  JSON
+                </Button>
+              )}
+              {isAdmin() && (
+                <Button variant="outline" size="sm" onClick={() => handleExport(form.id, form.name, 'yaml')}>
+                  <Download className="h-4 w-4 mr-1" />
+                  YAML
+                </Button>
               )}
               {isAdmin() && (
                 <Button

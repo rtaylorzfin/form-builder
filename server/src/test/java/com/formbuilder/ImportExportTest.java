@@ -41,6 +41,7 @@ class ImportExportTest {
     private String adminToken;
     private String importedFormId;
     private String pageBreakFormId;
+    private String yamlImportedFormId;
 
     @BeforeAll
     void setup() throws Exception {
@@ -325,6 +326,59 @@ class ImportExportTest {
 
     @Test
     @Order(11)
+    void exportFormAsYaml() throws Exception {
+        mockMvc.perform(get("/api/forms/{id}/export", importedFormId)
+                .param("format", "yaml")
+                .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.valueOf("text/yaml;charset=UTF-8")))
+                .andExpect(content().string(containsString("name: Submit a Line")));
+    }
+
+    @Test
+    @Order(12)
+    void yamlImportEndpoint() throws Exception {
+        Path yamlPath = Path.of("../examples/zebrafish-line-submission.yaml");
+        String yamlContent = Files.readString(yamlPath);
+
+        MvcResult result = mockMvc.perform(post("/api/forms/import/yaml")
+                .header("Authorization", "Bearer " + adminToken)
+                .contentType(MediaType.valueOf("text/yaml"))
+                .content(yamlContent))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value("Submit a Line"))
+                .andReturn();
+
+        FormDTO.Response response = objectMapper.readValue(
+                result.getResponse().getContentAsString(), FormDTO.Response.class);
+        yamlImportedFormId = response.getId().toString();
+    }
+
+    @Test
+    @Order(13)
+    void publicFormsListEmpty() throws Exception {
+        // importedFormId is DRAFT status, so it should not appear in public forms list
+        mockMvc.perform(get("/api/public/forms"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.id=='" + importedFormId + "')]").doesNotExist());
+    }
+
+    @Test
+    @Order(14)
+    void publicFormsListAfterPublish() throws Exception {
+        // Publish the imported form
+        mockMvc.perform(post("/api/forms/{id}/publish", importedFormId)
+                .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk());
+
+        // Verify it now appears in the public forms list
+        mockMvc.perform(get("/api/public/forms"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.name=='Submit a Line')]").exists());
+    }
+
+    @Test
+    @Order(15)
     void cleanup() throws Exception {
         // Clean up forms created during tests
         if (importedFormId != null) {
@@ -334,6 +388,11 @@ class ImportExportTest {
         }
         if (pageBreakFormId != null) {
             mockMvc.perform(delete("/api/forms/{id}", pageBreakFormId)
+                    .header("Authorization", "Bearer " + adminToken))
+                    .andExpect(status().isNoContent());
+        }
+        if (yamlImportedFormId != null) {
+            mockMvc.perform(delete("/api/forms/{id}", yamlImportedFormId)
                     .header("Authorization", "Bearer " + adminToken))
                     .andExpect(status().isNoContent());
         }

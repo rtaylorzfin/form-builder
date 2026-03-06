@@ -54,6 +54,14 @@ public class FormService {
     }
 
     @Transactional(readOnly = true)
+    public List<FormDTO.ListResponse> getPublishedForms() {
+        return formRepository.findByStatusOrderByUpdatedAtDesc(FormStatus.PUBLISHED)
+                .stream()
+                .map(this::toListResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     public FormDTO.Response getPublishedForm(UUID id) {
         Form form = formRepository.findPublishedByIdWithElements(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Published form not found: " + id));

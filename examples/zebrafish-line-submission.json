@@ -231,60 +231,10 @@
       "pageIndex": 2,
       "children": [
         {
-          "type": "TEXT_INPUT",
-          "label": "Allele designation assigned to the mutation ",
-          "fieldName": "allele_designation",
+          "type": "ELEMENT_GROUP",
+          "label": "Mutation General Info",
+          "fieldName": "mutation_general_info",
           "sortOrder": 0,
-          "configuration": {
-            "placeholder": "Enter text...",
-            "required": false,
-            "minLength": null,
-            "maxLength": null,
-            "min": null,
-            "max": null,
-            "pattern": null,
-            "patternMessage": null,
-            "options": null,
-            "defaultValue": null,
-            "content": null,
-            "repeatable": null,
-            "minInstances": null,
-            "maxInstances": null,
-            "fullPage": null
-          },
-          "pageIndex": 2,
-          "children": null
-        },
-        {
-          "type": "TEXT_INPUT",
-          "label": "Mutagenesis protocol",
-          "fieldName": "mutagenesis_protocol",
-          "sortOrder": 1,
-          "configuration": {
-            "placeholder": "Enter text...",
-            "required": false,
-            "minLength": null,
-            "maxLength": null,
-            "min": null,
-            "max": null,
-            "pattern": null,
-            "patternMessage": null,
-            "options": null,
-            "defaultValue": null,
-            "content": null,
-            "repeatable": null,
-            "minInstances": null,
-            "maxInstances": null,
-            "fullPage": null
-          },
-          "pageIndex": 2,
-          "children": null
-        },
-        {
-          "type": "RADIO_GROUP",
-          "label": "Is the mutation molecularly characterized/cloned?",
-          "fieldName": "mutation_molecularly_characterized",
-          "sortOrder": 2,
           "configuration": {
             "placeholder": null,
             "required": false,
@@ -294,31 +244,107 @@
             "max": null,
             "pattern": null,
             "patternMessage": null,
-            "options": [
-              {
-                "label": "Yes",
-                "value": "yes"
-              },
-              {
-                "label": "No",
-                "value": "no"
-              }
-            ],
+            "options": null,
             "defaultValue": null,
             "content": null,
-            "repeatable": null,
+            "repeatable": false,
             "minInstances": null,
             "maxInstances": null,
-            "fullPage": null
+            "fullPage": true
           },
           "pageIndex": 2,
-          "children": null
+          "children": [
+            {
+              "type": "TEXT_INPUT",
+              "label": "Allele designation assigned to the mutation ",
+              "fieldName": "allele_designation",
+              "sortOrder": 0,
+              "configuration": {
+                "placeholder": "Enter text...",
+                "required": false,
+                "minLength": null,
+                "maxLength": null,
+                "min": null,
+                "max": null,
+                "pattern": null,
+                "patternMessage": null,
+                "options": null,
+                "defaultValue": null,
+                "content": null,
+                "repeatable": null,
+                "minInstances": null,
+                "maxInstances": null,
+                "fullPage": null
+              },
+              "pageIndex": 2,
+              "children": null
+            },
+            {
+              "type": "TEXT_INPUT",
+              "label": "Mutagenesis protocol",
+              "fieldName": "mutagenesis_protocol",
+              "sortOrder": 1,
+              "configuration": {
+                "placeholder": "Enter text...",
+                "required": false,
+                "minLength": null,
+                "maxLength": null,
+                "min": null,
+                "max": null,
+                "pattern": null,
+                "patternMessage": null,
+                "options": null,
+                "defaultValue": null,
+                "content": null,
+                "repeatable": null,
+                "minInstances": null,
+                "maxInstances": null,
+                "fullPage": null
+              },
+              "pageIndex": 2,
+              "children": null
+            },
+            {
+              "type": "RADIO_GROUP",
+              "label": "Is the mutation molecularly characterized/cloned?",
+              "fieldName": "mutation_molecularly_characterized",
+              "sortOrder": 2,
+              "configuration": {
+                "placeholder": null,
+                "required": false,
+                "minLength": null,
+                "maxLength": null,
+                "min": null,
+                "max": null,
+                "pattern": null,
+                "patternMessage": null,
+                "options": [
+                  {
+                    "label": "Yes",
+                    "value": "yes"
+                  },
+                  {
+                    "label": "No",
+                    "value": "no"
+                  }
+                ],
+                "defaultValue": null,
+                "content": null,
+                "repeatable": null,
+                "minInstances": null,
+                "maxInstances": null,
+                "fullPage": null
+              },
+              "pageIndex": 2,
+              "children": null
+            }
+          ]
         },
         {
           "type": "ELEMENT_GROUP",
-          "label": "Gene",
+          "label": "Genes",
           "fieldName": "genes",
-          "sortOrder": 4,
+          "sortOrder": 1,
           "configuration": {
             "placeholder": null,
             "required": false,
@@ -443,9 +469,9 @@
         },
         {
           "type": "ELEMENT_GROUP",
-          "label": "Lesion",
+          "label": "Lesions",
           "fieldName": "lesions",
-          "sortOrder": 5,
+          "sortOrder": 2,
           "configuration": {
             "placeholder": null,
             "required": false,
@@ -758,9 +784,9 @@
         },
         {
           "type": "ELEMENT_GROUP",
-          "label": "Genotyping Assay",
+          "label": "Genotyping Assays",
           "fieldName": "genotyping_assays",
-          "sortOrder": 6,
+          "sortOrder": 3,
           "configuration": {
             "placeholder": null,
             "required": false,
@@ -1074,9 +1100,9 @@
         },
         {
           "type": "ELEMENT_GROUP",
-          "label": "Phenotyping",
+          "label": "Phenotyping General Info",
           "fieldName": "phenotyping",
-          "sortOrder": 7,
+          "sortOrder": 4,
           "configuration": {
             "placeholder": null,
             "required": false,
@@ -1147,9 +1173,9 @@
         },
         {
           "type": "ELEMENT_GROUP",
-          "label": "Phenotypes",
+          "label": "Phenotyping Assays",
           "fieldName": "phenotypes",
-          "sortOrder": 8,
+          "sortOrder": 5,
           "configuration": {
             "placeholder": null,
             "required": false,
@@ -1466,7 +1492,7 @@
                     "value": "maternal"
                   },
                   {
-                    "label": "Maternal \u2013 Zygotic (M-Z)",
+                    "label": "Maternal – Zygotic (M-Z)",
                     "value": "maternal_zygotic"
                   }
                 ],
@@ -1484,10 +1510,10 @@
           ]
         },
         {
-          "type": "STATIC_TEXT",
+          "type": "ELEMENT_GROUP",
           "label": "Lethality",
-          "fieldName": "static_lethality",
-          "sortOrder": 9,
+          "fieldName": "lethality",
+          "sortOrder": 6,
           "configuration": {
             "placeholder": null,
             "required": false,
@@ -1499,54 +1525,189 @@
             "patternMessage": null,
             "options": null,
             "defaultValue": null,
-            "content": "<h4>Lethality</h4>",
-            "repeatable": null,
+            "content": null,
+            "repeatable": false,
             "minInstances": null,
             "maxInstances": null,
-            "fullPage": null
+            "fullPage": true
           },
           "pageIndex": 2,
-          "children": null
-        },
-        {
-          "type": "RADIO_GROUP",
-          "label": "Is the mutation homozygous lethal?",
-          "fieldName": "homozygous_lethal",
-          "sortOrder": 10,
-          "configuration": {
-            "placeholder": null,
-            "required": false,
-            "minLength": null,
-            "maxLength": null,
-            "min": null,
-            "max": null,
-            "pattern": null,
-            "patternMessage": null,
-            "options": [
-              {
-                "label": "Yes",
-                "value": "yes"
+          "children": [
+            {
+              "type": "RADIO_GROUP",
+              "label": "Is the mutation homozygous lethal?",
+              "fieldName": "homozygous_lethal",
+              "sortOrder": 0,
+              "configuration": {
+                "placeholder": null,
+                "required": false,
+                "minLength": null,
+                "maxLength": null,
+                "min": null,
+                "max": null,
+                "pattern": null,
+                "patternMessage": null,
+                "options": [
+                  {
+                    "label": "Yes",
+                    "value": "yes"
+                  },
+                  {
+                    "label": "No",
+                    "value": "no"
+                  }
+                ],
+                "defaultValue": null,
+                "content": null,
+                "repeatable": null,
+                "minInstances": null,
+                "maxInstances": null,
+                "fullPage": null
               },
-              {
-                "label": "No",
-                "value": "no"
-              }
-            ],
-            "defaultValue": null,
-            "content": null,
-            "repeatable": null,
-            "minInstances": null,
-            "maxInstances": null,
-            "fullPage": null
-          },
-          "pageIndex": 2,
-          "children": null
+              "pageIndex": 2,
+              "children": null
+            },
+            {
+              "type": "RADIO_GROUP",
+              "label": "Specify developmental stage at which homozygous individuals die",
+              "fieldName": "lethality_stage_type",
+              "sortOrder": 1,
+              "configuration": {
+                "placeholder": null,
+                "required": false,
+                "minLength": null,
+                "maxLength": null,
+                "min": null,
+                "max": null,
+                "pattern": null,
+                "patternMessage": null,
+                "options": [
+                  {
+                    "label": "A specific developmental time point",
+                    "value": "specific"
+                  },
+                  {
+                    "label": "A temporal window",
+                    "value": "temporal_window"
+                  }
+                ],
+                "defaultValue": null,
+                "content": null,
+                "repeatable": null,
+                "minInstances": null,
+                "maxInstances": null,
+                "fullPage": null
+              },
+              "pageIndex": 2,
+              "children": null
+            },
+            {
+              "type": "TEXT_INPUT",
+              "label": "Specific developmental time point",
+              "fieldName": "lethality_specific_timepoint",
+              "sortOrder": 2,
+              "configuration": {
+                "placeholder": "Enter developmental stage...",
+                "required": false,
+                "minLength": null,
+                "maxLength": null,
+                "min": null,
+                "max": null,
+                "pattern": null,
+                "patternMessage": null,
+                "options": null,
+                "defaultValue": null,
+                "content": null,
+                "repeatable": null,
+                "minInstances": null,
+                "maxInstances": null,
+                "fullPage": null
+              },
+              "pageIndex": 2,
+              "children": null
+            },
+            {
+              "type": "TEXT_INPUT",
+              "label": "Temporal window start",
+              "fieldName": "lethality_window_start",
+              "sortOrder": 3,
+              "configuration": {
+                "placeholder": "e.g. day 20",
+                "required": false,
+                "minLength": null,
+                "maxLength": null,
+                "min": null,
+                "max": null,
+                "pattern": null,
+                "patternMessage": null,
+                "options": null,
+                "defaultValue": null,
+                "content": null,
+                "repeatable": null,
+                "minInstances": null,
+                "maxInstances": null,
+                "fullPage": null
+              },
+              "pageIndex": 2,
+              "children": null
+            },
+            {
+              "type": "TEXT_INPUT",
+              "label": "Temporal window end",
+              "fieldName": "lethality_window_end",
+              "sortOrder": 4,
+              "configuration": {
+                "placeholder": "e.g. day 30",
+                "required": false,
+                "minLength": null,
+                "maxLength": null,
+                "min": null,
+                "max": null,
+                "pattern": null,
+                "patternMessage": null,
+                "options": null,
+                "defaultValue": null,
+                "content": null,
+                "repeatable": null,
+                "minInstances": null,
+                "maxInstances": null,
+                "fullPage": null
+              },
+              "pageIndex": 2,
+              "children": null
+            },
+            {
+              "type": "TEXT_AREA",
+              "label": "Additional Information",
+              "fieldName": "lethality_additional_info",
+              "sortOrder": 5,
+              "configuration": {
+                "placeholder": "Enter text...",
+                "required": false,
+                "minLength": null,
+                "maxLength": null,
+                "min": null,
+                "max": null,
+                "pattern": null,
+                "patternMessage": null,
+                "options": null,
+                "defaultValue": null,
+                "content": null,
+                "repeatable": null,
+                "minInstances": null,
+                "maxInstances": null,
+                "fullPage": null
+              },
+              "pageIndex": 2,
+              "children": null
+            }
+          ]
         },
         {
-          "type": "RADIO_GROUP",
-          "label": "Specify developmental stage at which homozygous individuals die",
-          "fieldName": "lethality_stage_type",
-          "sortOrder": 11,
+          "type": "ELEMENT_GROUP",
+          "label": "Mutation Finalization",
+          "fieldName": "mutation_finalization",
+          "sortOrder": 7,
           "configuration": {
             "placeholder": null,
             "required": false,
@@ -1556,259 +1717,151 @@
             "max": null,
             "pattern": null,
             "patternMessage": null,
-            "options": [
-              {
-                "label": "A specific developmental time point",
-                "value": "specific"
+            "options": null,
+            "defaultValue": null,
+            "content": null,
+            "repeatable": false,
+            "minInstances": null,
+            "maxInstances": null,
+            "fullPage": true
+          },
+          "pageIndex": 2,
+          "children": [
+            {
+              "type": "RADIO_GROUP",
+              "label": "Is ZFIN record established for this mutation?",
+              "fieldName": "zfin_record_established",
+              "sortOrder": 0,
+              "configuration": {
+                "placeholder": null,
+                "required": false,
+                "minLength": null,
+                "maxLength": null,
+                "min": null,
+                "max": null,
+                "pattern": null,
+                "patternMessage": null,
+                "options": [
+                  {
+                    "label": "Yes",
+                    "value": "yes"
+                  },
+                  {
+                    "label": "No",
+                    "value": "no"
+                  }
+                ],
+                "defaultValue": null,
+                "content": null,
+                "repeatable": null,
+                "minInstances": null,
+                "maxInstances": null,
+                "fullPage": null
               },
-              {
-                "label": "A temporal window",
-                "value": "temporal_window"
-              }
-            ],
-            "defaultValue": null,
-            "content": null,
-            "repeatable": null,
-            "minInstances": null,
-            "maxInstances": null,
-            "fullPage": null
-          },
-          "pageIndex": 2,
-          "children": null
-        },
-        {
-          "type": "TEXT_INPUT",
-          "label": "Specific developmental time point",
-          "fieldName": "lethality_specific_timepoint",
-          "sortOrder": 12,
-          "configuration": {
-            "placeholder": "Enter developmental stage...",
-            "required": false,
-            "minLength": null,
-            "maxLength": null,
-            "min": null,
-            "max": null,
-            "pattern": null,
-            "patternMessage": null,
-            "options": null,
-            "defaultValue": null,
-            "content": null,
-            "repeatable": null,
-            "minInstances": null,
-            "maxInstances": null,
-            "fullPage": null
-          },
-          "pageIndex": 2,
-          "children": null
-        },
-        {
-          "type": "TEXT_INPUT",
-          "label": "Temporal window start",
-          "fieldName": "lethality_window_start",
-          "sortOrder": 13,
-          "configuration": {
-            "placeholder": "e.g. day 20",
-            "required": false,
-            "minLength": null,
-            "maxLength": null,
-            "min": null,
-            "max": null,
-            "pattern": null,
-            "patternMessage": null,
-            "options": null,
-            "defaultValue": null,
-            "content": null,
-            "repeatable": null,
-            "minInstances": null,
-            "maxInstances": null,
-            "fullPage": null
-          },
-          "pageIndex": 2,
-          "children": null
-        },
-        {
-          "type": "TEXT_INPUT",
-          "label": "Temporal window end",
-          "fieldName": "lethality_window_end",
-          "sortOrder": 14,
-          "configuration": {
-            "placeholder": "e.g. day 30",
-            "required": false,
-            "minLength": null,
-            "maxLength": null,
-            "min": null,
-            "max": null,
-            "pattern": null,
-            "patternMessage": null,
-            "options": null,
-            "defaultValue": null,
-            "content": null,
-            "repeatable": null,
-            "minInstances": null,
-            "maxInstances": null,
-            "fullPage": null
-          },
-          "pageIndex": 2,
-          "children": null
-        },
-        {
-          "type": "TEXT_AREA",
-          "label": "Additional Information",
-          "fieldName": "lethality_additional_info",
-          "sortOrder": 15,
-          "configuration": {
-            "placeholder": "Enter text...",
-            "required": false,
-            "minLength": null,
-            "maxLength": null,
-            "min": null,
-            "max": null,
-            "pattern": null,
-            "patternMessage": null,
-            "options": null,
-            "defaultValue": null,
-            "content": null,
-            "repeatable": null,
-            "minInstances": null,
-            "maxInstances": null,
-            "fullPage": null
-          },
-          "pageIndex": 2,
-          "children": null
-        },
-        {
-          "type": "RADIO_GROUP",
-          "label": "Is ZFIN record established for this mutation?",
-          "fieldName": "zfin_record_established",
-          "sortOrder": 16,
-          "configuration": {
-            "placeholder": null,
-            "required": false,
-            "minLength": null,
-            "maxLength": null,
-            "min": null,
-            "max": null,
-            "pattern": null,
-            "patternMessage": null,
-            "options": [
-              {
-                "label": "Yes",
-                "value": "yes"
+              "pageIndex": 2,
+              "children": null
+            },
+            {
+              "type": "TEXT_INPUT",
+              "label": "ZDB genomic feature # (ZFIN ID)",
+              "fieldName": "zdb_genomic_feature",
+              "sortOrder": 1,
+              "configuration": {
+                "placeholder": "Enter text...",
+                "required": false,
+                "minLength": null,
+                "maxLength": null,
+                "min": null,
+                "max": null,
+                "pattern": null,
+                "patternMessage": null,
+                "options": null,
+                "defaultValue": null,
+                "content": null,
+                "repeatable": null,
+                "minInstances": null,
+                "maxInstances": null,
+                "fullPage": null
               },
-              {
-                "label": "No",
-                "value": "no"
-              }
-            ],
-            "defaultValue": null,
-            "content": null,
-            "repeatable": null,
-            "minInstances": null,
-            "maxInstances": null,
-            "fullPage": null
-          },
-          "pageIndex": 2,
-          "children": null
-        },
-        {
-          "type": "TEXT_INPUT",
-          "label": "ZDB genomic feature # (ZFIN ID)",
-          "fieldName": "zdb_genomic_feature",
-          "sortOrder": 17,
-          "configuration": {
-            "placeholder": "Enter text...",
-            "required": false,
-            "minLength": null,
-            "maxLength": null,
-            "min": null,
-            "max": null,
-            "pattern": null,
-            "patternMessage": null,
-            "options": null,
-            "defaultValue": null,
-            "content": null,
-            "repeatable": null,
-            "minInstances": null,
-            "maxInstances": null,
-            "fullPage": null
-          },
-          "pageIndex": 2,
-          "children": null
-        },
-        {
-          "type": "TEXT_INPUT",
-          "label": "Mutation discoverer/creator",
-          "fieldName": "mutation_discoverer",
-          "sortOrder": 18,
-          "configuration": {
-            "placeholder": "Enter text...",
-            "required": false,
-            "minLength": null,
-            "maxLength": null,
-            "min": null,
-            "max": null,
-            "pattern": null,
-            "patternMessage": null,
-            "options": null,
-            "defaultValue": null,
-            "content": null,
-            "repeatable": null,
-            "minInstances": null,
-            "maxInstances": null,
-            "fullPage": null
-          },
-          "pageIndex": 2,
-          "children": null
-        },
-        {
-          "type": "TEXT_INPUT",
-          "label": "Institution where the mutation was discovered/generated",
-          "fieldName": "mutation_institution",
-          "sortOrder": 19,
-          "configuration": {
-            "placeholder": "Enter text...",
-            "required": false,
-            "minLength": null,
-            "maxLength": null,
-            "min": null,
-            "max": null,
-            "pattern": null,
-            "patternMessage": null,
-            "options": null,
-            "defaultValue": null,
-            "content": null,
-            "repeatable": null,
-            "minInstances": null,
-            "maxInstances": null,
-            "fullPage": null
-          },
-          "pageIndex": 2,
-          "children": null
-        },
-        {
-          "type": "TEXT_INPUT",
-          "label": "Publications (please list)",
-          "fieldName": "publications",
-          "sortOrder": 20,
-          "configuration": {
-            "placeholder": "Enter text...",
-            "required": false,
-            "minLength": null,
-            "maxLength": null,
-            "min": null,
-            "max": null,
-            "pattern": null,
-            "patternMessage": null,
-            "options": null,
-            "defaultValue": null,
-            "content": null,
-            "repeatable": true,
-            "minInstances": 0,
-            "maxInstances": 10,
-            "fullPage": null
-          },
-          "pageIndex": 2,
-          "children": null
+              "pageIndex": 2,
+              "children": null
+            },
+            {
+              "type": "TEXT_INPUT",
+              "label": "Mutation discoverer/creator",
+              "fieldName": "mutation_discoverer",
+              "sortOrder": 2,
+              "configuration": {
+                "placeholder": "Enter text...",
+                "required": false,
+                "minLength": null,
+                "maxLength": null,
+                "min": null,
+                "max": null,
+                "pattern": null,
+                "patternMessage": null,
+                "options": null,
+                "defaultValue": null,
+                "content": null,
+                "repeatable": null,
+                "minInstances": null,
+                "maxInstances": null,
+                "fullPage": null
+              },
+              "pageIndex": 2,
+              "children": null
+            },
+            {
+              "type": "TEXT_INPUT",
+              "label": "Institution where the mutation was discovered/generated",
+              "fieldName": "mutation_institution",
+              "sortOrder": 3,
+              "configuration": {
+                "placeholder": "Enter text...",
+                "required": false,
+                "minLength": null,
+                "maxLength": null,
+                "min": null,
+                "max": null,
+                "pattern": null,
+                "patternMessage": null,
+                "options": null,
+                "defaultValue": null,
+                "content": null,
+                "repeatable": null,
+                "minInstances": null,
+                "maxInstances": null,
+                "fullPage": null
+              },
+              "pageIndex": 2,
+              "children": null
+            },
+            {
+              "type": "TEXT_INPUT",
+              "label": "Publications (please list)",
+              "fieldName": "publications",
+              "sortOrder": 4,
+              "configuration": {
+                "placeholder": "Enter text...",
+                "required": false,
+                "minLength": null,
+                "maxLength": null,
+                "min": null,
+                "max": null,
+                "pattern": null,
+                "patternMessage": null,
+                "options": null,
+                "defaultValue": null,
+                "content": null,
+                "repeatable": true,
+                "minInstances": 0,
+                "maxInstances": 10,
+                "fullPage": null
+              },
+              "pageIndex": 2,
+              "children": null
+            }
+          ]
         }
       ]
     },

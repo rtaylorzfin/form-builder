@@ -73,6 +73,20 @@ describe('FormList', () => {
       await screen.findByText('Contact Form')
       expect(screen.getByText('Submissions')).toBeInTheDocument()
     })
+
+    it('shows JSON export button for admin', async () => {
+      renderWithProviders(<FormList />)
+      await screen.findByText('Contact Form')
+      const jsonButtons = screen.getAllByText('JSON')
+      expect(jsonButtons.length).toBeGreaterThan(0)
+    })
+
+    it('shows YAML export button for admin', async () => {
+      renderWithProviders(<FormList />)
+      await screen.findByText('Contact Form')
+      const yamlButtons = screen.getAllByText('YAML')
+      expect(yamlButtons.length).toBeGreaterThan(0)
+    })
   })
 
   describe('user role', () => {
@@ -96,6 +110,13 @@ describe('FormList', () => {
       renderWithProviders(<FormList />)
       await screen.findByText('Contact Form')
       expect(screen.getByText('Fill Form')).toBeInTheDocument()
+    })
+
+    it('hides export buttons for non-admin', async () => {
+      renderWithProviders(<FormList />)
+      await screen.findByText('Contact Form')
+      expect(screen.queryByText('JSON')).not.toBeInTheDocument()
+      expect(screen.queryByText('YAML')).not.toBeInTheDocument()
     })
   })
 })

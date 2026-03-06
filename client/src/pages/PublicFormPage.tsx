@@ -6,7 +6,7 @@ import { publicApi } from '@/api/client'
 import { useAuthStore } from '@/stores/authStore'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import FormRenderer from '@/components/preview/FormRenderer'
-import MultiPageFormRenderer from '@/components/preview/MultiPageFormRenderer'
+import OverviewFormRenderer from '@/components/preview/OverviewFormRenderer'
 
 export default function PublicFormPage() {
   const { formId } = useParams<{ formId: string }>()
@@ -127,7 +127,7 @@ export default function PublicFormPage() {
           </CardHeader>
           <CardContent>
             {hasMultiplePages ? (
-              <MultiPageFormRenderer
+              <OverviewFormRenderer
                 pages={form.pages}
                 onSubmit={(data) => submitMutation.mutate(data)}
                 isSubmitting={submitMutation.isPending}
