@@ -31,7 +31,7 @@ export const handlers = [
     return new HttpResponse(null, { status: 204 })
   }),
 
-  http.get('/api/forms/:id/export', ({ params }) => {
+  http.get('/api/forms/:id/export', () => {
     return HttpResponse.json({
       name: 'Exported Form',
       description: 'A test form',

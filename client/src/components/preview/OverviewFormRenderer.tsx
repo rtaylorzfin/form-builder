@@ -45,6 +45,7 @@ type EditingState = {
   pageIndex: number
   instanceIndex?: number
   subSectionIndex?: number
+  subInstanceIndex?: number
 } | null
 
 // ─── Schema Building (shared with existing renderers) ─────────────────────────
@@ -836,14 +837,15 @@ function RepeatablePageSection({
 // ─── Section Editor ───────────────────────────────────────────────────────────
 
 function SectionEditor({
-  pages, pageIndex, instanceIndex, subSectionIndex,
+  pages, pageIndex, instanceIndex, subSectionIndex, subInstanceIndex,
   register, errors, setValue, watch, control, readOnly,
-  onSaveAndExit, onNavigateSubSection,
+  onSaveAndExit, onNavigateSubSection, onEditSubInstance, onBackToSubSection,
 }: {
   pages: FormPage[]
   pageIndex: number
   instanceIndex?: number
   subSectionIndex?: number
+  subInstanceIndex?: number
   register: ReturnType<typeof useForm>['register']
   errors: Record<string, unknown>
   setValue: ReturnType<typeof useForm>['setValue']
@@ -852,6 +854,8 @@ function SectionEditor({
   readOnly?: boolean
   onSaveAndExit: () => void
   onNavigateSubSection: (subIdx: number) => void
+  onEditSubInstance: (subInstanceIndex: number) => void
+  onBackToSubSection: () => void
 }) {
   const page = pages[pageIndex]
   const repeatableGroup = getRepeatableGroupForPage(page)
@@ -893,6 +897,135 @@ function SectionEditor({
     const prevLabel = !isFirst ? subSections[subSectionIndex - 1].label : null
     const nextLabel = !isLast ? subSections[subSectionIndex + 1].label : null
 
+    // Repeatable sub-section: editing a specific instance
+    if (currentSub.configuration?.repeatable && subInstanceIndex !== undefined) {
+      const subPrefix = `${prefix}.${currentSub.fieldName}.${subInstanceIndex}`
+      const subChildren = (currentSub.children || []).filter(
+        (c) => c.type !== 'ELEMENT_GROUP' || !c.configuration?.fullPage
+      )
+      const subInstanceLabel = currentSub.configuration?.instanceLabel || 'Instance'
+
+      return (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between border-b pb-4">
+            <div>
+              <h2 className="text-lg font-semibold">
+                {instanceLabel} {instanceIndex + 1} — {currentSub.label} — {subInstanceLabel} {subInstanceIndex + 1}
+              </h2>
+              <p className="text-sm text-gray-500 mt-1">
+                Section {subSectionIndex + 1} of {subSections.length}
+              </p>
+            </div>
+            <Button type="button" variant="outline" onClick={onBackToSubSection}>
+              <ArrowLeft className="h-4 w-4 mr-2" /> Back to {currentSub.label}
+            </Button>
+          </div>
+          <div className="space-y-6">
+            {subChildren.map((child) => (
+              <RenderElement key={child.id} element={child} register={register}
+                errors={errors as Record<string, { message?: string }>} setValue={setValue}
+                watch={watch} readOnly={readOnly} prefix={subPrefix} />
+            ))}
+          </div>
+          <div className="flex justify-end pt-4 border-t">
+            <Button type="button" variant="outline" onClick={onBackToSubSection}>
+              <ArrowLeft className="h-4 w-4 mr-2" /> Back to {currentSub.label}
+            </Button>
+          </div>
+        </div>
+      )
+    }
+
+    // Repeatable sub-section: show collapsed instance list
+    if (currentSub.configuration?.repeatable && subInstanceIndex === undefined) {
+      const subFieldName = `${prefix}.${currentSub.fieldName}`
+      const subInstances = (watch(subFieldName) || []) as Record<string, unknown>[]
+      const subConfig = currentSub.configuration || {}
+      const subInstanceLabel = subConfig.instanceLabel || 'Instance'
+      const subMaxInstances = subConfig.maxInstances || 10
+      const subMinInstances = subConfig.minInstances ?? 0
+      const subChildren = (currentSub.children || []).filter(
+        (c) => c.type !== 'ELEMENT_GROUP' || !c.configuration?.fullPage
+      )
+
+      return (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between border-b pb-4">
+            <div>
+              <h2 className="text-lg font-semibold">
+                {instanceLabel} {instanceIndex + 1} — {currentSub.label}
+              </h2>
+              <p className="text-sm text-gray-500 mt-1">
+                Section {subSectionIndex + 1} of {subSections.length}
+              </p>
+            </div>
+            <Button type="button" variant="outline" onClick={onSaveAndExit}>
+              <ArrowLeft className="h-4 w-4 mr-2" /> Save and Exit
+            </Button>
+          </div>
+
+          <div className="space-y-3">
+            {subInstances.map((instanceData, idx) => {
+              const summary = getInstanceSummary(subChildren, instanceData, idx, subInstanceLabel)
+              return (
+                <div key={idx} className="border rounded-lg p-3 bg-gray-50/50">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-sm">{summary}</span>
+                    <div className="flex items-center gap-2">
+                      <Button type="button" variant="outline" size="sm" onClick={() => onEditSubInstance(idx)}>
+                        <Pencil className="h-3 w-3 mr-1" /> Edit
+                      </Button>
+                      {!readOnly && subInstances.length > subMinInstances && (
+                        <Button type="button" variant="ghost" size="sm" className="text-red-500 hover:text-red-600"
+                          onClick={() => {
+                            const updated = subInstances.filter((_, i) => i !== idx)
+                            setValue(subFieldName, updated)
+                          }}>
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+            {!readOnly && subInstances.length < subMaxInstances && (
+              <Button type="button" variant="outline" size="sm" className="w-full"
+                onClick={() => {
+                  const newInstance = getDefaultValuesForGroup(currentSub.children || [])
+                  setValue(subFieldName, [...subInstances, newInstance])
+                }}>
+                <Plus className="h-4 w-4 mr-1" /> Add {subInstanceLabel}
+              </Button>
+            )}
+          </div>
+
+          <div className="flex items-center justify-between pt-4 border-t">
+            <div>
+              {!isFirst && (
+                <Button type="button" variant="outline" onClick={() => onNavigateSubSection(subSectionIndex - 1)}>
+                  <ChevronLeft className="h-4 w-4 mr-1" />
+                  Previous ({prevLabel})
+                </Button>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <Button type="button" variant="outline" onClick={onSaveAndExit}>
+                Save and Exit
+              </Button>
+              {!isLast && (
+                <Button type="button" onClick={() => onNavigateSubSection(subSectionIndex + 1)}>
+                  Next ({nextLabel})
+                  <ChevronRight className="h-4 w-4 ml-1" />
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    // Non-repeatable sub-section: render fields directly
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between border-b pb-4">
@@ -910,19 +1043,11 @@ function SectionEditor({
         </div>
 
         <div className="space-y-6">
-          {currentSub.configuration?.repeatable ? (
-            <RepeatableGroupField
-              element={currentSub} control={control} register={register}
-              errors={errors} setValue={setValue} watch={watch} readOnly={readOnly}
-              prefix={prefix}
-            />
-          ) : (
-            renderElementList(
-              currentSub.children || [],
-              register,
-              errors as Record<string, { message?: string }>,
-              setValue, watch, control, readOnly, prefix
-            )
+          {renderElementList(
+            currentSub.children || [],
+            register,
+            errors as Record<string, { message?: string }>,
+            setValue, watch, control, readOnly, prefix
           )}
         </div>
 
@@ -1104,6 +1229,7 @@ export default function OverviewFormRenderer({
           pageIndex={editing.pageIndex}
           instanceIndex={editing.instanceIndex}
           subSectionIndex={editing.subSectionIndex}
+          subInstanceIndex={editing.subInstanceIndex}
           register={register}
           errors={errors}
           setValue={setValue}
@@ -1112,7 +1238,13 @@ export default function OverviewFormRenderer({
           readOnly={readOnly}
           onSaveAndExit={() => setEditing(null)}
           onNavigateSubSection={(subIdx) =>
-            setEditing({ ...editing, subSectionIndex: subIdx })
+            setEditing({ ...editing, subSectionIndex: subIdx, subInstanceIndex: undefined })
+          }
+          onEditSubInstance={(subInstanceIdx) =>
+            setEditing({ ...editing, subInstanceIndex: subInstanceIdx })
+          }
+          onBackToSubSection={() =>
+            setEditing({ ...editing, subInstanceIndex: undefined })
           }
         />
       </form>
