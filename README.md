@@ -11,7 +11,12 @@ A full-stack web application for building, managing, and rendering dynamic forms
 - **Nested Groups**: Groups can be nested up to 5 levels deep (e.g., Line > Feature > Genes), each level repeatable independently
 - **Multi-page Forms**: Create wizard-style forms with multiple pages, per-page validation, and a progress bar
 - **Static Text**: Insert HTML content blocks (titles, instructions) between form fields
-- **Import/Export**: Export forms as JSON and import them into other instances
+- **Import/Export**: Export forms as JSON or YAML and import them into other instances
+
+### Form Filling
+- **Overview-Driven UI**: Public form filling uses an overview page showing all sections with completion status badges, collapsed repeatable sub-sections with Add/Edit/Delete instance management
+- **Multi-Level Navigation**: Overview → section → sub-section → instance editing, each level rendered as its own "page"
+- **Read-Only Sections**: Sections containing only static HTML display without edit controls or status badges
 
 ### Form Management
 - **Publishing**: Publish forms to make them available via a public link
@@ -244,7 +249,7 @@ cd server
 mvn test
 ```
 
-Tests run against a `formbuilder_test` database on the same Docker Compose PostgreSQL instance. The test suite uses Flyway clean+migrate for isolation between runs. 18 tests covering authentication, form CRUD, publishing, submissions, role-based access control, and full-page group submissions.
+Tests run against a `formbuilder_test` database on the same Docker Compose PostgreSQL instance. The test suite uses Flyway clean+migrate for isolation between runs. 46 tests covering authentication, form CRUD, publishing, submissions, role-based access control, full-page group submissions, YAML import/export, and public forms listing.
 
 ### Frontend Tests
 
@@ -254,10 +259,12 @@ npm test          # Run all tests once
 npm run test:watch  # Run in watch mode
 ```
 
-53 tests across 3 test suites:
+82 tests across 5 test suites:
 - **formBuilderStore.test.ts** (23 tests): Zustand store operations — add/remove/update/move elements, nested groups, page management, element selection
 - **FormRenderer.test.tsx** (19 tests): Form rendering for all field types, required field indicators, Zod validation errors, form submission, repeatable groups, submit button states
-- **FormList.test.tsx** (11 tests): Integration tests with MSW — loading state, form cards, status badges, admin vs user role-based visibility
+- **FormList.test.tsx** (14 tests): Integration tests with MSW — loading state, form cards, status badges, JSON/YAML export buttons, admin vs user role-based visibility
+- **OverviewFormRenderer.test.tsx** (13 tests): Overview display, section editing, repeatable group instance management, form submission
+- **formBuilderStore pages** (13 tests): Additional store tests for page operations
 
 Test stack: Vitest, Testing Library, MSW (Mock Service Worker)
 
@@ -291,7 +298,7 @@ spring-boot-form-builder/
 │       ├── components/
 │       │   ├── builder/            # FormBuilder, Canvas, ElementPalette, ConfigPanel
 │       │   ├── dashboard/          # FormList, SubmissionList
-│       │   ├── preview/            # FormRenderer, MultiPageFormRenderer
+│       │   ├── preview/            # FormRenderer, MultiPageFormRenderer, OverviewFormRenderer
 │       │   └── ui/                 # shadcn/ui components
 │       ├── pages/                  # Route pages (Login, Register, Public form, etc.)
 │       ├── stores/                 # Zustand stores (formBuilder, auth)
@@ -308,6 +315,7 @@ spring-boot-form-builder/
 |--------|-------------------------------------|-----------------------|
 | POST   | `/api/auth/register`                | Register a new user   |
 | POST   | `/api/auth/login`                   | Login, returns JWT    |
+| GET    | `/api/public/forms`                 | List published forms  |
 | GET    | `/api/public/forms/{formId}`        | Get published form    |
 | POST   | `/api/public/forms/{formId}/submit` | Submit form response  |
 
@@ -322,7 +330,9 @@ spring-boot-form-builder/
 | DELETE | `/api/forms/{formId}`                            | Delete form              | ADMIN    |
 | POST   | `/api/forms/{formId}/publish`                    | Publish form             | ADMIN    |
 | GET    | `/api/forms/{formId}/export`                     | Export form as JSON      | ADMIN    |
+| GET    | `/api/forms/{formId}/export/yaml`                | Export form as YAML      | ADMIN    |
 | POST   | `/api/forms/import`                              | Import form from JSON    | ADMIN    |
+| POST   | `/api/forms/import/yaml`                         | Import form from YAML    | ADMIN    |
 | GET    | `/api/forms/{formId}/elements`                   | List form elements       | Any      |
 | POST   | `/api/forms/{formId}/elements`                   | Create element           | Any      |
 | PUT    | `/api/forms/{formId}/elements/{elementId}`       | Update element           | Any      |

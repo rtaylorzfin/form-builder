@@ -25,7 +25,7 @@ Full-stack form builder application with:
 - Multi-page wizard-style forms with per-page validation
 - User roles: ADMIN (first registered user) can manage forms; USER can only fill published forms
 - Method-level security with `@PreAuthorize("hasRole('ADMIN')")` on write endpoints
-- Form import/export as JSON
+- Form import/export as JSON or YAML
 - Submission CSV export
 
 **API Endpoints:**
@@ -35,11 +35,14 @@ Full-stack form builder application with:
 - `GET/PUT/DELETE /api/forms/{id}` - CRUD operations
 - `POST /api/forms/{id}/publish` - Publish form
 - `GET /api/forms/{id}/export` - Export form JSON (ADMIN)
+- `GET /api/forms/{id}/export/yaml` - Export form YAML (ADMIN)
 - `POST /api/forms/import` - Import form JSON (ADMIN)
+- `POST /api/forms/import/yaml` - Import form YAML (ADMIN)
 - `GET/POST /api/forms/{formId}/elements` - Manage elements
 - `PUT /api/forms/{formId}/elements/reorder` - Reorder elements
 - `GET/POST /api/forms/{formId}/pages` - Manage pages
 - `PUT /api/forms/{formId}/pages/reorder` - Reorder pages
+- `GET /api/public/forms` - List published forms (public)
 - `GET /api/public/forms/{id}` - Get published form (public)
 - `POST /api/public/forms/{id}/submit` - Submit response (public)
 - `GET /api/forms/{formId}/submissions` - List submissions
@@ -58,6 +61,7 @@ Full-stack form builder application with:
 - `ElementConfigPanel` - Property editor for selected element
 - `FormRenderer` - Form rendering with recursive Zod validation
 - `MultiPageFormRenderer` - Wizard-style multi-page forms
+- `OverviewFormRenderer` - Overview-driven form filling with section status, collapsed repeatable sub-sections, multi-level navigation (overview → section → sub-section → instance)
 - `FormList` / `SubmissionList` - Dashboard components (role-aware)
 
 **State Management:**
@@ -82,14 +86,14 @@ docker compose up -d
 # Backend
 cd server
 mvn spring-boot:run -Dspring-boot.run.profiles=dev    # Run server
-mvn test                                                # Run tests (18 tests)
+mvn test                                                # Run tests (46 tests)
 
 # Frontend
 cd client
 npm install          # Install deps
 npm run dev          # Dev server
 npm run build        # Production build
-npm test             # Run tests (53 tests)
+npm test             # Run tests (82 tests)
 npm run test:watch   # Watch mode
 ```
 
@@ -103,19 +107,21 @@ mvn spring-boot:run -Dspring-boot.run.arguments="--promote-admin=user@example.co
 
 ## Testing
 
-### Backend (18 tests)
+### Backend (46 tests)
 - JUnit 5 with `@TestMethodOrder` for ordered test execution
 - Tests against `formbuilder_test` database (Docker Compose PostgreSQL)
 - `TestFlywayConfig` provides clean+migrate between runs
-- Covers: registration, login, form CRUD, publishing, submissions, role-based access (403 for USER), full-page group submissions
+- Covers: registration, login, form CRUD, publishing, submissions, role-based access (403 for USER), full-page group submissions, YAML import/export, public forms listing
 
-### Frontend (53 tests, 3 suites)
+### Frontend (82 tests, 5 suites)
 - **Vitest** + **jsdom** environment
 - **Testing Library** for React component testing
 - **MSW** (Mock Service Worker) for API mocking
 - **formBuilderStore.test.ts** (23 tests): Store operations, nested groups, element movement
 - **FormRenderer.test.tsx** (19 tests): All field types, validation, groups, submit states
-- **FormList.test.tsx** (11 tests): Integration with MSW, role-based UI visibility
+- **FormList.test.tsx** (14 tests): Integration with MSW, role-based UI visibility, JSON/YAML export buttons
+- **OverviewFormRenderer.test.tsx** (13 tests): Overview display, section editing, repeatable groups, submission
+- **formBuilderStore pages** (13 tests): Page operations
 
 ## Flyway Migrations
 - V1: users, forms tables

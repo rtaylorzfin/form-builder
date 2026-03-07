@@ -44,8 +44,8 @@ com.formbuilder/
     Form.java                        # JPA entity: id, name, description, status, user
     FormStatus.java                  # Enum: DRAFT, PUBLISHED, ARCHIVED
     FormRepository.java              # JPQL: findByIdWithElements, findPublishedByIdWithElements
-    FormService.java                 # CRUD, publish, ownership verification, import/export
-    FormController.java              # /api/forms  -- @PreAuthorize("hasRole('ADMIN')") on mutating endpoints
+    FormService.java                 # CRUD, publish, ownership verification, import/export (JSON + YAML)
+    FormController.java              # /api/forms  -- @PreAuthorize("hasRole('ADMIN')") on mutating endpoints; YAML import via /import/yaml
     FormDTO.java                     # Response, ListResponse, CreateRequest, UpdateRequest, ExportResponse, ImportRequest
   page/
     FormPage.java                    # JPA entity: id, form, pageNumber, title, description
@@ -68,7 +68,7 @@ com.formbuilder/
     SubmissionRepository.java
     SubmissionService.java           # CRUD, server-side validation, CSV export, paginated listing
     SubmissionController.java        # /api/forms/{formId}/submissions  -- CSV export is @PreAuthorize("hasRole('ADMIN')")
-    PublicFormController.java        # /api/public/forms/{id} and /api/public/forms/{id}/submit  -- no auth required
+    PublicFormController.java        # /api/public/forms (list), /api/public/forms/{id}, /api/public/forms/{id}/submit  -- no auth required
     SubmissionDTO.java               # Response, PageResponse, CreateRequest, UpdateRequest
   exception/
     ResourceNotFoundException.java
@@ -168,6 +168,7 @@ client/src/
     preview/
       FormRenderer.tsx            # Single-page: builds Zod schema from elements, renders react-hook-form
       MultiPageFormRenderer.tsx   # Multi-page wizard: per-page validation, progress bar, prev/next navigation
+      OverviewFormRenderer.tsx    # Overview-driven form filling: section status badges, collapsed repeatable sub-sections, multi-level navigation
       SubmissionPrintView.tsx     # Read-only submission view: renders all pages as static label/value pairs for review/printing
     dashboard/
       FormList.tsx                # Lists forms with admin/user-specific actions
@@ -295,6 +296,17 @@ Authorization is enforced at the controller method level using `@PreAuthorize("h
 6. On submit, `react-hook-form` validates against the Zod schema. If valid, `onSubmit` fires `POST /api/public/forms/{id}/submit` with `{ data: {...}, status: "SUBMITTED" }`.
 7. Backend `SubmissionService.createSubmission()` re-validates the data against element definitions, serializes it to JSON, and persists a `Submission` row with IP address and user agent.
 
+### Overview-driven form filling (OverviewFormRenderer)
+
+1. `PublicFormPage` loads the published form and renders `OverviewFormRenderer` instead of `MultiPageFormRenderer`.
+2. The overview page shows all form pages as sections with completion status badges (Not Started / In Progress / Complete).
+3. Each section displays its sub-sections (element groups). Simple sections show an Edit button; repeatable sections show collapsed instance lists with Add/Edit/Delete controls.
+4. Clicking Edit on a section navigates to a `SectionEditor` that renders only that section's fields using `FormRenderer`.
+5. For repeatable sub-sections, clicking Edit on an instance sets `subInstanceIndex` in the `EditingState`, rendering only that instance's fields on its own "page".
+6. Read-only sections (containing only STATIC_TEXT elements) display without status badges, Edit buttons, or completion checkboxes.
+7. Navigation state is managed via `EditingState`: `{ pageIndex, instanceIndex?, subSectionIndex?, subInstanceIndex? }`.
+8. On the overview page, a Submit button triggers the full form submission with all collected data.
+
 ### Multi-page wizard
 
 1. `MultiPageFormRenderer` receives `pages[]`, each containing its `elements[]`.
@@ -319,16 +331,18 @@ Authorization is enforced at the controller method level using `@PreAuthorize("h
 
 ### Frontend: Vitest + Testing Library + MSW
 
-53 tests across 3 test files, run with `vitest`:
+82 tests across 5 test files, run with `vitest`:
 
 | File | Tests | Coverage |
 |------|-------|----------|
 | `formBuilderStore.test.ts` | 23 | Store operations: add, remove, update, reorder, move up/down (including nested children), select, addElementToGroup (including deep nesting), pages, setForm, createNewElement, reset |
 | `FormRenderer.test.tsx` | 19 | Field rendering for all 10 element types, required indicator, Zod validation (required text, required email, successful submission), group rendering (non-repeatable fieldset, repeatable with instance controls), submit button states (custom label, submitting, readOnly) |
-| `FormList.test.tsx` | 11 | Loading state, form card rendering, descriptions, element counts, status badges, admin actions (Edit, Import, Submissions), user role restrictions (no Edit, no Import, Fill Form for published) |
+| `FormList.test.tsx` | 14 | Loading state, form card rendering, descriptions, element counts, status badges, JSON/YAML export buttons, admin actions (Edit, Import, Submissions), user role restrictions (no Edit, no Import, Fill Form for published) |
+| `OverviewFormRenderer.test.tsx` | 13 | Overview page display, section editing, repeatable group instance management, collapsed sub-sections, form submission |
+| `formBuilderStore pages` | 13 | Page operations |
 
 **Test infrastructure:**
 - `test/setup.ts` -- Sets up MSW server, `@testing-library/jest-dom/vitest` matchers, and a `ResizeObserver` polyfill for Radix UI in jsdom.
 - `test/mocks/server.ts` -- MSW `setupServer` instance.
-- `test/mocks/handlers.ts` -- Mock handlers for `GET /api/forms`, `DELETE /api/forms/:id`, `POST /api/forms/import`.
+- `test/mocks/handlers.ts` -- Mock handlers for `GET /api/forms`, `DELETE /api/forms/:id`, `GET /api/forms/:id/export`, `POST /api/forms/import`.
 - Tests use `renderWithProviders()` helper that wraps components in `QueryClientProvider` and `MemoryRouter`.
