@@ -37,6 +37,7 @@ export default function ElementConfigPanel() {
   const [maxInstances, setMaxInstances] = useState(5)
   const [instanceLabel, setInstanceLabel] = useState('')
   const [allowOther, setAllowOther] = useState(false)
+  const [trackCompletion, setTrackCompletion] = useState(false)
 
   useEffect(() => {
     if (selectedElement) {
@@ -52,6 +53,7 @@ export default function ElementConfigPanel() {
       setMaxInstances(selectedElement.configuration?.maxInstances || 5)
       setInstanceLabel(selectedElement.configuration?.instanceLabel || '')
       setAllowOther(selectedElement.configuration?.allowOther || false)
+      setTrackCompletion(selectedElement.configuration?.trackCompletion || false)
     }
   }, [selectedElement])
 
@@ -140,6 +142,13 @@ export default function ElementConfigPanel() {
     setInstanceLabel(value)
     handleUpdate({
       configuration: { ...selectedElement.configuration, instanceLabel: value || undefined },
+    })
+  }
+
+  const handleTrackCompletionChange = (checked: boolean) => {
+    setTrackCompletion(checked)
+    handleUpdate({
+      configuration: { ...selectedElement.configuration, trackCompletion: checked },
     })
   }
 
@@ -264,6 +273,18 @@ export default function ElementConfigPanel() {
                 />
                 <Label htmlFor="fullPage" className="cursor-pointer">
                   Display as full page when filling
+                </Label>
+              </div>
+            )}
+            {isGroup && (
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="trackCompletion"
+                  checked={trackCompletion}
+                  onCheckedChange={(checked) => handleTrackCompletionChange(checked as boolean)}
+                />
+                <Label htmlFor="trackCompletion" className="cursor-pointer">
+                  Track completion status
                 </Label>
               </div>
             )}

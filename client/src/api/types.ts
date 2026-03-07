@@ -37,6 +37,7 @@ export interface ElementConfiguration {
   fullPage?: boolean
   instanceLabel?: string
   allowOther?: boolean
+  trackCompletion?: boolean
 }
 
 export interface FormElement {

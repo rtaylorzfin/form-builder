@@ -769,10 +769,16 @@ function RepeatablePageSection({
         {instances.map((instanceData, instanceIndex) => {
           const summary = getInstanceSummary(directChildren.length > 0 ? directChildren : (group.children || []), instanceData, instanceIndex, instanceLabel)
 
+          const instanceStatusKey = getSectionStatusKey(pageIndex, group.fieldName, instanceIndex)
+          const instanceIsComplete = sectionStatus[instanceStatusKey] || false
+
           return (
             <div key={instanceIndex} className="border rounded-lg p-3 bg-gray-50/50">
               <div className="flex items-center justify-between mb-2">
-                <span className="font-medium text-sm">{summary}</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-sm">{summary}</span>
+                  {config.trackCompletion && <StatusBadge status={instanceIsComplete ? 'complete' : 'not_started'} />}
+                </div>
                 <div className="flex items-center gap-2">
                   <Button type="button" variant="outline" size="sm" onClick={() => onEditInstance(instanceIndex)}>
                     <Pencil className="h-3 w-3 mr-1" /> Edit
@@ -794,22 +800,50 @@ function RepeatablePageSection({
                     const subHasFields = subFieldNames.length > 0 || (sub.configuration?.repeatable)
                     const instancePrefix = `${group.fieldName}.${instanceIndex}`
                     const subStatus = getSectionDisplayStatus(sectionStatus, subKey, formValues, subFieldNames, instancePrefix)
+                    const subIsComplete = sectionStatus[subKey] || false
 
                     return (
-                      <div key={sub.id} className="flex items-center justify-between py-1.5">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm text-gray-700">{sub.label}</span>
-                          {subHasFields && <StatusBadge status={subStatus} />}
+                      <div key={sub.id}>
+                        <div className="flex items-center justify-between py-1.5">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-700">{sub.label}</span>
+                            {subHasFields && <StatusBadge status={subStatus} />}
+                          </div>
+                          {subHasFields && (
+                            <Button type="button" variant="ghost" size="sm" className="h-7 text-xs"
+                              onClick={() => onEditSubSection(instanceIndex, subIdx)}>
+                              <Pencil className="h-3 w-3 mr-1" /> Edit
+                            </Button>
+                          )}
                         </div>
-                        {subHasFields && (
-                          <Button type="button" variant="ghost" size="sm" className="h-7 text-xs"
-                            onClick={() => onEditSubSection(instanceIndex, subIdx)}>
-                            <Pencil className="h-3 w-3 mr-1" /> Edit
-                          </Button>
+                        {!readOnly && sub.configuration?.trackCompletion && (
+                          <div className="flex items-center gap-2 ml-4 pb-1.5">
+                            <Checkbox
+                              id={`complete-${subKey}`}
+                              checked={subIsComplete}
+                              onCheckedChange={(checked) => onToggleComplete(subKey, !!checked)}
+                            />
+                            <Label htmlFor={`complete-${subKey}`} className="text-xs text-gray-500 cursor-pointer">
+                              Mark as complete
+                            </Label>
+                          </div>
                         )}
                       </div>
                     )
                   })}
+                </div>
+              )}
+
+              {!readOnly && config.trackCompletion && (
+                <div className="flex items-center gap-2 mt-2 pt-2 border-t">
+                  <Checkbox
+                    id={`complete-${instanceStatusKey}`}
+                    checked={instanceIsComplete}
+                    onCheckedChange={(checked) => onToggleComplete(instanceStatusKey, !!checked)}
+                  />
+                  <Label htmlFor={`complete-${instanceStatusKey}`} className="text-xs text-gray-500 cursor-pointer">
+                    Mark {instanceLabel.toLowerCase()} as complete
+                  </Label>
                 </div>
               )}
             </div>

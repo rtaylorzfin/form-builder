@@ -27,6 +27,7 @@ public class ElementConfiguration {
     private Boolean fullPage;
     private String instanceLabel;
     private Boolean allowOther;
+    private Boolean trackCompletion;
 
     @Data
     @NoArgsConstructor
