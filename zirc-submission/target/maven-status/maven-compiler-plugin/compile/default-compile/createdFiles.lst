@@ -1,0 +1,14 @@
+org/zfin/zirc/submission/domain/Phenotype.class
+org/zfin/zirc/submission/domain/Lesion.class
+org/zfin/zirc/submission/domain/GenotypingAssay$GenotypingAssayBuilder.class
+org/zfin/zirc/submission/domain/EnzymeCleaves.class
+org/zfin/zirc/submission/domain/LineSubmission$LineSubmissionBuilder.class
+org/zfin/zirc/submission/domain/Lesion$LesionBuilder.class
+org/zfin/zirc/submission/domain/Mutation.class
+org/zfin/zirc/submission/domain/LethalityStageType.class
+org/zfin/zirc/submission/domain/Gene$GeneBuilder.class
+org/zfin/zirc/submission/domain/Phenotype$PhenotypeBuilder.class
+org/zfin/zirc/submission/domain/Mutation$MutationBuilder.class
+org/zfin/zirc/submission/domain/LineSubmission.class
+org/zfin/zirc/submission/domain/Gene.class
+org/zfin/zirc/submission/domain/GenotypingAssay.class

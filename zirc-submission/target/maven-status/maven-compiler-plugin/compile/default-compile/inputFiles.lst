@@ -1,0 +1,8 @@
+/home/ryan2/spring-boot-form-builder/zirc-submission/src/main/java/org/zfin/zirc/submission/domain/Mutation.java
+/home/ryan2/spring-boot-form-builder/zirc-submission/src/main/java/org/zfin/zirc/submission/domain/LineSubmission.java
+/home/ryan2/spring-boot-form-builder/zirc-submission/src/main/java/org/zfin/zirc/submission/domain/LethalityStageType.java
+/home/ryan2/spring-boot-form-builder/zirc-submission/src/main/java/org/zfin/zirc/submission/domain/GenotypingAssay.java
+/home/ryan2/spring-boot-form-builder/zirc-submission/src/main/java/org/zfin/zirc/submission/domain/Phenotype.java
+/home/ryan2/spring-boot-form-builder/zirc-submission/src/main/java/org/zfin/zirc/submission/domain/Gene.java
+/home/ryan2/spring-boot-form-builder/zirc-submission/src/main/java/org/zfin/zirc/submission/domain/Lesion.java
+/home/ryan2/spring-boot-form-builder/zirc-submission/src/main/java/org/zfin/zirc/submission/domain/EnzymeCleaves.java
