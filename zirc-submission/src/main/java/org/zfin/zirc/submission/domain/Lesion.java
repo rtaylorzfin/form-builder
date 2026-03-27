@@ -24,7 +24,10 @@ public class Lesion {
 
     private Integer sortOrder;
 
-    private String lesionType;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lesion_type")
+    private LesionTypeOption lesionType;
+
     private Integer indelDeletionSize;
     private Integer indelInsertionSize;
     private String deletedBasePairs;

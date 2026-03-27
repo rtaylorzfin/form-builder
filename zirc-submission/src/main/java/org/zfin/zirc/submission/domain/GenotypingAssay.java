@@ -24,14 +24,18 @@ public class GenotypingAssay {
 
     private Integer sortOrder;
 
-    private String assayType;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assay_type")
+    private AssayTypeOption assayType;
+
     private String forwardPrimer;
     private String reversePrimer;
     private String expectedWtPcr;
     private String expectedMutPcr;
     private String restrictionEnzyme;
 
-    @Enumerated(EnumType.STRING)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "enzyme_cleaves")
     private EnzymeCleaves enzymeCleaves;
 
     private String expectedWtDigest;

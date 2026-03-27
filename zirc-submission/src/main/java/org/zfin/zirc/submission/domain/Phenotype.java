@@ -31,19 +31,19 @@ public class Phenotype {
     private String stage;
     private Boolean zircImagePermission;
 
-    @ElementCollection
-    @CollectionTable(name = "phenotype_segregation",
-            joinColumns = @JoinColumn(name = "phenotype_id"))
-    @Column(name = "segregation")
+    @ManyToMany
+    @JoinTable(name = "phenotype_segregation",
+            joinColumns = @JoinColumn(name = "phenotype_id"),
+            inverseJoinColumns = @JoinColumn(name = "segregation"))
     @Builder.Default
-    private Set<String> segregation = new LinkedHashSet<>();
+    private Set<SegregationOption> segregation = new LinkedHashSet<>();
 
     private Double nonMendelianPercentage;
 
-    @ElementCollection
-    @CollectionTable(name = "phenotype_type",
-            joinColumns = @JoinColumn(name = "phenotype_id"))
-    @Column(name = "type")
+    @ManyToMany
+    @JoinTable(name = "phenotype_type",
+            joinColumns = @JoinColumn(name = "phenotype_id"),
+            inverseJoinColumns = @JoinColumn(name = "type"))
     @Builder.Default
-    private Set<String> phenotypeTypes = new LinkedHashSet<>();
+    private Set<PhenotypeTypeOption> phenotypeTypes = new LinkedHashSet<>();
 }

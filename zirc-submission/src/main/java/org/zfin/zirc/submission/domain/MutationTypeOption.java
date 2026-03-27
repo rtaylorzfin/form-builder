@@ -4,13 +4,13 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "enzyme_cleaves_option")
+@Table(name = "mutation_type_option")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class EnzymeCleaves {
+public class MutationTypeOption {
 
     @Id
     private String value;

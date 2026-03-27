@@ -27,14 +27,14 @@ public class LineSubmission {
     @Column(columnDefinition = "text")
     private String previousNames;
 
-    // -- Reasons to accept (checkbox group) --
+    // -- Reasons to accept (checkbox group → lookup table) --
 
-    @ElementCollection
-    @CollectionTable(name = "line_submission_reason",
-            joinColumns = @JoinColumn(name = "line_submission_id"))
-    @Column(name = "reason")
+    @ManyToMany
+    @JoinTable(name = "line_submission_reason",
+            joinColumns = @JoinColumn(name = "line_submission_id"),
+            inverseJoinColumns = @JoinColumn(name = "reason"))
     @Builder.Default
-    private Set<String> reasons = new LinkedHashSet<>();
+    private Set<ReasonOption> reasons = new LinkedHashSet<>();
 
     // -- Mutations --
 

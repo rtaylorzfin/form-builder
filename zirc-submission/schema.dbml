@@ -1,35 +1,99 @@
 // ZIRC Line Submission Schema
 // Paste into https://dbdiagram.io to render
 
+// ============================================================
+// Lookup tables (managed option lists)
+// ============================================================
+
+Table reason_option {
+  value      varchar(255) [pk]
+  label      varchar(255) [not null]
+  sort_order integer [not null, default: 0]
+  active     boolean [not null, default: true]
+}
+
+Table mutation_type_option {
+  value      varchar(255) [pk]
+  label      varchar(255) [not null]
+  sort_order integer [not null, default: 0]
+  active     boolean [not null, default: true]
+}
+
+Table lethality_stage_type_option {
+  value      varchar(255) [pk]
+  label      varchar(255) [not null]
+  sort_order integer [not null, default: 0]
+  active     boolean [not null, default: true]
+}
+
+Table lesion_type_option {
+  value      varchar(255) [pk]
+  label      varchar(255) [not null]
+  sort_order integer [not null, default: 0]
+  active     boolean [not null, default: true]
+}
+
+Table assay_type_option {
+  value      varchar(255) [pk]
+  label      varchar(255) [not null]
+  sort_order integer [not null, default: 0]
+  active     boolean [not null, default: true]
+}
+
+Table enzyme_cleaves_option {
+  value      varchar(255) [pk]
+  label      varchar(255) [not null]
+  sort_order integer [not null, default: 0]
+  active     boolean [not null, default: true]
+}
+
+Table segregation_option {
+  value      varchar(255) [pk]
+  label      varchar(255) [not null]
+  sort_order integer [not null, default: 0]
+  active     boolean [not null, default: true]
+}
+
+Table phenotype_type_option {
+  value      varchar(255) [pk]
+  label      varchar(255) [not null]
+  sort_order integer [not null, default: 0]
+  active     boolean [not null, default: true]
+}
+
+// ============================================================
+// Core entities
+// ============================================================
+
 Table line_submission {
-  id uuid [pk, default: `gen_random_uuid()`]
-  name varchar(255) [not null]
-  abbreviation varchar(255)
-  previous_names text
+  id                              uuid [pk, default: `gen_random_uuid()`]
+  name                            varchar(255) [not null]
+  abbreviation                    varchar(255)
+  previous_names                  text
 
   // Linked Features
-  features_linked boolean
-  distance_known boolean
-  distance_centimorgans double
-  distance_megabases double
+  features_linked                 boolean
+  distance_known                  boolean
+  distance_centimorgans           double
+  distance_megabases              double
   linked_features_additional_info text
 
   // Line Background
-  maternal_background varchar(255)
-  paternal_background varchar(255)
-  background_changeable boolean
-  background_change_concerns text
-  unreported_features boolean
-  unreported_features_details text
+  maternal_background             varchar(255)
+  paternal_background             varchar(255)
+  background_changeable           boolean
+  background_change_concerns      text
+  unreported_features             boolean
+  unreported_features_details     text
 
-  additional_info text
-  created_at timestamp [not null, default: `now()`]
-  updated_at timestamp [not null, default: `now()`]
+  additional_info                 text
+  created_at                      timestamp [not null, default: `now()`]
+  updated_at                      timestamp [not null, default: `now()`]
 }
 
 Table line_submission_reason {
   line_submission_id uuid [not null]
-  reason varchar(255) [not null]
+  reason             varchar(255) [not null]
 
   indexes {
     (line_submission_id, reason) [pk]
@@ -38,7 +102,7 @@ Table line_submission_reason {
 
 Table line_submission_linked_feature {
   line_submission_id uuid [not null]
-  feature varchar(255) [not null]
+  feature            varchar(255) [not null]
 
   indexes {
     (line_submission_id, feature) [pk]
@@ -46,94 +110,94 @@ Table line_submission_linked_feature {
 }
 
 Table mutation {
-  id uuid [pk, default: `gen_random_uuid()`]
-  line_submission_id uuid [not null]
-  sort_order integer [not null, default: 0]
+  id                           uuid [pk, default: `gen_random_uuid()`]
+  line_submission_id           uuid [not null]
+  sort_order                   integer [not null, default: 0]
 
   // General Info
-  allele_designation varchar(255)
-  mutagenesis_protocol varchar(255)
-  molecularly_characterized boolean
+  allele_designation           varchar(255)
+  mutagenesis_protocol         varchar(255)
+  molecularly_characterized    boolean
 
   // Phenotyping General Info
-  mutation_type varchar(255)
+  mutation_type                varchar(255)
 
   // Lethality
-  homozygous_lethal boolean
-  lethality_stage_type varchar(50) [note: 'SPECIFIC | TEMPORAL_WINDOW']
+  homozygous_lethal            boolean
+  lethality_stage_type         varchar(255)
   lethality_specific_timepoint varchar(255)
-  lethality_window_start varchar(255)
-  lethality_window_end varchar(255)
-  lethality_additional_info text
+  lethality_window_start       varchar(255)
+  lethality_window_end         varchar(255)
+  lethality_additional_info    text
 
   // Finalization
-  zfin_record_established boolean
-  zdb_genomic_feature varchar(255)
-  mutation_discoverer varchar(255)
-  mutation_institution varchar(255)
+  zfin_record_established      boolean
+  zdb_genomic_feature          varchar(255)
+  mutation_discoverer           varchar(255)
+  mutation_institution          varchar(255)
 }
 
 Table mutation_publication {
   mutation_id uuid [not null]
   publication varchar(500) [not null]
-  sort_order integer [not null, default: 0]
+  sort_order  integer [not null, default: 0]
 }
 
 Table gene {
-  id uuid [pk, default: `gen_random_uuid()`]
-  mutation_id uuid [not null]
-  sort_order integer [not null, default: 0]
-  mutated_gene varchar(255)
-  linkage_group varchar(255)
+  id                  uuid [pk, default: `gen_random_uuid()`]
+  mutation_id         uuid [not null]
+  sort_order          integer [not null, default: 0]
+  mutated_gene        varchar(255)
+  linkage_group       varchar(255)
   genbank_genomic_dna varchar(255)
-  genbank_cdna varchar(255)
+  genbank_cdna        varchar(255)
 }
 
 Table lesion {
-  id uuid [pk, default: `gen_random_uuid()`]
-  mutation_id uuid [not null]
-  sort_order integer [not null, default: 0]
-  lesion_type varchar(100)
-  indel_deletion_size integer
+  id                   uuid [pk, default: `gen_random_uuid()`]
+  mutation_id          uuid [not null]
+  sort_order           integer [not null, default: 0]
+  lesion_type          varchar(100)
+  indel_deletion_size  integer
   indel_insertion_size integer
-  deleted_base_pairs varchar(500)
-  inserted_base_pairs varchar(500)
-  wt_genomic_sequence text
+  deleted_base_pairs   varchar(500)
+  inserted_base_pairs  varchar(500)
+  wt_genomic_sequence  text
   mut_genomic_sequence text
-  mutated_amino_acids varchar(500)
-  additional_info text
+  mutated_amino_acids  varchar(500)
+  additional_info      text
 }
 
 Table genotyping_assay {
-  id uuid [pk, default: `gen_random_uuid()`]
-  mutation_id uuid [not null]
-  sort_order integer [not null, default: 0]
-  assay_type varchar(100)
-  forward_primer varchar(500)
-  reverse_primer varchar(500)
-  expected_wt_pcr varchar(255)
-  expected_mut_pcr varchar(255)
-  restriction_enzyme varchar(255)
-  enzyme_cleaves varchar(10) [note: 'WT | MUT']
-  expected_wt_digest varchar(255)
+  id                  uuid [pk, default: `gen_random_uuid()`]
+  mutation_id         uuid [not null]
+  sort_order          integer [not null, default: 0]
+  assay_type          varchar(100)
+  forward_primer      varchar(500)
+  reverse_primer      varchar(500)
+  expected_wt_pcr     varchar(255)
+  expected_mut_pcr    varchar(255)
+  restriction_enzyme  varchar(255)
+  enzyme_cleaves      varchar(10)
+  expected_wt_digest  varchar(255)
   expected_mut_digest varchar(255)
-  additional_info text
+  additional_info     text
 }
 
 Table phenotype {
-  id uuid [pk, default: `gen_random_uuid()`]
-  mutation_id uuid [not null]
-  sort_order integer [not null, default: 0]
-  description text
+  id                       uuid [pk, default: `gen_random_uuid()`]
+  mutation_id              uuid [not null]
+  sort_order               integer [not null, default: 0]
+  description              text
   hours_post_fertilization integer
-  stage varchar(255)
-  zirc_image_permission boolean
+  stage                    varchar(255)
+  zirc_image_permission    boolean
   non_mendelian_percentage double
 }
 
 Table phenotype_segregation {
   phenotype_id uuid [not null]
-  segregation varchar(255) [not null]
+  segregation  varchar(255) [not null]
 
   indexes {
     (phenotype_id, segregation) [pk]
@@ -142,29 +206,39 @@ Table phenotype_segregation {
 
 Table phenotype_type {
   phenotype_id uuid [not null]
-  type varchar(255) [not null]
+  type         varchar(255) [not null]
 
   indexes {
     (phenotype_id, type) [pk]
   }
 }
 
-// -- Relationships --
+// ============================================================
+// Relationships
+// ============================================================
 
 // LineSubmission collections
 Ref: line_submission_reason.line_submission_id > line_submission.id [delete: cascade]
+Ref: line_submission_reason.reason > reason_option.value
 Ref: line_submission_linked_feature.line_submission_id > line_submission.id [delete: cascade]
 
-// Mutation belongs to LineSubmission
+// Mutation → LineSubmission
 Ref: mutation.line_submission_id > line_submission.id [delete: cascade]
+Ref: mutation.mutation_type > mutation_type_option.value
+Ref: mutation.lethality_stage_type > lethality_stage_type_option.value
 Ref: mutation_publication.mutation_id > mutation.id [delete: cascade]
 
 // Mutation children
 Ref: gene.mutation_id > mutation.id [delete: cascade]
 Ref: lesion.mutation_id > mutation.id [delete: cascade]
+Ref: lesion.lesion_type > lesion_type_option.value
 Ref: genotyping_assay.mutation_id > mutation.id [delete: cascade]
+Ref: genotyping_assay.assay_type > assay_type_option.value
+Ref: genotyping_assay.enzyme_cleaves > enzyme_cleaves_option.value
 Ref: phenotype.mutation_id > mutation.id [delete: cascade]
 
 // Phenotype collections
 Ref: phenotype_segregation.phenotype_id > phenotype.id [delete: cascade]
+Ref: phenotype_segregation.segregation > segregation_option.value
 Ref: phenotype_type.phenotype_id > phenotype.id [delete: cascade]
+Ref: phenotype_type.type > phenotype_type_option.value

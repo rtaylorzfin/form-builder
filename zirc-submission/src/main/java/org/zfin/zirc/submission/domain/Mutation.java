@@ -32,14 +32,17 @@ public class Mutation {
 
     // -- Phenotyping General Info --
 
-    private String mutationType;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mutation_type")
+    private MutationTypeOption mutationType;
 
     // -- Lethality --
 
     private Boolean homozygousLethal;
 
-    @Enumerated(EnumType.STRING)
-    private LethalityStageType lethalityStageType;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lethality_stage_type")
+    private LethalityStageTypeOption lethalityStageType;
 
     private String lethalitySpecificTimepoint;
     private String lethalityWindowStart;
