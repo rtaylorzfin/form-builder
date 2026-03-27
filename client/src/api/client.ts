@@ -127,6 +127,14 @@ export const formsApi = {
     return data
   },
 
+  exportYaml: async (id: string): Promise<string> => {
+    const { data } = await api.get<string>(`/forms/${id}/export`, {
+      params: { format: 'yaml' },
+      headers: { Accept: 'text/yaml' },
+    })
+    return data
+  },
+
   import: async (data: FormExportData): Promise<Form> => {
     const { data: result } = await api.post<Form>('/forms/import', data)
     return result

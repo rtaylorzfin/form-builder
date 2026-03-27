@@ -1,5 +1,6 @@
 package com.formbuilder.element;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
 import java.util.List;
@@ -11,7 +12,9 @@ import java.util.List;
 public class ElementConfiguration {
 
     private String placeholder;
-    private Boolean required;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    @Builder.Default
+    private Boolean required = false;
     private Integer minLength;
     private Integer maxLength;
     private Double min;

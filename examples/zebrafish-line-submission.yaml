@@ -3,45 +3,24 @@ description: ''
 pages:
 - pageNumber: 0
   title: Notice
-  description: null
 - pageNumber: 1
   title: General Info
-  description: null
 - pageNumber: 2
   title: Mutations
-  description: null
 - pageNumber: 3
   title: Linked Features
-  description: null
 - pageNumber: 4
   title: Line Background
-  description: null
 - pageNumber: 5
   title: Additional Information
-  description: null
 elements:
 - type: STATIC_TEXT
   label: Line Information
   fieldName: static_text_1771882818043
   sortOrder: 0
   configuration:
-    placeholder: null
-    required: false
-    minLength: null
-    maxLength: null
-    min: null
-    max: null
-    pattern: null
-    patternMessage: null
-    options: null
-    defaultValue: null
     content: <p>General information about the line</p>
-    repeatable: null
-    minInstances: null
-    maxInstances: null
-    fullPage: null
   pageIndex: 1
-  children: null
 - type: TEXT_INPUT
   label: Line Name
   fieldName: line_name
@@ -49,21 +28,7 @@ elements:
   configuration:
     placeholder: Enter text...
     required: true
-    minLength: null
-    maxLength: null
-    min: null
-    max: null
-    pattern: null
-    patternMessage: null
-    options: null
-    defaultValue: null
-    content: null
-    repeatable: null
-    minInstances: null
-    maxInstances: null
-    fullPage: null
   pageIndex: 1
-  children: null
 - type: TEXT_INPUT
   label: Line Abbreviation
   fieldName: line_abbreviation
@@ -71,56 +36,19 @@ elements:
   configuration:
     placeholder: Enter text...
     required: true
-    minLength: null
-    maxLength: null
-    min: null
-    max: null
-    pattern: null
-    patternMessage: null
-    options: null
-    defaultValue: null
-    content: null
-    repeatable: null
-    minInstances: null
-    maxInstances: null
-    fullPage: null
   pageIndex: 1
-  children: null
 - type: TEXT_AREA
   label: Previous Line Names
   fieldName: previous_line_names
   sortOrder: 3
   configuration:
     placeholder: Enter text...
-    required: false
-    minLength: null
-    maxLength: null
-    min: null
-    max: null
-    pattern: null
-    patternMessage: null
-    options: null
-    defaultValue: null
-    content: null
-    repeatable: null
-    minInstances: null
-    maxInstances: null
-    fullPage: null
   pageIndex: 1
-  children: null
 - type: CHECKBOX_GROUP
   label: Reasons why ZIRC should accept line
   fieldName: reasons_to_accept
   sortOrder: 4
   configuration:
-    placeholder: null
-    required: false
-    minLength: null
-    maxLength: null
-    min: null
-    max: null
-    pattern: null
-    patternMessage: null
     options:
     - label: This line is groundbreaking
       value: groundbreaking
@@ -132,54 +60,22 @@ elements:
       value: clinical_studies
     - label: High community interest
       value: community_interest
-    defaultValue: null
-    content: null
-    repeatable: null
-    minInstances: null
-    maxInstances: null
-    fullPage: null
   pageIndex: 1
-  children: null
 - type: STATIC_TEXT
   label: How many genetic/genomic features (alleles) are present in the line?
   fieldName: static_text_1771883076763
   sortOrder: 5
   configuration:
-    placeholder: null
-    required: false
-    minLength: null
-    maxLength: null
-    min: null
-    max: null
-    pattern: null
-    patternMessage: null
-    options: null
-    defaultValue: null
-    content: "<p>Before proceeding make sure you have the information for all features in the line</p>\n\n<p>\nPlease include\
-      \ genetic/genomic features present in a line background \n(e.g., known background mutations and/or known background\
+    content: "<p>Before proceeding make sure you have the information for all features\
+      \ in the line</p>\n\n<p>\nPlease include genetic/genomic features present in\
+      \ a line background \n(e.g., known background mutations and/or known background\
       \ transgenes)  \n</p>\n\n"
-    repeatable: null
-    minInstances: null
-    maxInstances: null
-    fullPage: null
   pageIndex: 0
-  children: null
 - type: ELEMENT_GROUP
   label: Mutations
   fieldName: mutations
   sortOrder: 6
   configuration:
-    placeholder: null
-    required: false
-    minLength: null
-    maxLength: null
-    min: null
-    max: null
-    pattern: null
-    patternMessage: null
-    options: null
-    defaultValue: null
-    content: null
     repeatable: true
     minInstances: 0
     maxInstances: 5
@@ -192,20 +88,7 @@ elements:
     fieldName: mutation_general_info
     sortOrder: 0
     configuration:
-      placeholder: null
-      required: false
-      minLength: null
-      maxLength: null
-      min: null
-      max: null
-      pattern: null
-      patternMessage: null
-      options: null
-      defaultValue: null
-      content: null
       repeatable: false
-      minInstances: null
-      maxInstances: null
       fullPage: true
     pageIndex: 2
     children:
@@ -215,86 +98,30 @@ elements:
       sortOrder: 0
       configuration:
         placeholder: Enter text...
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: TEXT_INPUT
       label: Mutagenesis protocol
       fieldName: mutagenesis_protocol
       sortOrder: 1
       configuration:
         placeholder: Enter text...
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: RADIO_GROUP
       label: Is the mutation molecularly characterized/cloned?
       fieldName: mutation_molecularly_characterized
       sortOrder: 2
       configuration:
-        placeholder: null
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
         options:
         - label: 'Yes'
           value: 'yes'
         - label: 'No'
           value: 'no'
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
   - type: ELEMENT_GROUP
     label: Genes
     fieldName: genes
     sortOrder: 1
     configuration:
-      placeholder: null
-      required: false
-      minLength: null
-      maxLength: null
-      min: null
-      max: null
-      pattern: null
-      patternMessage: null
-      options: null
-      defaultValue: null
-      content: null
       repeatable: true
       minInstances: 0
       maxInstances: 10
@@ -308,104 +135,33 @@ elements:
       sortOrder: 0
       configuration:
         placeholder: Enter text...
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: TEXT_INPUT
       label: Linkage group
       fieldName: linkage_group
       sortOrder: 1
       configuration:
         placeholder: Enter text...
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: TEXT_INPUT
       label: 'GenBank accession # for genomic DNA'
       fieldName: genbank_genomic_dna
       sortOrder: 2
       configuration:
         placeholder: Enter text...
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: TEXT_INPUT
       label: 'GenBank accession # for cDNA'
       fieldName: genbank_cdna
       sortOrder: 3
       configuration:
         placeholder: Enter text...
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
   - type: ELEMENT_GROUP
     label: Lesions
     fieldName: lesions
     sortOrder: 2
     configuration:
-      placeholder: null
-      required: false
-      minLength: null
-      maxLength: null
-      min: null
-      max: null
-      pattern: null
-      patternMessage: null
-      options: null
-      defaultValue: null
-      content: null
       repeatable: true
       minInstances: 0
       maxInstances: 10
@@ -418,14 +174,6 @@ elements:
       fieldName: lesion_type
       sortOrder: 0
       configuration:
-        placeholder: null
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
         options:
         - label: Point mutation
           value: point_mutation
@@ -445,229 +193,76 @@ elements:
           value: transgene
         - label: Unknown
           value: unknown
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
         allowOther: true
       pageIndex: 2
-      children: null
     - type: STATIC_TEXT
       label: Molecular Nature of the Lesion
       fieldName: static_lesion_molecular
       sortOrder: 1
       configuration:
-        placeholder: null
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
         content: <h4>More information about the molecular nature of the lesion</h4>
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: NUMBER
       label: Indel (delins) deletion size (bp)
       fieldName: indel_deletion_size
       sortOrder: 2
       configuration:
         placeholder: Enter number...
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: NUMBER
       label: Indel (delins) insertion size (bp)
       fieldName: indel_insertion_size
       sortOrder: 3
       configuration:
         placeholder: Enter number...
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: TEXT_INPUT
       label: Deleted base pairs
       fieldName: deleted_base_pairs
       sortOrder: 4
       configuration:
         placeholder: e.g. TTAT
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: TEXT_INPUT
       label: Inserted base pairs (replaced with)
       fieldName: inserted_base_pairs
       sortOrder: 5
       configuration:
         placeholder: e.g. GTCATTTATTTAAA
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: TEXT_INPUT
       label: Location of mutated nucleotide(s) in WT genomic sequence
       fieldName: wt_genomic_sequence
       sortOrder: 6
       configuration:
         placeholder: e.g. ccgccgc[TTAT]tgacagtg
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: TEXT_INPUT
       label: Location of mutated nucleotide(s) in mutant genomic sequence
       fieldName: mut_genomic_sequence
       sortOrder: 7
       configuration:
         placeholder: e.g. ccgccgc[GTCATTTATTTAAA]tgacagtg
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: TEXT_INPUT
       label: Mutated amino acid(s) (effect of the mutation on the protein)
       fieldName: mutated_amino_acids
       sortOrder: 8
       configuration:
         placeholder: e.g. Phe173Cys, fsTer6 or F173C6*6
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: TEXT_AREA
       label: Additional information
       fieldName: lesion_additional_info
       sortOrder: 9
       configuration:
         placeholder: Enter any additional information about this lesion...
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
   - type: ELEMENT_GROUP
     label: Genotyping Assays
     fieldName: genotyping_assays
     sortOrder: 3
     configuration:
-      placeholder: null
-      required: false
-      minLength: null
-      maxLength: null
-      min: null
-      max: null
-      pattern: null
-      patternMessage: null
-      options: null
-      defaultValue: null
-      content: null
       repeatable: true
       minInstances: 0
       maxInstances: 10
@@ -680,14 +275,6 @@ elements:
       fieldName: assay_type
       sortOrder: 0
       configuration:
-        placeholder: null
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
         options:
         - label: PCR followed by gel electrophoresis
           value: pcr_gel
@@ -703,236 +290,81 @@ elements:
           value: kasp
         - label: High-Resolution Melt Analysis (HRMA)
           value: hrma
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
         allowOther: true
       pageIndex: 2
-      children: null
     - type: TEXT_INPUT
       label: Forward primer
       fieldName: forward_primer
       sortOrder: 1
       configuration:
         placeholder: 5'-...
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: TEXT_INPUT
       label: Reverse primer
       fieldName: reverse_primer
       sortOrder: 2
       configuration:
         placeholder: 5'-...
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: TEXT_INPUT
       label: Expected wild-type PCR product(s)
       fieldName: expected_wt_pcr
       sortOrder: 3
       configuration:
         placeholder: e.g. 413 bp
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: TEXT_INPUT
       label: Expected mutant PCR product(s)
       fieldName: expected_mut_pcr
       sortOrder: 4
       configuration:
         placeholder: e.g. 300 bp
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: TEXT_INPUT
       label: Restriction enzyme
       fieldName: restriction_enzyme
       sortOrder: 5
       configuration:
         placeholder: Enter text...
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: RADIO_GROUP
       label: The enzyme cleaves WT or MUT template
       fieldName: enzyme_cleaves
       sortOrder: 6
       configuration:
-        placeholder: null
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
         options:
         - label: WT
           value: wt
         - label: MUT
           value: mut
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: TEXT_INPUT
       label: Expected wild-type product(s) after digest
       fieldName: expected_wt_digest
       sortOrder: 7
       configuration:
         placeholder: e.g. 50 + 150 + 213 bp
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: TEXT_INPUT
       label: Expected mutant product(s) after digest
       fieldName: expected_mut_digest
       sortOrder: 8
       configuration:
         placeholder: e.g. 300 bp
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: TEXT_AREA
       label: Additional information
       fieldName: assay_additional_info
       sortOrder: 9
       configuration:
         placeholder: Enter text...
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
   - type: ELEMENT_GROUP
     label: Phenotyping General Info
     fieldName: phenotyping
     sortOrder: 4
     configuration:
-      placeholder: null
-      required: false
-      minLength: null
-      maxLength: null
-      min: null
-      max: null
-      pattern: null
-      patternMessage: null
-      options: null
-      defaultValue: null
-      content: null
       repeatable: false
-      minInstances: null
-      maxInstances: null
       fullPage: true
     pageIndex: 2
     children:
@@ -941,14 +373,6 @@ elements:
       fieldName: mutation_type
       sortOrder: 0
       configuration:
-        placeholder: null
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
         options:
         - label: Null (complete loss of function)
           value: 'null'
@@ -960,31 +384,13 @@ elements:
           value: neomorphic
         - label: Unknown
           value: unknown
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
         allowOther: true
       pageIndex: 2
-      children: null
   - type: ELEMENT_GROUP
     label: Phenotyping Assays
     fieldName: phenotypes
     sortOrder: 5
     configuration:
-      placeholder: null
-      required: false
-      minLength: null
-      maxLength: null
-      min: null
-      max: null
-      pattern: null
-      patternMessage: null
-      options: null
-      defaultValue: null
-      content: null
       repeatable: true
       minInstances: 0
       maxInstances: 10
@@ -998,172 +404,59 @@ elements:
       sortOrder: 0
       configuration:
         placeholder: Enter text...
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: STATIC_TEXT
       label: Optimal stage to ID by the phenotype
       fieldName: static_optimal_stage
       sortOrder: 1
       configuration:
-        placeholder: null
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
         content: <h4>Optimal stage to ID by the phenotype</h4>
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: NUMBER
       label: Hours post fertilization (hpf)
       fieldName: hours_post_fertilization
       sortOrder: 2
       configuration:
         placeholder: e.g. 72
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: TEXT_INPUT
       label: Stage
       fieldName: phenotype_stage
       sortOrder: 3
       configuration:
         placeholder: e.g. Protruding-mouth
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: STATIC_TEXT
       label: Images of the phenotype
       fieldName: static_phenotype_images
       sortOrder: 4
       configuration:
-        placeholder: null
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: <h4>Images of the phenotype</h4><p>(Please upload image(s) of the phenotype with annotations of developmental
-          stages and anatomical structures)</p>
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
+        content: <h4>Images of the phenotype</h4><p>(Please upload image(s) of the
+          phenotype with annotations of developmental stages and anatomical structures)</p>
       pageIndex: 2
-      children: null
     - type: RADIO_GROUP
       label: Does ZIRC have the permission to publish these images on the ZIRC website?
       fieldName: zirc_image_permission
       sortOrder: 5
       configuration:
-        placeholder: null
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
         options:
         - label: 'Yes'
           value: 'yes'
         - label: 'No'
           value: 'no'
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: STATIC_TEXT
       label: Segregation
       fieldName: static_segregation
       sortOrder: 6
       configuration:
-        placeholder: null
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
         content: <h4>Segregation</h4>
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: CHECKBOX_GROUP
       label: Segregation
       fieldName: segregation
       sortOrder: 7
       configuration:
-        placeholder: null
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
         options:
         - label: Mendelian recessive
           value: mendelian_recessive
@@ -1171,71 +464,28 @@ elements:
           value: mendelian_dominant
         - label: Non-Mendelian
           value: non_mendelian
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: NUMBER
       label: Non-Mendelian percentage (%)
       fieldName: non_mendelian_percentage
       sortOrder: 8
       configuration:
         placeholder: Enter percentage...
-        required: false
-        minLength: null
-        maxLength: null
         min: 0
         max: 100
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: STATIC_TEXT
       label: Phenotype Type
       fieldName: static_phenotype_type
       sortOrder: 9
       configuration:
-        placeholder: null
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
         content: <h4>Phenotype Type</h4>
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: CHECKBOX_GROUP
       label: Phenotype Type
       fieldName: phenotype_type
       sortOrder: 10
       configuration:
-        placeholder: null
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
         options:
         - label: Zygotic (Z)
           value: zygotic
@@ -1243,34 +493,14 @@ elements:
           value: maternal
         - label: Maternal – Zygotic (M-Z)
           value: maternal_zygotic
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
         allowOther: true
       pageIndex: 2
-      children: null
   - type: ELEMENT_GROUP
     label: Lethality
     fieldName: lethality
     sortOrder: 6
     configuration:
-      placeholder: null
-      required: false
-      minLength: null
-      maxLength: null
-      min: null
-      max: null
-      pattern: null
-      patternMessage: null
-      options: null
-      defaultValue: null
-      content: null
       repeatable: false
-      minInstances: null
-      maxInstances: null
       fullPage: true
     pageIndex: 2
     children:
@@ -1279,160 +509,57 @@ elements:
       fieldName: homozygous_lethal
       sortOrder: 0
       configuration:
-        placeholder: null
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
         options:
         - label: 'Yes'
           value: 'yes'
         - label: 'No'
           value: 'no'
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: RADIO_GROUP
       label: Specify developmental stage at which homozygous individuals die
       fieldName: lethality_stage_type
       sortOrder: 1
       configuration:
-        placeholder: null
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
         options:
         - label: A specific developmental time point
           value: specific
         - label: A temporal window
           value: temporal_window
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: TEXT_INPUT
       label: Specific developmental time point
       fieldName: lethality_specific_timepoint
       sortOrder: 2
       configuration:
         placeholder: Enter developmental stage...
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: TEXT_INPUT
       label: Temporal window start
       fieldName: lethality_window_start
       sortOrder: 3
       configuration:
         placeholder: e.g. day 20
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: TEXT_INPUT
       label: Temporal window end
       fieldName: lethality_window_end
       sortOrder: 4
       configuration:
         placeholder: e.g. day 30
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: TEXT_AREA
       label: Additional Information
       fieldName: lethality_additional_info
       sortOrder: 5
       configuration:
         placeholder: Enter text...
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
   - type: ELEMENT_GROUP
     label: Mutation Finalization
     fieldName: mutation_finalization
     sortOrder: 7
     configuration:
-      placeholder: null
-      required: false
-      minLength: null
-      maxLength: null
-      min: null
-      max: null
-      pattern: null
-      patternMessage: null
-      options: null
-      defaultValue: null
-      content: null
       repeatable: false
-      minInstances: null
-      maxInstances: null
       fullPage: true
     pageIndex: 2
     children:
@@ -1441,177 +568,68 @@ elements:
       fieldName: zfin_record_established
       sortOrder: 0
       configuration:
-        placeholder: null
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
         options:
         - label: 'Yes'
           value: 'yes'
         - label: 'No'
           value: 'no'
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: TEXT_INPUT
       label: 'ZDB genomic feature # (ZFIN ID)'
       fieldName: zdb_genomic_feature
       sortOrder: 1
       configuration:
         placeholder: Enter text...
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: TEXT_INPUT
       label: Mutation discoverer/creator
       fieldName: mutation_discoverer
       sortOrder: 2
       configuration:
         placeholder: Enter text...
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: TEXT_INPUT
       label: Institution where the mutation was discovered/generated
       fieldName: mutation_institution
       sortOrder: 3
       configuration:
         placeholder: Enter text...
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
-        repeatable: null
-        minInstances: null
-        maxInstances: null
-        fullPage: null
       pageIndex: 2
-      children: null
     - type: TEXT_INPUT
       label: Publications (please list)
       fieldName: publications
       sortOrder: 4
       configuration:
         placeholder: Enter text...
-        required: false
-        minLength: null
-        maxLength: null
-        min: null
-        max: null
-        pattern: null
-        patternMessage: null
-        options: null
-        defaultValue: null
-        content: null
         repeatable: true
         minInstances: 0
         maxInstances: 10
-        fullPage: null
       pageIndex: 2
-      children: null
 - type: RADIO_GROUP
-  label: Are there any features in the line that do not segregate independently during line propagation because they are linked
-    with each other?
+  label: Are there any features in the line that do not segregate independently during
+    line propagation because they are linked with each other?
   fieldName: features_linked
   sortOrder: 7
   configuration:
-    placeholder: null
-    required: false
-    minLength: null
-    maxLength: null
-    min: null
-    max: null
-    pattern: null
-    patternMessage: null
     options:
     - label: 'Yes'
       value: 'yes'
     - label: 'No'
       value: 'no'
-    defaultValue: null
-    content: null
-    repeatable: null
-    minInstances: null
-    maxInstances: null
-    fullPage: null
   pageIndex: 3
-  children: null
 - type: STATIC_TEXT
   label: Linked Features
   fieldName: static_linked_features
   sortOrder: 8
   configuration:
-    placeholder: null
-    required: false
-    minLength: null
-    maxLength: null
-    min: null
-    max: null
-    pattern: null
-    patternMessage: null
-    options: null
-    defaultValue: null
-    content: <h4>Linked Features</h4><p>Please mark the features that are linked with each other.</p>
-    repeatable: null
-    minInstances: null
-    maxInstances: null
-    fullPage: null
+    content: <h4>Linked Features</h4><p>Please mark the features that are linked with
+      each other.</p>
   pageIndex: 3
-  children: null
 - type: CHECKBOX_GROUP
   label: Linked features
   fieldName: linked_features
   sortOrder: 9
   configuration:
-    placeholder: null
-    required: false
-    minLength: null
-    maxLength: null
-    min: null
-    max: null
-    pattern: null
-    patternMessage: null
     options:
     - label: Mutation 1
       value: mutation_1
@@ -1619,331 +637,114 @@ elements:
       value: mutation_2
     - label: Transgene 1
       value: transgene_1
-    defaultValue: null
-    content: null
-    repeatable: null
-    minInstances: null
-    maxInstances: null
-    fullPage: null
   pageIndex: 3
-  children: null
 - type: STATIC_TEXT
   label: The Distance Between Linked Features
   fieldName: static_distance_linked
   sortOrder: 10
   configuration:
-    placeholder: null
-    required: false
-    minLength: null
-    maxLength: null
-    min: null
-    max: null
-    pattern: null
-    patternMessage: null
-    options: null
-    defaultValue: null
     content: <h4>The Distance Between Linked Features</h4>
-    repeatable: null
-    minInstances: null
-    maxInstances: null
-    fullPage: null
   pageIndex: 3
-  children: null
 - type: RADIO_GROUP
   label: Is the distance between linked features known?
   fieldName: distance_known
   sortOrder: 11
   configuration:
-    placeholder: null
-    required: false
-    minLength: null
-    maxLength: null
-    min: null
-    max: null
-    pattern: null
-    patternMessage: null
     options:
     - label: 'Yes'
       value: 'yes'
     - label: 'No'
       value: 'no'
-    defaultValue: null
-    content: null
-    repeatable: null
-    minInstances: null
-    maxInstances: null
-    fullPage: null
   pageIndex: 3
-  children: null
 - type: NUMBER
   label: Distance in centimorgans (cM)
   fieldName: distance_centimorgans
   sortOrder: 12
   configuration:
     placeholder: Enter number...
-    required: false
-    minLength: null
-    maxLength: null
-    min: null
-    max: null
-    pattern: null
-    patternMessage: null
-    options: null
-    defaultValue: null
-    content: null
-    repeatable: null
-    minInstances: null
-    maxInstances: null
-    fullPage: null
   pageIndex: 3
-  children: null
 - type: NUMBER
   label: Distance in megabases (Mb)
   fieldName: distance_megabases
   sortOrder: 13
   configuration:
     placeholder: Enter number...
-    required: false
-    minLength: null
-    maxLength: null
-    min: null
-    max: null
-    pattern: null
-    patternMessage: null
-    options: null
-    defaultValue: null
-    content: null
-    repeatable: null
-    minInstances: null
-    maxInstances: null
-    fullPage: null
   pageIndex: 3
-  children: null
 - type: TEXT_AREA
   label: Additional information
   fieldName: linked_features_additional_info
   sortOrder: 14
   configuration:
     placeholder: Enter text...
-    required: false
-    minLength: null
-    maxLength: null
-    min: null
-    max: null
-    pattern: null
-    patternMessage: null
-    options: null
-    defaultValue: null
-    content: null
-    repeatable: null
-    minInstances: null
-    maxInstances: null
-    fullPage: null
   pageIndex: 3
-  children: null
 - type: STATIC_TEXT
   label: Line Background
   fieldName: static_line_background
   sortOrder: 15
   configuration:
-    placeholder: null
-    required: false
-    minLength: null
-    maxLength: null
-    min: null
-    max: null
-    pattern: null
-    patternMessage: null
-    options: null
-    defaultValue: null
     content: <h4>Line Background</h4>
-    repeatable: null
-    minInstances: null
-    maxInstances: null
-    fullPage: null
   pageIndex: 4
-  children: null
 - type: TEXT_INPUT
   label: Maternal background
   fieldName: maternal_background
   sortOrder: 16
   configuration:
     placeholder: Enter text...
-    required: false
-    minLength: null
-    maxLength: null
-    min: null
-    max: null
-    pattern: null
-    patternMessage: null
-    options: null
-    defaultValue: null
-    content: null
-    repeatable: null
-    minInstances: null
-    maxInstances: null
-    fullPage: null
   pageIndex: 4
-  children: null
 - type: TEXT_INPUT
   label: Paternal background
   fieldName: paternal_background
   sortOrder: 17
   configuration:
     placeholder: Enter text...
-    required: false
-    minLength: null
-    maxLength: null
-    min: null
-    max: null
-    pattern: null
-    patternMessage: null
-    options: null
-    defaultValue: null
-    content: null
-    repeatable: null
-    minInstances: null
-    maxInstances: null
-    fullPage: null
   pageIndex: 4
-  children: null
 - type: RADIO_GROUP
   label: Can the background be changed?
   fieldName: background_changeable
   sortOrder: 18
   configuration:
-    placeholder: null
-    required: false
-    minLength: null
-    maxLength: null
-    min: null
-    max: null
-    pattern: null
-    patternMessage: null
     options:
     - label: 'Yes'
       value: 'yes'
     - label: 'No'
       value: 'no'
-    defaultValue: null
-    content: null
-    repeatable: null
-    minInstances: null
-    maxInstances: null
-    fullPage: null
   pageIndex: 4
-  children: null
 - type: TEXT_AREA
   label: Please specify the potential concerns if the background needs to be changed
   fieldName: background_change_concerns
   sortOrder: 19
   configuration:
     placeholder: Enter text...
-    required: false
-    minLength: null
-    maxLength: null
-    min: null
-    max: null
-    pattern: null
-    patternMessage: null
-    options: null
-    defaultValue: null
-    content: null
-    repeatable: null
-    minInstances: null
-    maxInstances: null
-    fullPage: null
   pageIndex: 4
-  children: null
 - type: STATIC_TEXT
   label: Unreported Known Genetic/Genomic Features Present in the Line Background
   fieldName: static_unreported_features
   sortOrder: 20
   configuration:
-    placeholder: null
-    required: false
-    minLength: null
-    maxLength: null
-    min: null
-    max: null
-    pattern: null
-    patternMessage: null
-    options: null
-    defaultValue: null
     content: <h4>Unreported Known Genetic/Genomic Features Present in the Line Background</h4>
-    repeatable: null
-    minInstances: null
-    maxInstances: null
-    fullPage: null
   pageIndex: 4
-  children: null
 - type: RADIO_GROUP
   label: Are there any unreported genetic/genomic features present in the line background?
   fieldName: unreported_features
   sortOrder: 21
   configuration:
-    placeholder: null
-    required: false
-    minLength: null
-    maxLength: null
-    min: null
-    max: null
-    pattern: null
-    patternMessage: null
     options:
     - label: 'Yes'
       value: 'yes'
     - label: 'No'
       value: 'no'
-    defaultValue: null
-    content: null
-    repeatable: null
-    minInstances: null
-    maxInstances: null
-    fullPage: null
   pageIndex: 4
-  children: null
 - type: TEXT_AREA
   label: Please specify
   fieldName: unreported_features_details
   sortOrder: 22
   configuration:
     placeholder: Enter text...
-    required: false
-    minLength: null
-    maxLength: null
-    min: null
-    max: null
-    pattern: null
-    patternMessage: null
-    options: null
-    defaultValue: null
-    content: null
-    repeatable: null
-    minInstances: null
-    maxInstances: null
-    fullPage: null
   pageIndex: 4
-  children: null
 - type: TEXT_AREA
   label: Any additional information about the line
   fieldName: line_additional_info
   sortOrder: 23
   configuration:
     placeholder: Enter text...
-    required: false
-    minLength: null
-    maxLength: null
-    min: null
-    max: null
-    pattern: null
-    patternMessage: null
-    options: null
-    defaultValue: null
-    content: null
-    repeatable: null
-    minInstances: null
-    maxInstances: null
-    fullPage: null
   pageIndex: 5
-  children: null

@@ -64,14 +64,14 @@ export default function FormList() {
 
   const handleExport = async (formId: string, formName: string, format: 'json' | 'yaml') => {
     try {
-      const exportData = await formsApi.export(formId)
       let blob: Blob
       let filename: string
       if (format === 'yaml') {
-        const yamlStr = yaml.dump(exportData, { lineWidth: -1, noRefs: true, quotingType: '"' })
+        const yamlStr = await formsApi.exportYaml(formId)
         blob = new Blob([yamlStr], { type: 'text/yaml' })
         filename = `${formName || 'form'}.yaml`
       } else {
+        const exportData = await formsApi.export(formId)
         blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
         filename = `${formName || 'form'}.json`
       }

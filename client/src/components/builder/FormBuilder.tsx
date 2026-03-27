@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { Eye, Save, Send, Plus, X, Download, Pencil } from 'lucide-react'
-import yaml from 'js-yaml'
 import { formsApi, elementsApi, pagesApi } from '@/api/client'
 import type { ElementType, FormElement, FormPage } from '@/api/types'
 import { useFormBuilderStore, createNewElement } from '@/stores/formBuilderStore'
@@ -180,14 +179,14 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
 
   const handleExport = async (format: 'json' | 'yaml' = 'json') => {
     try {
-      const exportData = await formsApi.export(formId)
       let blob: Blob
       let filename: string
       if (format === 'yaml') {
-        const yamlStr = yaml.dump(exportData, { lineWidth: -1, noRefs: true, quotingType: '"' })
+        const yamlStr = await formsApi.exportYaml(formId)
         blob = new Blob([yamlStr], { type: 'text/yaml' })
         filename = `${form?.name || 'form'}.yaml`
       } else {
+        const exportData = await formsApi.export(formId)
         blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
         filename = `${form?.name || 'form'}.json`
       }

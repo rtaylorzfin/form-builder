@@ -1,5 +1,6 @@
 package com.formbuilder.form;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
@@ -85,6 +86,7 @@ public class FormController {
                                 .enable(YAMLGenerator.Feature.MINIMIZE_QUOTES)
                                 .enable(YAMLGenerator.Feature.LITERAL_BLOCK_STYLE));
                 yamlMapper.findAndRegisterModules();
+                yamlMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
                 String yaml = yamlMapper.writeValueAsString(export);
                 return ResponseEntity.ok()
                         .header(HttpHeaders.CONTENT_TYPE, "text/yaml; charset=UTF-8")
