@@ -317,126 +317,337 @@ elements:
           value: insertion
         - label: Indel (delins)
           value: indel
+        - label: Duplication
+          value: duplication
+        - label: Inversion
+          value: inversion
+        - label: Translocation
+          value: translocation
         - label: Transgene
           value: transgene
+        - label: Other
+          value: other
         - label: Unknown
           value: unknown
-        allowOther: true
       pageIndex: 2
     - type: STATIC_TEXT
-      label: Molecular Nature of the Lesion
-      fieldName: static_lesion_molecular
+      label: Conditional fields note
+      fieldName: static_lesion_conditional_header
       sortOrder: 1
       configuration:
-        content: "<h4>More information about the molecular nature of the lesion</h4>\n\
-          <p><em>The fields shown below depend on the Lesion Type selected above.</em></p>\n"
-      pageIndex: 2
-    - type: NUMBER
-      label: Indel (delins) deletion size (bp)
-      fieldName: indel_deletion_size
-      sortOrder: 2
-      configuration:
-        placeholder: Enter number...
-      pageIndex: 2
-    - type: NUMBER
-      label: Indel (delins) insertion size (bp)
-      fieldName: indel_insertion_size
-      sortOrder: 3
-      configuration:
-        placeholder: Enter number...
-      pageIndex: 2
-    - type: TEXT_INPUT
-      label: Deleted base pairs
-      fieldName: deleted_base_pairs
-      sortOrder: 4
-      configuration:
-        placeholder: e.g. TTAT
-      pageIndex: 2
-    - type: TEXT_INPUT
-      label: Inserted base pairs (replaced with)
-      fieldName: inserted_base_pairs
-      sortOrder: 5
-      configuration:
-        placeholder: e.g. GTCATTTATTTAAA
-      pageIndex: 2
-    - type: TEXT_INPUT
-      label: Location of mutated nucleotide(s) in WT genomic sequence
-      fieldName: wt_genomic_sequence
-      sortOrder: 6
-      configuration:
-        placeholder: "Please list at least 5 nucleotides preceding and following.\
-          \ e.g. ccgccgc[TTAT]tgacagtg"
-      pageIndex: 2
-    - type: TEXT_INPUT
-      label: Location of mutated nucleotide(s) in mutant genomic sequence
-      fieldName: mut_genomic_sequence
-      sortOrder: 7
-      configuration:
-        placeholder: "e.g. ccgccgc[GTCATTTATTTAAA]tgacagtg"
-      pageIndex: 2
-    - type: TEXT_INPUT
-      label: Mutated amino acid(s) — free text
-      fieldName: mutated_amino_acids_freetext
-      sortOrder: 8
-      configuration:
-        placeholder: Free-text description of the effect on the protein
-      pageIndex: 2
-    - type: TEXT_INPUT
-      label: Mutated amino acid(s) — HGVS.P nomenclature
-      fieldName: mutated_amino_acids_hgvs
-      sortOrder: 9
-      configuration:
-        placeholder: "e.g. p.Phe173Cys, p.Phe173fsTer6 (see HGVS.P documentation)"
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Stakeholder note · TODO:</strong> The fields below should be shown conditionally based on the Lesion Type selected above (and the Variant for types that have small/large sub-forms). Each section header lists the lesion types that trigger it.</aside>"
       pageIndex: 2
     - type: STATIC_TEXT
-      label: Transgenic Insertion
-      fieldName: static_transgenic_insertion
+      label: Variant section
+      fieldName: static_lesion_variant_section
+      sortOrder: 2
+      configuration:
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Conditional · TODO:</strong> Shown for: Deletion, Insertion, Indel, Duplication, Inversion, Translocation. The small / large choice changes the Location field structure (inline ~5 nt flanking for small; structured 5'/sequence/3' with ~20 nt flanking for large).</aside>"
+      pageIndex: 2
+    - type: RADIO_GROUP
+      label: Variant
+      fieldName: lesion_variant
+      sortOrder: 3
+      configuration:
+        options:
+        - label: small
+          value: small
+        - label: large
+          value: large
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: Point mutation section
+      fieldName: static_lesion_point_mutation
+      sortOrder: 4
+      configuration:
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Conditional · TODO:</strong> Shown for lesion type: Point mutation.</aside>"
+      pageIndex: 2
+    - type: NUMBER
+      label: Lesion size (bp)
+      fieldName: pointmut_lesion_size
+      sortOrder: 5
+      configuration:
+        placeholder: Enter number...
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Nucleotide(s) change (WT into mutant)
+      fieldName: pointmut_nucleotide_change
+      sortOrder: 6
+      configuration:
+        placeholder: e.g. A>T
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: Deletion section
+      fieldName: static_lesion_deletion
+      sortOrder: 7
+      configuration:
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Conditional · TODO:</strong> Shown for lesion type: Deletion (small or large).</aside>"
+      pageIndex: 2
+    - type: NUMBER
+      label: Deletion size (bp)
+      fieldName: deletion_size
+      sortOrder: 8
+      configuration:
+        placeholder: Enter number...
+      pageIndex: 2
+    - type: TEXT_AREA
+      label: Sequence of the deleted region
+      fieldName: deletion_sequence
+      sortOrder: 9
+      configuration:
+        placeholder: Paste the deleted region sequence
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: Insertion section
+      fieldName: static_lesion_insertion
       sortOrder: 10
       configuration:
-        content: "<h4>Transgenic Insertion</h4>\n<p><em>The fields below apply when\
-          \ Lesion Type is Transgene.</em></p>\n"
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Conditional · TODO:</strong> Shown for lesion type: Insertion (small or large).</aside>"
+      pageIndex: 2
+    - type: NUMBER
+      label: Insertion size (bp)
+      fieldName: insertion_size
+      sortOrder: 11
+      configuration:
+        placeholder: Enter number...
+      pageIndex: 2
+    - type: TEXT_AREA
+      label: Sequence of the inserted fragment/region
+      fieldName: insertion_sequence
+      sortOrder: 12
+      configuration:
+        placeholder: Paste the inserted sequence
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: Indel section
+      fieldName: static_lesion_indel
+      sortOrder: 13
+      configuration:
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Conditional · TODO:</strong> Shown for lesion type: Indel (delins) — small or large.</aside>"
+      pageIndex: 2
+    - type: NUMBER
+      label: Indel (delins) size (bp) — deletion + insertion
+      fieldName: indel_size
+      sortOrder: 14
+      configuration:
+        placeholder: Enter number...
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Nucleotide(s) change (deleted / inserted base pairs)
+      fieldName: indel_nucleotide_change
+      sortOrder: 15
+      configuration:
+        placeholder: e.g. TTAT > GTCATTTATTTAAA
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: Duplication section
+      fieldName: static_lesion_duplication
+      sortOrder: 16
+      configuration:
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Conditional · TODO:</strong> Shown for lesion type: Duplication (small or large).</aside>"
+      pageIndex: 2
+    - type: NUMBER
+      label: Duplication size (bp)
+      fieldName: duplication_size
+      sortOrder: 17
+      configuration:
+        placeholder: Enter number...
+      pageIndex: 2
+    - type: TEXT_AREA
+      label: Sequence of the duplicated region
+      fieldName: duplication_sequence
+      sortOrder: 18
+      configuration:
+        placeholder: Paste the duplicated region sequence
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: Inversion section
+      fieldName: static_lesion_inversion
+      sortOrder: 19
+      configuration:
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Conditional · TODO:</strong> Shown for lesion type: Inversion (small or large). <em>Note: the source document's large-inversion page mistakenly labels these fields as &ldquo;duplication size&rdquo; / &ldquo;duplicated region&rdquo; — corrected here to inversion.</em></aside>"
+      pageIndex: 2
+    - type: NUMBER
+      label: Inversion size (bp)
+      fieldName: inversion_size
+      sortOrder: 20
+      configuration:
+        placeholder: Enter number...
+      pageIndex: 2
+    - type: TEXT_AREA
+      label: Sequence of the inverted region
+      fieldName: inversion_sequence
+      sortOrder: 21
+      configuration:
+        placeholder: Paste the inverted region sequence
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: Translocation section
+      fieldName: static_lesion_translocation
+      sortOrder: 22
+      configuration:
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Conditional · TODO:</strong> Shown for lesion type: Translocation (small or large).</aside>"
+      pageIndex: 2
+    - type: NUMBER
+      label: Translocation size (bp)
+      fieldName: translocation_size
+      sortOrder: 23
+      configuration:
+        placeholder: Enter number...
+      pageIndex: 2
+    - type: TEXT_AREA
+      label: Sequence of the translocated region
+      fieldName: translocation_sequence
+      sortOrder: 24
+      configuration:
+        placeholder: Paste the translocated region sequence
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: Transgene section
+      fieldName: static_lesion_transgene
+      sortOrder: 25
+      configuration:
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Conditional · TODO:</strong> Shown for lesion type: Transgene.</aside>"
       pageIndex: 2
     - type: NUMBER
       label: Transgene size (bp)
       fieldName: transgene_size
-      sortOrder: 11
+      sortOrder: 26
       configuration:
         placeholder: Automatically calculated from the transgene sequence
       pageIndex: 2
     - type: TEXT_AREA
       label: Sequence of the transgene
       fieldName: transgene_sequence
-      sortOrder: 12
+      sortOrder: 27
       configuration:
         placeholder: Paste the transgene sequence
       pageIndex: 2
     - type: TEXT_INPUT
-      label: 5' genomic region nucleotides that directly precede the transgene
-      fieldName: transgene_5prime_flank
-      sortOrder: 13
+      label: GenBank accession for the transgene
+      fieldName: transgene_genbank_accession
+      sortOrder: 28
+      configuration:
+        placeholder: Validated against NCBI
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: Inline annotated location section
+      fieldName: static_lesion_location_inline
+      sortOrder: 29
+      configuration:
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Conditional · TODO:</strong> Shown for: Point mutation, Deletion (small), Insertion (small), Indel (small), Duplication (small), Inversion (small). Inline annotated sequence with ~5 nt flanking on each side.</aside>"
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Location of mutated nucleotide(s) in the genomic sequence
+      fieldName: location_inline_annotated
+      sortOrder: 30
+      configuration:
+        placeholder: "e.g. ccgccgc[TTAT]tgacagtg (≥5 nt flanking each side)"
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: Structured location section
+      fieldName: static_lesion_location_structured
+      sortOrder: 31
+      configuration:
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Conditional · TODO:</strong> Shown for: Deletion (large), Insertion (large), Indel (large), Duplication (large), Inversion (large), Transgene. Structured layout with ~20 nt flanking on each side.</aside>"
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: 5' genomic region (~20 nt preceding)
+      fieldName: location_5prime_flank
+      sortOrder: 32
       configuration:
         placeholder: e.g. atcctggatgaggcatccatggaaagtggaagtgatgta
       pageIndex: 2
+    - type: TEXT_AREA
+      label: Lesion sequence
+      fieldName: location_lesion_sequence
+      sortOrder: 33
+      configuration:
+        placeholder: Paste the lesion sequence (deleted, inserted, duplicated, inverted, or transgene)
+      pageIndex: 2
     - type: TEXT_INPUT
-      label: 3' genomic region nucleotides that directly follow the transgene
-      fieldName: transgene_3prime_flank
-      sortOrder: 14
+      label: 3' genomic region (~20 nt following)
+      fieldName: location_3prime_flank
+      sortOrder: 34
       configuration:
         placeholder: e.g. ctgggattcatccaccatggttatcaccaagaatggtgta
       pageIndex: 2
-    - type: TEXT_INPUT
-      label: GenBank accession for the transgene
-      fieldName: transgene_genbank_accession
-      sortOrder: 15
+    - type: STATIC_TEXT
+      label: Indel large mutant location section
+      fieldName: static_lesion_indel_mut_location
+      sortOrder: 35
       configuration:
-        placeholder: Validated against NCBI
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Conditional · TODO:</strong> Shown only for Indel (large), in addition to the structured location above. The Indel (large) form captures the location for both the WT (deletion context, above) and the mutant (insertion context, below) separately.</aside>"
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: 5' genomic region — mutant context (~20 nt preceding)
+      fieldName: indel_mut_location_5prime_flank
+      sortOrder: 36
+      configuration:
+        placeholder: e.g. atcctggatgaggcatccatggaaagtggaagtgatgta
+      pageIndex: 2
+    - type: TEXT_AREA
+      label: Inserted sequence — mutant context
+      fieldName: indel_mut_location_inserted_sequence
+      sortOrder: 37
+      configuration:
+        placeholder: Paste the inserted sequence
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: 3' genomic region — mutant context (~20 nt following)
+      fieldName: indel_mut_location_3prime_flank
+      sortOrder: 38
+      configuration:
+        placeholder: e.g. ctgggattcatccaccatggttatcaccaagaatggtgta
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: Translocation location section
+      fieldName: static_lesion_translocation_location
+      sortOrder: 39
+      configuration:
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Conditional · TODO:</strong> Shown for: Translocation (small or large). Translocation is unique in capturing both an origin and a destination region rather than a single location.</aside>"
+      pageIndex: 2
+    - type: TEXT_AREA
+      label: Origin region of the translocation
+      fieldName: translocation_origin_region
+      sortOrder: 40
+      configuration:
+        placeholder: 5' flank — origin sequence — 3' flank
+      pageIndex: 2
+    - type: TEXT_AREA
+      label: Destination region of the translocation
+      fieldName: translocation_destination_region
+      sortOrder: 41
+      configuration:
+        placeholder: 5' flank — destination sequence — 3' flank
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: Mutated amino acids section
+      fieldName: static_lesion_amino_acids
+      sortOrder: 42
+      configuration:
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Conditional · TODO:</strong> Shown for all lesion types.</aside>"
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Mutated amino acid(s) — free text
+      fieldName: mutated_amino_acids_freetext
+      sortOrder: 43
+      configuration:
+        placeholder: Free-text description of the effect on the protein
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Mutated amino acid(s) — HGVS.P nomenclature
+      fieldName: mutated_amino_acids_hgvs
+      sortOrder: 44
+      configuration:
+        placeholder: "e.g. p.Phe173Cys, p.Phe173fsTer6 (see HGVS.P documentation)"
       pageIndex: 2
     - type: TEXT_AREA
       label: Additional information
       fieldName: lesion_additional_info
-      sortOrder: 16
+      sortOrder: 45
       configuration:
-        placeholder: Enter any additional information about this lesion...
+        placeholder: Enter any additional information about this lesion... (Shown for all lesion types.)
       pageIndex: 2
   - type: ELEMENT_GROUP
     label: Genotyping Assays
