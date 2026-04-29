@@ -31,33 +31,45 @@ elements:
   configuration:
     content: <p>General information about the line (for fish, not alleles and features)</p>
   pageIndex: 1
+- type: STATIC_TEXT
+  label: Line Name — ZFIN mapping note
+  fieldName: static_line_name_zfin_note
+  sortOrder: 2
+  configuration:
+    content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem\
+      \ 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨\
+      \ Stakeholder note \xB7 TODO:</strong> Line Name is equivalent to a synonym\
+      \ for fish on the ZFIN side.</aside>"
+  pageIndex: 1
 - type: TEXT_INPUT
   label: Line Name
   fieldName: line_name
-  sortOrder: 2
+  sortOrder: 3
   configuration:
-    placeholder: Enter text (equivalent to synonym for fish on ZFIN side)...
+    placeholder: Enter text...
     required: false
   pageIndex: 1
 - type: STATIC_TEXT
-  label: Line Name Note
+  label: Line Name — submission requirement note
   fieldName: static_line_name_note
-  sortOrder: 3
+  sortOrder: 4
   configuration:
-    content: <p><em>Line Name is not required to fill in fields, but is required
-      before submitting for review.</em></p>
+    content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem\
+      \ 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨\
+      \ Stakeholder note \xB7 TODO:</strong> Line Name is not required to fill in\
+      \ fields, but is required before submitting for review.</aside>"
   pageIndex: 1
 - type: TEXT_AREA
   label: Previous Line Names
   fieldName: previous_line_names
-  sortOrder: 4
+  sortOrder: 5
   configuration:
     placeholder: Enter text...
   pageIndex: 1
 - type: CHECKBOX_GROUP
   label: Reasons why ZIRC should accept line
   fieldName: reasons_to_accept
-  sortOrder: 5
+  sortOrder: 6
   configuration:
     options:
     - label: Currently frequently requested
@@ -79,7 +91,7 @@ elements:
 - type: ELEMENT_GROUP
   label: Mutations
   fieldName: mutations
-  sortOrder: 6
+  sortOrder: 7
   configuration:
     repeatable: true
     minInstances: 0
@@ -782,7 +794,7 @@ elements:
   label: Are there any features in the line that do not segregate independently during
     line propagation because they are linked with each other?
   fieldName: features_linked
-  sortOrder: 7
+  sortOrder: 8
   configuration:
     options:
     - label: "Yes"
@@ -793,7 +805,7 @@ elements:
 - type: STATIC_TEXT
   label: Linked Features
   fieldName: static_linked_features
-  sortOrder: 8
+  sortOrder: 9
   configuration:
     content: <h4>Linked Features</h4><p>Please mark the features that are linked
       with each other. (List is dynamically populated from the mutations and transgenes
@@ -802,7 +814,7 @@ elements:
 - type: CHECKBOX_GROUP
   label: Linked features
   fieldName: linked_features
-  sortOrder: 9
+  sortOrder: 10
   configuration:
     options:
     - label: Mutation 1
@@ -815,14 +827,14 @@ elements:
 - type: STATIC_TEXT
   label: The Distance Between Linked Features
   fieldName: static_distance_linked
-  sortOrder: 10
+  sortOrder: 11
   configuration:
     content: <h4>The Distance Between Linked Features</h4>
   pageIndex: 3
 - type: RADIO_GROUP
   label: Is the distance between linked features known?
   fieldName: distance_known
-  sortOrder: 11
+  sortOrder: 12
   configuration:
     options:
     - label: "Yes"
@@ -833,14 +845,14 @@ elements:
 - type: NUMBER
   label: Distance
   fieldName: distance_value
-  sortOrder: 12
+  sortOrder: 13
   configuration:
     placeholder: Enter number...
   pageIndex: 3
 - type: RADIO_GROUP
   label: Distance unit
   fieldName: distance_unit
-  sortOrder: 13
+  sortOrder: 14
   configuration:
     options:
     - label: centimorgans (cM)
@@ -851,35 +863,35 @@ elements:
 - type: TEXT_AREA
   label: Additional information
   fieldName: linked_features_additional_info
-  sortOrder: 14
+  sortOrder: 15
   configuration:
     placeholder: Enter text...
   pageIndex: 3
 - type: STATIC_TEXT
   label: Line Background
   fieldName: static_line_background
-  sortOrder: 15
+  sortOrder: 16
   configuration:
     content: <h4>Line Background</h4>
   pageIndex: 4
 - type: TEXT_INPUT
   label: Maternal background
   fieldName: maternal_background
-  sortOrder: 16
+  sortOrder: 17
   configuration:
     placeholder: e.g. AB, TU, unknown
   pageIndex: 4
 - type: TEXT_INPUT
   label: Paternal background
   fieldName: paternal_background
-  sortOrder: 17
+  sortOrder: 18
   configuration:
     placeholder: e.g. AB, TU, unknown
   pageIndex: 4
 - type: RADIO_GROUP
   label: Can the background be changed?
   fieldName: background_changeable
-  sortOrder: 18
+  sortOrder: 19
   configuration:
     options:
     - label: "Yes"
@@ -890,21 +902,21 @@ elements:
 - type: TEXT_AREA
   label: Please specify the potential concerns if the background needs to be changed
   fieldName: background_change_concerns
-  sortOrder: 19
+  sortOrder: 20
   configuration:
     placeholder: Enter text...
   pageIndex: 4
 - type: STATIC_TEXT
   label: Unreported Known Genetic/Genomic Features Present in the Line Background
   fieldName: static_unreported_features
-  sortOrder: 20
+  sortOrder: 21
   configuration:
     content: <h4>Unreported Known Genetic/Genomic Features Present in the Line Background</h4>
   pageIndex: 4
 - type: RADIO_GROUP
   label: Are there any unreported genetic/genomic features present in the line background?
   fieldName: unreported_features
-  sortOrder: 21
+  sortOrder: 22
   configuration:
     options:
     - label: "Yes"
@@ -915,14 +927,14 @@ elements:
 - type: TEXT_AREA
   label: Please specify
   fieldName: unreported_features_details
-  sortOrder: 22
+  sortOrder: 23
   configuration:
     placeholder: Enter text...
   pageIndex: 4
 - type: RADIO_GROUP
   label: Will this be submitted as single-allelic?
   fieldName: single_allelic_submission
-  sortOrder: 23
+  sortOrder: 24
   configuration:
     options:
     - label: "Yes"
@@ -933,14 +945,14 @@ elements:
 - type: TEXT_AREA
   label: Any additional information about the line
   fieldName: line_additional_info
-  sortOrder: 24
+  sortOrder: 25
   configuration:
     placeholder: Enter text...
   pageIndex: 5
 - type: TEXT_AREA
   label: Husbandry-specific information
   fieldName: husbandry_info
-  sortOrder: 25
+  sortOrder: 26
   configuration:
     placeholder: e.g. special feeding regime, water conditions, handling notes
   pageIndex: 5
