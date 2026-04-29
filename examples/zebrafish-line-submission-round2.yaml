@@ -1,0 +1,946 @@
+name: Submit a Line
+description: ""
+pages:
+- pageNumber: 0
+  title: Notice
+- pageNumber: 1
+  title: General Info
+- pageNumber: 2
+  title: Mutations
+- pageNumber: 3
+  title: Linked Features
+- pageNumber: 4
+  title: Line Background
+- pageNumber: 5
+  title: Additional Information
+elements:
+- type: STATIC_TEXT
+  label: Notice
+  fieldName: static_notice_description
+  sortOrder: 0
+  configuration:
+    content: "<p>Description of the form</p>\n\n<p>Before proceeding make sure you\
+      \ have the information for all features in the line. Please include genetic/genomic\
+      \ features present in a line background (e.g., known background mutations and/or\
+      \ known background transgenes).</p>\n"
+  pageIndex: 0
+- type: STATIC_TEXT
+  label: Line Information
+  fieldName: static_text_1771882818043
+  sortOrder: 1
+  configuration:
+    content: <p>General information about the line (for fish, not alleles and features)</p>
+  pageIndex: 1
+- type: TEXT_INPUT
+  label: Line Name
+  fieldName: line_name
+  sortOrder: 2
+  configuration:
+    placeholder: Enter text (equivalent to synonym for fish on ZFIN side)...
+    required: false
+  pageIndex: 1
+- type: STATIC_TEXT
+  label: Line Name Note
+  fieldName: static_line_name_note
+  sortOrder: 3
+  configuration:
+    content: <p><em>Line Name is not required to fill in fields, but is required
+      before submitting for review.</em></p>
+  pageIndex: 1
+- type: TEXT_AREA
+  label: Previous Line Names
+  fieldName: previous_line_names
+  sortOrder: 4
+  configuration:
+    placeholder: Enter text...
+  pageIndex: 1
+- type: CHECKBOX_GROUP
+  label: Reasons why ZIRC should accept line
+  fieldName: reasons_to_accept
+  sortOrder: 5
+  configuration:
+    options:
+    - label: Currently frequently requested
+      value: frequently_requested
+    - label: Expect high demand
+      value: expect_high_demand
+    - label: Interesting gene
+      value: interesting_gene
+    - label: Community resource/tool
+      value: community_resource
+    - label: Mutant gene cloned
+      value: mutant_gene_cloned
+    - label: Danger of losing line
+      value: danger_of_losing
+    - label: Lack of space or funding to maintain line
+      value: lack_of_space_or_funding
+    allowOther: true
+  pageIndex: 1
+- type: ELEMENT_GROUP
+  label: Mutations
+  fieldName: mutations
+  sortOrder: 6
+  configuration:
+    repeatable: true
+    minInstances: 0
+    maxInstances: 5
+    fullPage: true
+    instanceLabel: Mutation
+  pageIndex: 2
+  children:
+  - type: ELEMENT_GROUP
+    label: Mutation General Info
+    fieldName: mutation_general_info
+    sortOrder: 0
+    configuration:
+      repeatable: false
+      fullPage: true
+    pageIndex: 2
+    children:
+    - type: CHECKBOX
+      label: Does this allele designation exist in ZFIN?
+      fieldName: allele_exists_in_zfin
+      sortOrder: 0
+      configuration:
+        content: <p><em>If not, this submission will be flagged for ZFIN curator
+          review.</em></p>
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Allele designation assigned to the mutation
+      fieldName: allele_designation_zfin
+      sortOrder: 1
+      configuration:
+        placeholder: Autocomplete from ZFIN — shown when allele exists in ZFIN
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Allele designation (free text)
+      fieldName: allele_designation_freetext
+      sortOrder: 2
+      configuration:
+        placeholder: Free text — shown when allele does not exist in ZFIN
+      pageIndex: 2
+    - type: SELECT
+      label: Mutagenesis stage
+      fieldName: mutagenesis_stage
+      sortOrder: 3
+      configuration:
+        options:
+        - label: not specified
+          value: not_specified
+        - label: adult females
+          value: adult_females
+        - label: adult males
+          value: adult_males
+        - label: embryos
+          value: embryos
+        - label: sperm
+          value: sperm
+        allowOther: true
+      pageIndex: 2
+    - type: SELECT
+      label: Mutagen
+      fieldName: mutagenesis_protocol
+      sortOrder: 4
+      configuration:
+        options:
+        - label: not specified
+          value: not_specified
+        - label: CRISPR
+          value: crispr
+        - label: EMS
+          value: ems
+        - label: ENU
+          value: enu
+        - label: g-rays
+          value: g_rays
+        - label: spontaneous
+          value: spontaneous
+        - label: TALEN
+          value: talen
+        - label: TMP
+          value: tmp
+        - label: zinc finger nuclease
+          value: zinc_finger_nuclease
+        allowOther: true
+      pageIndex: 2
+    - type: RADIO_GROUP
+      label: Is the mutation molecularly characterized/cloned?
+      fieldName: mutation_molecularly_characterized
+      sortOrder: 5
+      configuration:
+        options:
+        - label: "Yes"
+          value: "yes"
+        - label: "No"
+          value: "no"
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: Uncloned mutation note
+      fieldName: static_uncloned_mutation
+      sortOrder: 6
+      configuration:
+        content: <p><em>If the mutation is not molecularly characterized, additional
+          fields (e.g., SSLP markers) will be requested. Requirements TBD.</em></p>
+      pageIndex: 2
+    - type: RADIO_GROUP
+      label: Is ZFIN record established for this mutation?
+      fieldName: zfin_record_established
+      sortOrder: 7
+      configuration:
+        options:
+        - label: "Yes"
+          value: "yes"
+        - label: "No"
+          value: "no"
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: "ZDB genomic feature # (ZFIN ID)"
+      fieldName: zdb_genomic_feature
+      sortOrder: 8
+      configuration:
+        placeholder: Shown when ZFIN record is established
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Mutation discoverer/creator
+      fieldName: mutation_discoverer
+      sortOrder: 9
+      configuration:
+        placeholder: Enter text...
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Institution where the mutation was discovered/generated
+      fieldName: mutation_institution
+      sortOrder: 10
+      configuration:
+        placeholder: Enter text...
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Publications (please list)
+      fieldName: publications
+      sortOrder: 11
+      configuration:
+        placeholder: Enter text...
+        repeatable: true
+        minInstances: 0
+        maxInstances: 10
+      pageIndex: 2
+  - type: ELEMENT_GROUP
+    label: Genes
+    fieldName: genes
+    sortOrder: 1
+    configuration:
+      repeatable: true
+      minInstances: 0
+      maxInstances: 10
+      fullPage: true
+      instanceLabel: Gene
+      trackCompletion: true
+    pageIndex: 2
+    children:
+    - type: TEXT_INPUT
+      label: Mutated gene
+      fieldName: mutated_gene
+      sortOrder: 0
+      configuration:
+        placeholder: Autocomplete from ZFIN
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Linkage group
+      fieldName: linkage_group
+      sortOrder: 1
+      configuration:
+        placeholder: Autocomplete (chromosome)
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: "GenBank accession # for genomic DNA"
+      fieldName: genbank_genomic_dna
+      sortOrder: 2
+      configuration:
+        placeholder: Validated against NCBI (not ZFIN-only)
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: "GenBank accession # for cDNA"
+      fieldName: genbank_cdna
+      sortOrder: 3
+      configuration:
+        placeholder: Validated against NCBI
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: Single gene assumption
+      fieldName: static_single_gene_note
+      sortOrder: 4
+      configuration:
+        content: <p><em>In most cases with a single gene and a single mutation, an
+          'is allele of' relationship is assumed.</em></p>
+      pageIndex: 2
+    - type: CHECKBOX
+      label: Gene Section Complete
+      fieldName: gene_section_complete
+      sortOrder: 5
+      configuration: {}
+      pageIndex: 2
+  - type: ELEMENT_GROUP
+    label: Lesions
+    fieldName: lesions
+    sortOrder: 2
+    configuration:
+      repeatable: true
+      minInstances: 0
+      maxInstances: 10
+      fullPage: true
+      instanceLabel: Lesion
+    pageIndex: 2
+    children:
+    - type: RADIO_GROUP
+      label: Lesion Type
+      fieldName: lesion_type
+      sortOrder: 0
+      configuration:
+        options:
+        - label: Point mutation
+          value: point_mutation
+        - label: Deletion
+          value: deletion
+        - label: Insertion
+          value: insertion
+        - label: Indel (delins)
+          value: indel
+        - label: Transgene
+          value: transgene
+        - label: Unknown
+          value: unknown
+        allowOther: true
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: Molecular Nature of the Lesion
+      fieldName: static_lesion_molecular
+      sortOrder: 1
+      configuration:
+        content: "<h4>More information about the molecular nature of the lesion</h4>\n\
+          <p><em>The fields shown below depend on the Lesion Type selected above.</em></p>\n"
+      pageIndex: 2
+    - type: NUMBER
+      label: Indel (delins) deletion size (bp)
+      fieldName: indel_deletion_size
+      sortOrder: 2
+      configuration:
+        placeholder: Enter number...
+      pageIndex: 2
+    - type: NUMBER
+      label: Indel (delins) insertion size (bp)
+      fieldName: indel_insertion_size
+      sortOrder: 3
+      configuration:
+        placeholder: Enter number...
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Deleted base pairs
+      fieldName: deleted_base_pairs
+      sortOrder: 4
+      configuration:
+        placeholder: e.g. TTAT
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Inserted base pairs (replaced with)
+      fieldName: inserted_base_pairs
+      sortOrder: 5
+      configuration:
+        placeholder: e.g. GTCATTTATTTAAA
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Location of mutated nucleotide(s) in WT genomic sequence
+      fieldName: wt_genomic_sequence
+      sortOrder: 6
+      configuration:
+        placeholder: "Please list at least 5 nucleotides preceding and following.\
+          \ e.g. ccgccgc[TTAT]tgacagtg"
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Location of mutated nucleotide(s) in mutant genomic sequence
+      fieldName: mut_genomic_sequence
+      sortOrder: 7
+      configuration:
+        placeholder: "e.g. ccgccgc[GTCATTTATTTAAA]tgacagtg"
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Mutated amino acid(s) — free text
+      fieldName: mutated_amino_acids_freetext
+      sortOrder: 8
+      configuration:
+        placeholder: Free-text description of the effect on the protein
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Mutated amino acid(s) — HGVS.P nomenclature
+      fieldName: mutated_amino_acids_hgvs
+      sortOrder: 9
+      configuration:
+        placeholder: "e.g. p.Phe173Cys, p.Phe173fsTer6 (see HGVS.P documentation)"
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: Transgenic Insertion
+      fieldName: static_transgenic_insertion
+      sortOrder: 10
+      configuration:
+        content: "<h4>Transgenic Insertion</h4>\n<p><em>The fields below apply when\
+          \ Lesion Type is Transgene.</em></p>\n"
+      pageIndex: 2
+    - type: NUMBER
+      label: Transgene size (bp)
+      fieldName: transgene_size
+      sortOrder: 11
+      configuration:
+        placeholder: Automatically calculated from the transgene sequence
+      pageIndex: 2
+    - type: TEXT_AREA
+      label: Sequence of the transgene
+      fieldName: transgene_sequence
+      sortOrder: 12
+      configuration:
+        placeholder: Paste the transgene sequence
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: 5' genomic region nucleotides that directly precede the transgene
+      fieldName: transgene_5prime_flank
+      sortOrder: 13
+      configuration:
+        placeholder: e.g. atcctggatgaggcatccatggaaagtggaagtgatgta
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: 3' genomic region nucleotides that directly follow the transgene
+      fieldName: transgene_3prime_flank
+      sortOrder: 14
+      configuration:
+        placeholder: e.g. ctgggattcatccaccatggttatcaccaagaatggtgta
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: GenBank accession for the transgene
+      fieldName: transgene_genbank_accession
+      sortOrder: 15
+      configuration:
+        placeholder: Validated against NCBI
+      pageIndex: 2
+    - type: TEXT_AREA
+      label: Additional information
+      fieldName: lesion_additional_info
+      sortOrder: 16
+      configuration:
+        placeholder: Enter any additional information about this lesion...
+      pageIndex: 2
+  - type: ELEMENT_GROUP
+    label: Genotyping Assays
+    fieldName: genotyping_assays
+    sortOrder: 3
+    configuration:
+      repeatable: true
+      minInstances: 0
+      maxInstances: 10
+      fullPage: true
+      instanceLabel: Assay
+    pageIndex: 2
+    children:
+    - type: RADIO_GROUP
+      label: Type of Assay
+      fieldName: assay_type
+      sortOrder: 0
+      configuration:
+        options:
+        - label: PCR followed by gel electrophoresis
+          value: pcr_gel
+        - label: PCR followed by sequencing
+          value: pcr_sequencing
+        - label: Restriction Fragment Length Polymorphism (RFLP)
+          value: rflp
+        - label: Derived Cleaved Amplified Polymorphic Sequences (dCAPS)
+          value: dcaps
+        - label: Allele Specific Amplification (ASA)
+          value: asa
+        - label: Kompetitive Allele Specific PCR (KASP)
+          value: kasp
+        - label: High-Resolution Melt Analysis (HRMA)
+          value: hrma
+        - label: Simple Sequence Length Polymorphism (SSLP)
+          value: sslp
+        allowOther: true
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: Assay attachment
+      fieldName: static_assay_upload
+      sortOrder: 1
+      configuration:
+        content: "<h4>Attachment</h4>\n<p>Upload a chromatogram or other supporting\
+          \ file (file upload component pending — backend support required). Size\
+          \ limit applies.</p>\n"
+      pageIndex: 2
+    - type: TEXT_AREA
+      label: Attachment description
+      fieldName: assay_attachment_description
+      sortOrder: 2
+      configuration:
+        placeholder: Describe the uploaded file
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Forward primer
+      fieldName: forward_primer
+      sortOrder: 3
+      configuration:
+        placeholder: 5'-...
+        pattern: "^[ACTGNactgn]+$"
+        patternMessage: Only A, C, T, G, and N characters are allowed
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Reverse primer
+      fieldName: reverse_primer
+      sortOrder: 4
+      configuration:
+        placeholder: 5'-...
+        pattern: "^[ACTGNactgn]+$"
+        patternMessage: Only A, C, T, G, and N characters are allowed
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Expected wild-type PCR product(s) (bp)
+      fieldName: expected_wt_pcr
+      sortOrder: 5
+      configuration:
+        placeholder: e.g. 413
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Expected mutant PCR product(s) (bp)
+      fieldName: expected_mut_pcr
+      sortOrder: 6
+      configuration:
+        placeholder: e.g. 300
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Restriction enzyme — name
+      fieldName: restriction_enzyme_name
+      sortOrder: 7
+      configuration:
+        placeholder: e.g. BsaI
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Restriction enzyme — catalog number
+      fieldName: restriction_enzyme_catalog
+      sortOrder: 8
+      configuration:
+        placeholder: e.g. NEB R3733
+      pageIndex: 2
+    - type: CHECKBOX_GROUP
+      label: The enzyme cleaves WT or MUT template
+      fieldName: enzyme_cleaves
+      sortOrder: 9
+      configuration:
+        options:
+        - label: WT
+          value: wt
+        - label: MUT
+          value: mut
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Expected wild-type product(s) after digest (bp)
+      fieldName: expected_wt_digest
+      sortOrder: 10
+      configuration:
+        placeholder: e.g. 50 + 150 + 213
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Expected mutant product(s) after digest (bp)
+      fieldName: expected_mut_digest
+      sortOrder: 11
+      configuration:
+        placeholder: e.g. 300
+      pageIndex: 2
+    - type: TEXT_AREA
+      label: Additional information
+      fieldName: assay_additional_info
+      sortOrder: 12
+      configuration:
+        placeholder: "Enter text... (For SSLP, list multiple genes here.)"
+      pageIndex: 2
+  - type: ELEMENT_GROUP
+    label: Phenotyping General Info
+    fieldName: phenotyping
+    sortOrder: 4
+    configuration:
+      repeatable: false
+      fullPage: true
+    pageIndex: 2
+    children:
+    - type: RADIO_GROUP
+      label: Mutation Type
+      fieldName: mutation_type
+      sortOrder: 0
+      configuration:
+        options:
+        - label: Null (complete loss of function)
+          value: "null"
+        - label: Hypomorphic (partial loss of function)
+          value: hypomorphic
+        - label: "Hypermorphic (gain of function, increased activity)"
+          value: hypermorphic
+        - label: "Neomorphic (gain of function, new function)"
+          value: neomorphic
+        - label: Unknown
+          value: unknown
+        allowOther: true
+      pageIndex: 2
+  - type: ELEMENT_GROUP
+    label: Phenotyping Assays
+    fieldName: phenotypes
+    sortOrder: 5
+    configuration:
+      repeatable: true
+      minInstances: 0
+      maxInstances: 10
+      fullPage: true
+      instanceLabel: Phenotype
+    pageIndex: 2
+    children:
+    - type: TEXT_AREA
+      label: Description of the phenotype
+      fieldName: phenotype_description
+      sortOrder: 0
+      configuration:
+        placeholder: Enter text...
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: Optimal stage to ID by the phenotype
+      fieldName: static_optimal_stage
+      sortOrder: 1
+      configuration:
+        content: <h4>Optimal stage to ID by the phenotype</h4>
+      pageIndex: 2
+    - type: RADIO_GROUP
+      label: Time unit
+      fieldName: phenotype_time_unit
+      sortOrder: 2
+      configuration:
+        options:
+        - label: Hours post fertilization (hpf)
+          value: hpf
+        - label: Days post fertilization (dpf)
+          value: dpf
+      pageIndex: 2
+    - type: NUMBER
+      label: Start
+      fieldName: phenotype_time_start
+      sortOrder: 3
+      configuration:
+        placeholder: e.g. 72
+      pageIndex: 2
+    - type: NUMBER
+      label: End (optional, for ranges)
+      fieldName: phenotype_time_end
+      sortOrder: 4
+      configuration:
+        placeholder: Leave blank for a single time point
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Stage at 28.5
+      fieldName: phenotype_stage
+      sortOrder: 5
+      configuration:
+        placeholder: Read-only — derived from time above. See ZFIN stage info.
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: Images of the phenotype
+      fieldName: static_phenotype_images
+      sortOrder: 6
+      configuration:
+        content: <h4>Images of the phenotype</h4><p>(Please upload image(s) of the
+          phenotype with annotations of developmental stages and anatomical structures.
+          File upload component pending — backend support required.)</p>
+      pageIndex: 2
+    - type: RADIO_GROUP
+      label: Does ZIRC/ZFIN have permission to publish these images on the ZIRC or
+        ZFIN websites?
+      fieldName: zirc_image_permission
+      sortOrder: 7
+      configuration:
+        options:
+        - label: "Yes"
+          value: "yes"
+        - label: "No"
+          value: "no"
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: Segregation
+      fieldName: static_segregation
+      sortOrder: 8
+      configuration:
+        content: <h4>Segregation</h4>
+      pageIndex: 2
+    - type: CHECKBOX_GROUP
+      label: Segregation
+      fieldName: segregation
+      sortOrder: 9
+      configuration:
+        options:
+        - label: Mendelian recessive
+          value: mendelian_recessive
+        - label: Mendelian dominant
+          value: mendelian_dominant
+        - label: Non-Mendelian
+          value: non_mendelian
+      pageIndex: 2
+    - type: NUMBER
+      label: Non-Mendelian percentage (%)
+      fieldName: non_mendelian_percentage
+      sortOrder: 10
+      configuration:
+        placeholder: Enter percentage...
+        min: 0.0
+        max: 100.0
+      pageIndex: 2
+    - type: TEXT_AREA
+      label: Non-Mendelian percentage — comment
+      fieldName: non_mendelian_comment
+      sortOrder: 11
+      configuration:
+        placeholder: Optional comment
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: Phenotype Type
+      fieldName: static_phenotype_type
+      sortOrder: 12
+      configuration:
+        content: <h4>Phenotype Type</h4>
+      pageIndex: 2
+    - type: CHECKBOX_GROUP
+      label: Phenotype Type
+      fieldName: phenotype_type
+      sortOrder: 13
+      configuration:
+        options:
+        - label: Zygotic (Z)
+          value: zygotic
+        - label: Maternal (M)
+          value: maternal
+        - label: Maternal – Zygotic (M-Z)
+          value: maternal_zygotic
+        allowOther: true
+      pageIndex: 2
+  - type: ELEMENT_GROUP
+    label: Lethality
+    fieldName: lethality
+    sortOrder: 6
+    configuration:
+      repeatable: false
+      fullPage: true
+    pageIndex: 2
+    children:
+    - type: RADIO_GROUP
+      label: Is the mutation homozygous lethal?
+      fieldName: homozygous_lethal
+      sortOrder: 0
+      configuration:
+        options:
+        - label: "Yes"
+          value: "yes"
+        - label: "No"
+          value: "no"
+      pageIndex: 2
+    - type: RADIO_GROUP
+      label: Specify developmental stage at which homozygous individuals die
+      fieldName: lethality_stage_type
+      sortOrder: 1
+      configuration:
+        options:
+        - label: A specific developmental time point
+          value: specific
+        - label: A temporal window
+          value: temporal_window
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Specific developmental time point
+      fieldName: lethality_specific_timepoint
+      sortOrder: 2
+      configuration:
+        placeholder: Enter developmental stage...
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Temporal window start
+      fieldName: lethality_window_start
+      sortOrder: 3
+      configuration:
+        placeholder: e.g. day 20
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Temporal window end
+      fieldName: lethality_window_end
+      sortOrder: 4
+      configuration:
+        placeholder: e.g. day 30
+      pageIndex: 2
+    - type: TEXT_AREA
+      label: Additional Information
+      fieldName: lethality_additional_info
+      sortOrder: 5
+      configuration:
+        placeholder: Enter text...
+      pageIndex: 2
+- type: RADIO_GROUP
+  label: Are there any features in the line that do not segregate independently during
+    line propagation because they are linked with each other?
+  fieldName: features_linked
+  sortOrder: 7
+  configuration:
+    options:
+    - label: "Yes"
+      value: "yes"
+    - label: "No"
+      value: "no"
+  pageIndex: 3
+- type: STATIC_TEXT
+  label: Linked Features
+  fieldName: static_linked_features
+  sortOrder: 8
+  configuration:
+    content: <h4>Linked Features</h4><p>Please mark the features that are linked
+      with each other. (List is dynamically populated from the mutations and transgenes
+      entered above.)</p>
+  pageIndex: 3
+- type: CHECKBOX_GROUP
+  label: Linked features
+  fieldName: linked_features
+  sortOrder: 9
+  configuration:
+    options:
+    - label: Mutation 1
+      value: mutation_1
+    - label: Mutation 2
+      value: mutation_2
+    - label: Transgene 1
+      value: transgene_1
+  pageIndex: 3
+- type: STATIC_TEXT
+  label: The Distance Between Linked Features
+  fieldName: static_distance_linked
+  sortOrder: 10
+  configuration:
+    content: <h4>The Distance Between Linked Features</h4>
+  pageIndex: 3
+- type: RADIO_GROUP
+  label: Is the distance between linked features known?
+  fieldName: distance_known
+  sortOrder: 11
+  configuration:
+    options:
+    - label: "Yes"
+      value: "yes"
+    - label: "No"
+      value: "no"
+  pageIndex: 3
+- type: NUMBER
+  label: Distance
+  fieldName: distance_value
+  sortOrder: 12
+  configuration:
+    placeholder: Enter number...
+  pageIndex: 3
+- type: RADIO_GROUP
+  label: Distance unit
+  fieldName: distance_unit
+  sortOrder: 13
+  configuration:
+    options:
+    - label: centimorgans (cM)
+      value: cm
+    - label: megabases (Mb)
+      value: mb
+  pageIndex: 3
+- type: TEXT_AREA
+  label: Additional information
+  fieldName: linked_features_additional_info
+  sortOrder: 14
+  configuration:
+    placeholder: Enter text...
+  pageIndex: 3
+- type: STATIC_TEXT
+  label: Line Background
+  fieldName: static_line_background
+  sortOrder: 15
+  configuration:
+    content: <h4>Line Background</h4>
+  pageIndex: 4
+- type: TEXT_INPUT
+  label: Maternal background
+  fieldName: maternal_background
+  sortOrder: 16
+  configuration:
+    placeholder: e.g. AB, TU, unknown
+  pageIndex: 4
+- type: TEXT_INPUT
+  label: Paternal background
+  fieldName: paternal_background
+  sortOrder: 17
+  configuration:
+    placeholder: e.g. AB, TU, unknown
+  pageIndex: 4
+- type: RADIO_GROUP
+  label: Can the background be changed?
+  fieldName: background_changeable
+  sortOrder: 18
+  configuration:
+    options:
+    - label: "Yes"
+      value: "yes"
+    - label: "No"
+      value: "no"
+  pageIndex: 4
+- type: TEXT_AREA
+  label: Please specify the potential concerns if the background needs to be changed
+  fieldName: background_change_concerns
+  sortOrder: 19
+  configuration:
+    placeholder: Enter text...
+  pageIndex: 4
+- type: STATIC_TEXT
+  label: Unreported Known Genetic/Genomic Features Present in the Line Background
+  fieldName: static_unreported_features
+  sortOrder: 20
+  configuration:
+    content: <h4>Unreported Known Genetic/Genomic Features Present in the Line Background</h4>
+  pageIndex: 4
+- type: RADIO_GROUP
+  label: Are there any unreported genetic/genomic features present in the line background?
+  fieldName: unreported_features
+  sortOrder: 21
+  configuration:
+    options:
+    - label: "Yes"
+      value: "yes"
+    - label: "No"
+      value: "no"
+  pageIndex: 4
+- type: TEXT_AREA
+  label: Please specify
+  fieldName: unreported_features_details
+  sortOrder: 22
+  configuration:
+    placeholder: Enter text...
+  pageIndex: 4
+- type: RADIO_GROUP
+  label: Will this be submitted as single-allelic?
+  fieldName: single_allelic_submission
+  sortOrder: 23
+  configuration:
+    options:
+    - label: "Yes"
+      value: "yes"
+    - label: "No"
+      value: "no"
+  pageIndex: 4
+- type: TEXT_AREA
+  label: Any additional information about the line
+  fieldName: line_additional_info
+  sortOrder: 24
+  configuration:
+    placeholder: Enter text...
+  pageIndex: 5
+- type: TEXT_AREA
+  label: Husbandry-specific information
+  fieldName: husbandry_info
+  sortOrder: 25
+  configuration:
+    placeholder: e.g. special feeding regime, water conditions, handling notes
+  pageIndex: 5
