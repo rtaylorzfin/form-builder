@@ -475,20 +475,18 @@ elements:
         allowOther: true
       pageIndex: 2
     - type: STATIC_TEXT
-      label: Assay attachment
-      fieldName: static_assay_upload
+      label: Conditional fields note
+      fieldName: static_assay_conditional_header
       sortOrder: 1
       configuration:
-        content: "<h4>Attachment</h4>\n<p>Upload a chromatogram or other supporting\
-          \ file (file upload component pending — backend support required). Size\
-          \ limit applies.</p>\n"
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Stakeholder note · TODO:</strong> The fields below should be shown conditionally based on the Type of Assay selected above. Each section header lists the assay types that trigger it.</aside>"
       pageIndex: 2
-    - type: TEXT_AREA
-      label: Attachment description
-      fieldName: assay_attachment_description
+    - type: STATIC_TEXT
+      label: Common primer fields
+      fieldName: static_common_primers
       sortOrder: 2
       configuration:
-        placeholder: Describe the uploaded file
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Conditional · TODO:</strong> <em>Forward / Reverse primer</em> shown for: PCR + gel, PCR + sequencing, RFLP, dCAPS, HRMA, SSLP. <em>Expected PCR product(s)</em> shown for: PCR + gel, PCR + sequencing, RFLP, dCAPS, ASA, KASP, HRMA.</aside>"
       pageIndex: 2
     - type: TEXT_INPUT
       label: Forward primer
@@ -522,24 +520,81 @@ elements:
       configuration:
         placeholder: e.g. 300
       pageIndex: 2
+    - type: STATIC_TEXT
+      label: Sequencing-specific section
+      fieldName: static_sequencing_section
+      sortOrder: 7
+      configuration:
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Conditional · TODO:</strong> Shown for assay type: PCR + sequencing.</aside>"
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Sequencing primer
+      fieldName: sequencing_primer
+      sortOrder: 8
+      configuration:
+        placeholder: 5'-...
+        pattern: "^[ACTGNactgn]+$"
+        patternMessage: Only A, C, T, G, and N characters are allowed
+      pageIndex: 2
+    - type: RADIO_GROUP
+      label: Are chromatogram files available?
+      fieldName: chromatogram_available
+      sortOrder: 9
+      configuration:
+        options:
+        - label: "Yes"
+          value: "yes"
+        - label: "No"
+          value: "no"
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: Upload chromatogram files
+      fieldName: static_upload_chromatogram
+      sortOrder: 10
+      configuration:
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Stakeholder note · TODO:</strong> Upload chromatogram files — file upload component pending (backend support required).</aside>"
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: dCAPS-specific section
+      fieldName: static_dcaps_section
+      sortOrder: 11
+      configuration:
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Conditional · TODO:</strong> Shown for assay type: dCAPS.</aside>"
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: A primer with an introduced mismatch(s)
+      fieldName: dcaps_mismatch_primer
+      sortOrder: 12
+      configuration:
+        placeholder: 5'-...
+        pattern: "^[ACTGNactgn]+$"
+        patternMessage: Only A, C, T, G, and N characters are allowed
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: Restriction digest section
+      fieldName: static_restriction_section
+      sortOrder: 13
+      configuration:
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Conditional · TODO:</strong> Shown for assay types: RFLP, dCAPS.</aside>"
+      pageIndex: 2
     - type: TEXT_INPUT
       label: Restriction enzyme — name
       fieldName: restriction_enzyme_name
-      sortOrder: 7
+      sortOrder: 14
       configuration:
         placeholder: e.g. BsaI
       pageIndex: 2
     - type: TEXT_INPUT
       label: Restriction enzyme — catalog number
       fieldName: restriction_enzyme_catalog
-      sortOrder: 8
+      sortOrder: 15
       configuration:
         placeholder: e.g. NEB R3733
       pageIndex: 2
     - type: CHECKBOX_GROUP
       label: The enzyme cleaves WT or MUT template
       fieldName: enzyme_cleaves
-      sortOrder: 9
+      sortOrder: 16
       configuration:
         options:
         - label: WT
@@ -550,23 +605,202 @@ elements:
     - type: TEXT_INPUT
       label: Expected wild-type product(s) after digest (bp)
       fieldName: expected_wt_digest
-      sortOrder: 10
+      sortOrder: 17
       configuration:
         placeholder: e.g. 50 + 150 + 213
       pageIndex: 2
     - type: TEXT_INPUT
       label: Expected mutant product(s) after digest (bp)
       fieldName: expected_mut_digest
-      sortOrder: 11
+      sortOrder: 18
       configuration:
         placeholder: e.g. 300
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: Allele-specific primers section
+      fieldName: static_allele_specific_section
+      sortOrder: 19
+      configuration:
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Conditional · TODO:</strong> Shown for assay types: ASA, KASP.</aside>"
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: WT-specific primer
+      fieldName: wt_specific_primer
+      sortOrder: 20
+      configuration:
+        placeholder: 5'-...
+        pattern: "^[ACTGNactgn]+$"
+        patternMessage: Only A, C, T, G, and N characters are allowed
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Mutant-specific primer
+      fieldName: mutant_specific_primer
+      sortOrder: 21
+      configuration:
+        placeholder: 5'-...
+        pattern: "^[ACTGNactgn]+$"
+        patternMessage: Only A, C, T, G, and N characters are allowed
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Common primer
+      fieldName: common_primer
+      sortOrder: 22
+      configuration:
+        placeholder: 5'-...
+        pattern: "^[ACTGNactgn]+$"
+        patternMessage: Only A, C, T, G, and N characters are allowed
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: KASP-specific section
+      fieldName: static_kasp_section
+      sortOrder: 23
+      configuration:
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Conditional · TODO:</strong> Shown for assay type: KASP.</aside>"
+      pageIndex: 2
+    - type: TEXT_AREA
+      label: Genomic DNA sequence used for KASP assay design
+      fieldName: kasp_genomic_dna_sequence
+      sortOrder: 24
+      configuration:
+        placeholder: Paste the genomic DNA sequence used for KASP assay design
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: Gel image attachments section
+      fieldName: static_gel_images_section
+      sortOrder: 25
+      configuration:
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Conditional · TODO:</strong> Shown for assay types: PCR + gel, RFLP, dCAPS, SSLP.</aside>"
+      pageIndex: 2
+    - type: RADIO_GROUP
+      label: Are annotated gel images available?
+      fieldName: gel_images_available
+      sortOrder: 26
+      configuration:
+        options:
+        - label: "Yes"
+          value: "yes"
+        - label: "No"
+          value: "no"
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: Upload gel images
+      fieldName: static_upload_gel_images
+      sortOrder: 27
+      configuration:
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Stakeholder note · TODO:</strong> Upload gel images — file upload component pending (backend support required).</aside>"
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: Genotyping result images section
+      fieldName: static_result_images_section
+      sortOrder: 28
+      configuration:
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Conditional · TODO:</strong> Shown for assay types: ASA, KASP.</aside>"
+      pageIndex: 2
+    - type: RADIO_GROUP
+      label: Are annotated images of genotyping results available?
+      fieldName: result_images_available
+      sortOrder: 29
+      configuration:
+        options:
+        - label: "Yes"
+          value: "yes"
+        - label: "No"
+          value: "no"
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: Upload result images
+      fieldName: static_upload_result_images
+      sortOrder: 30
+      configuration:
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Stakeholder note · TODO:</strong> Upload images — file upload component pending (backend support required).</aside>"
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: Melt curve files section
+      fieldName: static_melt_curve_section
+      sortOrder: 31
+      configuration:
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Conditional · TODO:</strong> Shown for assay type: HRMA.</aside>"
+      pageIndex: 2
+    - type: RADIO_GROUP
+      label: Are annotated melt curve files available?
+      fieldName: melt_curve_available
+      sortOrder: 32
+      configuration:
+        options:
+        - label: "Yes"
+          value: "yes"
+        - label: "No"
+          value: "no"
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: Upload melt curve files
+      fieldName: static_upload_melt_curve
+      sortOrder: 33
+      configuration:
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Stakeholder note · TODO:</strong> Upload melt curve files — file upload component pending (backend support required).</aside>"
+      pageIndex: 2
+    - type: STATIC_TEXT
+      label: SSLP-specific section
+      fieldName: static_sslp_section
+      sortOrder: 34
+      configuration:
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Conditional · TODO:</strong> Shown for assay type: SSLP.</aside>"
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: SSLP marker name
+      fieldName: sslp_marker_name
+      sortOrder: 35
+      configuration:
+        placeholder: e.g. z9740
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Distance between the marker and the mutation
+      fieldName: sslp_distance
+      sortOrder: 36
+      configuration:
+        placeholder: e.g. 0.5 cM
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Genomic location of the marker relative to the mutation
+      fieldName: sslp_genomic_location
+      sortOrder: 37
+      configuration:
+        placeholder: e.g. proximal / distal / chromosome coordinates
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Background on which the mutation was induced
+      fieldName: sslp_induced_background
+      sortOrder: 38
+      configuration:
+        placeholder: e.g. AB, TU
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: Recommended background onto which the mutation should be outcrossed
+      fieldName: sslp_outcross_background
+      sortOrder: 39
+      configuration:
+        placeholder: e.g. AB, TU
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: PCR product of the background on which the mutation was induced (bp)
+      fieldName: sslp_induced_pcr_product
+      sortOrder: 40
+      configuration:
+        placeholder: e.g. 215
+      pageIndex: 2
+    - type: TEXT_INPUT
+      label: PCR product of the outcrossing background (bp)
+      fieldName: sslp_outcross_pcr_product
+      sortOrder: 41
+      configuration:
+        placeholder: e.g. 230
       pageIndex: 2
     - type: TEXT_AREA
       label: Additional information
       fieldName: assay_additional_info
-      sortOrder: 12
+      sortOrder: 42
       configuration:
-        placeholder: "Enter text... (For SSLP, list multiple genes here.)"
+        placeholder: Enter text... (Shown for all assay types.)
       pageIndex: 2
   - type: ELEMENT_GROUP
     label: Phenotyping General Info
