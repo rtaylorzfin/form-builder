@@ -191,8 +191,9 @@ elements:
       fieldName: static_uncloned_mutation
       sortOrder: 6
       configuration:
-        content: <p><em>If the mutation is not molecularly characterized, additional
-          fields (e.g., SSLP markers) will be requested. Requirements TBD.</em></p>
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem\
+          \ 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨\
+          \ Note \xB7 TODO:</strong> If the mutation is not molecularly characterized, additional fields (e.g., SSLP markers) will be requested. Requirements TBD.</aside>"
       pageIndex: 2
     - type: RADIO_GROUP
       label: Is ZFIN record established for this mutation?
@@ -1092,7 +1093,7 @@ elements:
         placeholder: Leave blank for a single time point
       pageIndex: 2
     - type: TEXT_INPUT
-      label: Stage at 28.5
+      label: Stage at 28.5 degrees
       fieldName: phenotype_stage
       sortOrder: 5
       configuration:
@@ -1253,13 +1254,19 @@ elements:
   sortOrder: 9
   configuration:
     content: <h4>Linked Features</h4><p>Please mark the features that are linked
-      with each other. (List is dynamically populated from the mutations and transgenes
-      entered above.)</p>
+      with each other.</p>
+  pageIndex: 3
+- type: STATIC_TEXT
+  label: Notice
+  fieldName: static_notice_description_xya
+  sortOrder: 10
+  configuration:
+    content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ TODO:</strong> List is dynamically populated from the mutations and transgenes entered above.</aside>"
   pageIndex: 3
 - type: CHECKBOX_GROUP
   label: Linked features
   fieldName: linked_features
-  sortOrder: 10
+  sortOrder: 11
   configuration:
     options:
     - label: Mutation 1
@@ -1272,14 +1279,14 @@ elements:
 - type: STATIC_TEXT
   label: The Distance Between Linked Features
   fieldName: static_distance_linked
-  sortOrder: 11
+  sortOrder: 12
   configuration:
     content: <h4>The Distance Between Linked Features</h4>
   pageIndex: 3
 - type: RADIO_GROUP
   label: Is the distance between linked features known?
   fieldName: distance_known
-  sortOrder: 12
+  sortOrder: 13
   configuration:
     options:
     - label: "Yes"
@@ -1290,14 +1297,14 @@ elements:
 - type: NUMBER
   label: Distance
   fieldName: distance_value
-  sortOrder: 13
+  sortOrder: 14
   configuration:
     placeholder: Enter number...
   pageIndex: 3
 - type: RADIO_GROUP
   label: Distance unit
   fieldName: distance_unit
-  sortOrder: 14
+  sortOrder: 15
   configuration:
     options:
     - label: centimorgans (cM)
@@ -1308,35 +1315,35 @@ elements:
 - type: TEXT_AREA
   label: Additional information
   fieldName: linked_features_additional_info
-  sortOrder: 15
+  sortOrder: 16
   configuration:
     placeholder: Enter text...
   pageIndex: 3
 - type: STATIC_TEXT
   label: Line Background
   fieldName: static_line_background
-  sortOrder: 16
+  sortOrder: 17
   configuration:
     content: <h4>Line Background</h4>
   pageIndex: 4
 - type: TEXT_INPUT
   label: Maternal background
   fieldName: maternal_background
-  sortOrder: 17
+  sortOrder: 18
   configuration:
     placeholder: e.g. AB, TU, unknown
   pageIndex: 4
 - type: TEXT_INPUT
   label: Paternal background
   fieldName: paternal_background
-  sortOrder: 18
+  sortOrder: 19
   configuration:
     placeholder: e.g. AB, TU, unknown
   pageIndex: 4
 - type: RADIO_GROUP
   label: Can the background be changed?
   fieldName: background_changeable
-  sortOrder: 19
+  sortOrder: 20
   configuration:
     options:
     - label: "Yes"
@@ -1347,21 +1354,21 @@ elements:
 - type: TEXT_AREA
   label: Please specify the potential concerns if the background needs to be changed
   fieldName: background_change_concerns
-  sortOrder: 20
+  sortOrder: 21
   configuration:
     placeholder: Enter text...
   pageIndex: 4
 - type: STATIC_TEXT
   label: Unreported Known Genetic/Genomic Features Present in the Line Background
   fieldName: static_unreported_features
-  sortOrder: 21
+  sortOrder: 22
   configuration:
     content: <h4>Unreported Known Genetic/Genomic Features Present in the Line Background</h4>
   pageIndex: 4
 - type: RADIO_GROUP
   label: Are there any unreported genetic/genomic features present in the line background?
   fieldName: unreported_features
-  sortOrder: 22
+  sortOrder: 23
   configuration:
     options:
     - label: "Yes"
@@ -1372,14 +1379,14 @@ elements:
 - type: TEXT_AREA
   label: Please specify
   fieldName: unreported_features_details
-  sortOrder: 23
+  sortOrder: 24
   configuration:
     placeholder: Enter text...
   pageIndex: 4
 - type: RADIO_GROUP
   label: Will this be submitted as single-allelic?
   fieldName: single_allelic_submission
-  sortOrder: 24
+  sortOrder: 25
   configuration:
     options:
     - label: "Yes"
@@ -1390,14 +1397,14 @@ elements:
 - type: TEXT_AREA
   label: Any additional information about the line
   fieldName: line_additional_info
-  sortOrder: 25
+  sortOrder: 26
   configuration:
     placeholder: Enter text...
   pageIndex: 5
 - type: TEXT_AREA
   label: Husbandry-specific information
   fieldName: husbandry_info
-  sortOrder: 26
+  sortOrder: 27
   configuration:
     placeholder: e.g. special feeding regime, water conditions, handling notes
   pageIndex: 5
