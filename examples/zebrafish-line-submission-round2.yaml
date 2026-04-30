@@ -38,7 +38,7 @@ elements:
   configuration:
     content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem\
       \ 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨\
-      \ Stakeholder note \xB7 TODO:</strong> Line Name is equivalent to a synonym\
+      \ Note \xB7 TODO:</strong> Line Name is equivalent to a synonym\
       \ for fish on the ZFIN side.</aside>"
   pageIndex: 1
 - type: TEXT_INPUT
@@ -56,7 +56,7 @@ elements:
   configuration:
     content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem\
       \ 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨\
-      \ Stakeholder note \xB7 TODO:</strong> Line Name is not required to fill in\
+      \ Note \xB7 TODO:</strong> Line Name is not required to fill in\
       \ fields, but is required before submitting for review.</aside>"
   pageIndex: 1
 - type: TEXT_AREA
@@ -335,7 +335,7 @@ elements:
       fieldName: static_lesion_conditional_header
       sortOrder: 1
       configuration:
-        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Stakeholder note · TODO:</strong> The fields below should be shown conditionally based on the Lesion Type selected above (and the Variant for types that have small/large sub-forms). Each section header lists the lesion types that trigger it.</aside>"
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Note · TODO:</strong> The fields below should be shown conditionally based on the Lesion Type selected above (and the Variant for types that have small/large sub-forms). Each section header lists the lesion types that trigger it.</aside>"
       pageIndex: 2
     - type: STATIC_TEXT
       label: Variant section
@@ -690,7 +690,7 @@ elements:
       fieldName: static_assay_conditional_header
       sortOrder: 1
       configuration:
-        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Stakeholder note · TODO:</strong> The fields below should be shown conditionally based on the Type of Assay selected above. Each section header lists the assay types that trigger it.</aside>"
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Note · TODO:</strong> The fields below should be shown conditionally based on the Type of Assay selected above. Each section header lists the assay types that trigger it.</aside>"
       pageIndex: 2
     - type: STATIC_TEXT
       label: Common primer fields
@@ -763,7 +763,7 @@ elements:
       fieldName: static_upload_chromatogram
       sortOrder: 10
       configuration:
-        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Stakeholder note · TODO:</strong> Upload chromatogram files — file upload component pending (backend support required).</aside>"
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Note · TODO:</strong> Upload chromatogram files — file upload component pending (backend support required).</aside>"
       pageIndex: 2
     - type: STATIC_TEXT
       label: dCAPS-specific section
@@ -898,7 +898,7 @@ elements:
       fieldName: static_upload_gel_images
       sortOrder: 27
       configuration:
-        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Stakeholder note · TODO:</strong> Upload gel images — file upload component pending (backend support required).</aside>"
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Note · TODO:</strong> Upload gel images — file upload component pending (backend support required).</aside>"
       pageIndex: 2
     - type: STATIC_TEXT
       label: Genotyping result images section
@@ -923,7 +923,7 @@ elements:
       fieldName: static_upload_result_images
       sortOrder: 30
       configuration:
-        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Stakeholder note · TODO:</strong> Upload images — file upload component pending (backend support required).</aside>"
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Note · TODO:</strong> Upload images — file upload component pending (backend support required).</aside>"
       pageIndex: 2
     - type: STATIC_TEXT
       label: Melt curve files section
@@ -948,7 +948,7 @@ elements:
       fieldName: static_upload_melt_curve
       sortOrder: 33
       configuration:
-        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Stakeholder note · TODO:</strong> Upload melt curve files — file upload component pending (backend support required).</aside>"
+        content: "<aside style=\"border-left:4px solid #f59e0b;background:#fffbeb;color:#78350f;padding:0.5rem 0.75rem;margin:0.5rem 0;border-radius:0.25rem;font-size:0.875rem;\"><strong>✨ Note · TODO:</strong> Upload melt curve files — file upload component pending (backend support required).</aside>"
       pageIndex: 2
     - type: STATIC_TEXT
       label: SSLP-specific section
